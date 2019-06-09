@@ -2,8 +2,10 @@
 #define SGSCENE_H
 
 #include "sgnode.h"
+class QSGNode;
 class SGScene
 {
+    friend class SGView;
 public:
     SGScene();
     void build();
@@ -15,6 +17,9 @@ protected:
 
     QList<QSGNode*> m_opacity_nodes;
     QList<QSGNode*> m_alpha_nodes;
+
+    int m_width = 1920;
+    int m_height = 1080;
 };
 
 #endif // SGSCENE_H

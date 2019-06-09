@@ -1,6 +1,6 @@
 #include "sgrenderer.h"
 
-SGRenderer::SGRenderer()
-{
+//SGRenderer::SGRenderer()
+//{
 
-}
+//}

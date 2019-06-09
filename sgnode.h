@@ -28,24 +28,30 @@ struct Rect {
 //};
 
 //define shader used to render
-class SGMaterialType{};
+enum E_MaterialType{
+    FlatColorMaterialType
+};
 class SGMaterial
 {
 public:
     class SGMaterialType{};
-    virtual const char* fragmentShader() const = 0;
+    virtual ~SGMaterial();
     virtual const char* vertexShader() const = 0;
-    virtual const SGMaterialType *type() const = 0;
+    virtual const char* fragmentShader() const = 0;
+    virtual const E_MaterialType type() const = 0;
     virtual bool build() = 0;
 
     bool compile();
     QOpenGLShaderProgram *m_program = nullptr;
 };
 
+
+extern std::vector<SGMaterial*> g_Materials;
+
 class SGFlatColorMaterial : public SGMaterial
 {
 public:
-    virtual const char* fragmentShader() const override
+    virtual const char* vertexShader() const override
     {
         return  "attribute highp vec4 posAttr;\n"
                 "attribute lowp vec4 colAttr;\n"
@@ -57,7 +63,7 @@ public:
                 "}\n";
     }
 
-    virtual const char* vertexShader() const override
+    virtual const char* fragmentShader() const override
     {
         return  "varying lowp vec4 col;\n"
                 "void main() {\n"
@@ -65,33 +71,40 @@ public:
                 "}\n";
     }
 
-    virtual const SGMaterialType *type() const override
+    virtual const E_MaterialType type() const override
     {
-        static SGMaterialType typ;
-        return &typ;
+        return E_MaterialType::FlatColorMaterialType;
     }
 
     virtual bool build() override;
-protected:
-    GLint m_posAttr;
-    GLint m_colAttr;
 
-private:
-    const GLfloat vertices[] = {
-        -0.5, 0.5, 0, 1,//topleft
-        0.5, 0.5, 0, 1,//topright
-        0.5, -0.5, 0, 1,//buttomright
-        -0.5, -0.5, 0, 1//buttomleft
+    void setColor(Color clr)
+    {
+        for (int i = 0; i < 6; ++i)
+        {
+            vertices[8 * i + 4] = clr.r / 255.f;
+            vertices[8 * i + 5] = clr.g / 255.f;
+            vertices[8 * i + 6] = clr.b / 255.f;
+        }
+    }
+//protected:
+    GLuint m_vbo;
+    GLuint m_posAttr;
+    GLuint m_colAttr;
+    GLuint m_matrixUniform;
+
+//private:
+    GLfloat vertices[48] = {
+        -0.5,  0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*topleft*/
+         0.5,  0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*topright*/
+         0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*buttomright*/
+
+        -0.5,  0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*topleft*/
+         0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*buttomright*/
+        -0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f/*buttomleft*/
     };
 
-    const GLfloat colors[] = {
-        1.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f, 1.0f
-    };
-
-    const GLuint verticesIndices[] = {
+    const GLuint verticesIndices[6] = {
         0, 1, 2, 0, 2, 3
     };
 
@@ -112,6 +125,7 @@ class SGNode
 public:
     enum E_NodeType {BasicNodeType, RectangleNodeType};
     SGNode(SGNode* parent=nullptr);
+    virtual ~SGNode();
     void add(SGNode* node);
     Rect boundingRect() const;
 
@@ -123,18 +137,22 @@ public:
     int width=0;//in scene's pixel size
     int height=0;
 
-    int gx=0;//global coordinate to the scene
-    int gy=0;
+    void renderProcessor();
+
+    int gx = 0;//global coordinate to the scene
+    int gy = 0;
+    int gwid = 0;
+    int ghei = 0;
     int gopacity=1.f;
 
-protected:
+//protected:
     //
     bool m_alpha=false;
     SGNode* m_parent=nullptr;
     std::list<SGNode*> m_children;
 
 //    SGGeometry *m_geometry=nullptr;
-    SGMaterial *m_material=nullptr;
+    static SGMaterial *m_material;
 };
 
 class SGRectangleNode : public SGNode

@@ -16,28 +16,8 @@ SGView::~SGView()
 {
 }
 
-static const char *vertexShaderSource =
-    "attribute highp vec4 posAttr;\n"
-    "attribute lowp vec4 colAttr;\n"
-    "varying lowp vec4 col;\n"
-    "uniform highp mat4 matrix;\n"
-    "void main() {\n"
-    "   col = colAttr;\n"
-    "   gl_Position = matrix * posAttr;\n"
-    "}\n";
-
-static const char *fragmentShaderSource =
-    "varying lowp vec4 col;\n"
-    "void main() {\n"
-    "   gl_FragColor = col;\n"
-    "}\n";
-
 void SGView::initialize()
 {
-    for(auto m: g_Materials)
-    {
-        m->build();
-    }
 }
 
 void SGView::setScene(SGScene *scene)
@@ -49,16 +29,22 @@ void SGView::drawItem(SGNode *node, SGFlatColorMaterial* mt)
 {
     if(!node) return;
     //...
-
-    QMatrix4x4 matrix;
-    matrix.ortho(0, m_scene->m_width, m_scene->m_height, 0, -1, 1);
-    matrix.translate(node->x + node->width / 2, node->y + node->height / 2);
-    matrix.scale(node->width,node->height);
     
-    mt->m_program->setUniformValue(mt->m_matrixUniform, matrix);
+    mt->m_program->setUniformValue(mt->m_matrixUniform, m_scene->m_projection * node->matrix);
+
+    glGenBuffers(1, &mt->m_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, mt->m_vbo);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(mt->vertices), mt->vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     //
     if(node->m_children.size())
@@ -77,8 +63,9 @@ void SGView::render()
 
     glClear(GL_COLOR_BUFFER_BIT);
     
-    Q_ASSERT(m_scene->m_root->m_material->type() == E_MaterialType::FlatColorMaterialType);
-    SGFlatColorMaterial* mt = dynamic_cast<SGFlatColorMaterial*>(m_scene->m_root->m_material);
+    SGMaterial *mt1 = SGShaderManager::find(FlatColorMaterialType);
+    Q_ASSERT(mt1->type() == E_MaterialType::FlatColorMaterialType);
+    SGFlatColorMaterial* mt = dynamic_cast<SGFlatColorMaterial*>(mt1);
     
     mt->m_program->bind();
 
@@ -103,6 +90,11 @@ bool SGView::event(QEvent *event)
     default:
         return QWindow::event(event);
     }
+}
+
+void SGView::resizeEvent(QResizeEvent * event)
+{
+    //m_projection
 }
 
 void SGView::exposeEvent(QExposeEvent *event)

@@ -2,14 +2,8 @@
 #define SGNODE_H
 #include <list>
 
-#include <QtGui/QOpenGLShaderProgram>
-
-struct Color {
-    int8_t r;
-    int8_t g;
-    int8_t b;
-    //int8_t a;
-};
+#include <QOpenGLShaderProgram>
+#include "sgmaterial.h"
 
 struct Rect {
     int top;
@@ -26,99 +20,6 @@ struct Rect {
 //    int8_t *data=nullptr;
 //    size_t size=0;
 //};
-
-//define shader used to render
-enum E_MaterialType{
-    FlatColorMaterialType
-};
-class SGMaterial
-{
-public:
-    class SGMaterialType{};
-    virtual ~SGMaterial();
-    virtual const char* vertexShader() const = 0;
-    virtual const char* fragmentShader() const = 0;
-    virtual const E_MaterialType type() const = 0;
-    virtual bool build() = 0;
-
-    bool compile();
-    QOpenGLShaderProgram *m_program = nullptr;
-};
-
-
-extern std::vector<SGMaterial*> g_Materials;
-
-class SGFlatColorMaterial : public SGMaterial
-{
-public:
-    virtual const char* vertexShader() const override
-    {
-        return  "attribute highp vec4 posAttr;\n"
-                "attribute lowp vec4 colAttr;\n"
-                "varying lowp vec4 col;\n"
-                "uniform highp mat4 matrix;\n"
-                "void main() {\n"
-                "   col = colAttr;\n"
-                "   gl_Position = matrix * posAttr;\n"
-                "}\n";
-    }
-
-    virtual const char* fragmentShader() const override
-    {
-        return  "varying lowp vec4 col;\n"
-                "void main() {\n"
-                "   gl_FragColor = col;\n"
-                "}\n";
-    }
-
-    virtual const E_MaterialType type() const override
-    {
-        return E_MaterialType::FlatColorMaterialType;
-    }
-
-    virtual bool build() override;
-
-    void setColor(Color clr)
-    {
-        for (int i = 0; i < 6; ++i)
-        {
-            vertices[8 * i + 4] = clr.r / 255.f;
-            vertices[8 * i + 5] = clr.g / 255.f;
-            vertices[8 * i + 6] = clr.b / 255.f;
-        }
-    }
-//protected:
-    GLuint m_vbo;
-    GLuint m_posAttr;
-    GLuint m_colAttr;
-    GLuint m_matrixUniform;
-
-//private:
-    GLfloat vertices[48] = {
-        -0.5,  0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*topleft*/
-         0.5,  0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*topright*/
-         0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*buttomright*/
-
-        -0.5,  0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*topleft*/
-         0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*buttomright*/
-        -0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f/*buttomleft*/
-    };
-
-    const GLuint verticesIndices[6] = {
-        0, 1, 2, 0, 2, 3
-    };
-
-    const GLint vts = 6;
-};
-
-class SGOpaqueImageMaterial : public SGMaterial
-{};
-
-class SGTranslucentImageMaterial : public SGMaterial
-{};
-
-class SGTextMaterial : public SGMaterial
-{};
 
 class SGNode
 {
@@ -138,12 +39,16 @@ public:
     int height=0;
 
     void renderProcessor();
+    void updateMatrix();
 
     int gx = 0;//global coordinate to the scene
     int gy = 0;
     int gwid = 0;
     int ghei = 0;
     int gopacity=1.f;
+
+
+    QMatrix4x4 matrix;
 
 //protected:
     //
@@ -152,7 +57,7 @@ public:
     std::list<SGNode*> m_children;
 
 //    SGGeometry *m_geometry=nullptr;
-    static SGMaterial *m_material;
+    SGMaterial *m_material = nullptr;
 };
 
 class SGRectangleNode : public SGNode

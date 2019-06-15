@@ -26,6 +26,7 @@ public slots:
 
 protected:
     bool event(QEvent *event) override;
+    virtual void resizeEvent(QResizeEvent *event) override;
 
     void exposeEvent(QExposeEvent *event) override;
 

@@ -84,15 +84,6 @@ public:
     };
 };
 
-class SGOpaqueImageMaterial : public SGMaterial
-{};
-
-class SGTranslucentImageMaterial : public SGMaterial
-{};
-
-class SGTextMaterial : public SGMaterial
-{};
-
 class SGShaderManager
 {
 public:

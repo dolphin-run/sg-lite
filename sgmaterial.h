@@ -2,14 +2,7 @@
 #define SGMATERIAL_H
 
 #include <QOpenGLShaderProgram>
-
-
-struct Color {
-    int8_t r;
-    int8_t g;
-    int8_t b;
-    //int8_t a;
-};
+#include "sgstruct.h"
 
 //define shader used to render
 enum E_MaterialType{
@@ -24,10 +17,13 @@ public:
     virtual const char* vertexShader() const = 0;
     virtual const char* fragmentShader() const = 0;
     virtual const E_MaterialType type() const = 0;
-    virtual bool build() = 0;
-
-    bool compile();
+    void active();
     QOpenGLShaderProgram *m_program = nullptr;
+
+protected:
+    bool compile();
+    virtual bool build() = 0;
+    bool m_ok = false;
 };
 
 class SGFlatColorMaterial : public SGMaterial
@@ -60,28 +56,11 @@ public:
 
     virtual bool build() override;
 
-    void setColor(Color clr)
-    {
-        for (int i = 0; i < 4; ++i)
-        {
-            vertices[8 * i + 4] = clr.r / 255.f;
-            vertices[8 * i + 5] = clr.g / 255.f;
-            vertices[8 * i + 6] = clr.b / 255.f;
-        }
-    }
 //protected:
     GLuint m_vbo;
     GLuint m_posAttr;
     GLuint m_colAttr;
     GLuint m_matrixUniform;
-
-//private:
-    GLfloat vertices[48] = {
-        0.5,  0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*topright*/
-        -0.5,  0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*topleft*/
-        0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*buttomright*/
-        -0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f/*buttomleft*/
-    };
 };
 
 class SGShaderManager

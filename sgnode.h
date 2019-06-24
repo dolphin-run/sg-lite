@@ -3,23 +3,10 @@
 #include <list>
 
 #include <QOpenGLShaderProgram>
+#include "sgstruct.h"
+#include "sggeometry.h"
 #include "sgmaterial.h"
 
-struct Rect {
-    int top;
-    int left;
-    int right;
-    int buttom;
-};
-
-//store vertex data
-//define how data should be explained
-//class SGGeometry
-//{
-//public:
-//    int8_t *data=nullptr;
-//    size_t size=0;
-//};
 
 class SGNode
 {
@@ -56,7 +43,7 @@ public:
     SGNode* m_parent=nullptr;
     std::list<SGNode*> m_children;
 
-//    SGGeometry *m_geometry=nullptr;
+    SGGeometry *m_geometry=nullptr;
     SGMaterial *m_material = nullptr;
 };
 
@@ -65,8 +52,10 @@ class SGRectangleNode : public SGNode
 public:
     SGRectangleNode(SGNode* parent = nullptr);
     void setColor(int32_t c);
-protected:
-    Color color;
+
+private:
+    Color m_color;
+    SGColorRectangleGeometry m_colorGeometry;
 };
 
 class SGImageNode : public SGNode

@@ -2,6 +2,7 @@
 #include <QScreen>
 #include "sgnode.h"
 #include "sgscene.h"
+#include "sgrenderer.h"
 
 //! [1]
 SGView::SGView(QWindow *parent)
@@ -9,6 +10,8 @@ SGView::SGView(QWindow *parent)
     , m_context(0)
 {
     setSurfaceType(QWindow::OpenGLSurface);
+
+    m_render = new SGRenderer;
 }
 //! [1]
 
@@ -25,56 +28,56 @@ void SGView::setScene(SGScene *scene)
     m_scene = scene;
 }
 
-void SGView::drawItem(SGNode *node, SGFlatColorMaterial* mt)
-{
-    if(!node) return;
-    //...
-    
-    mt->m_program->setUniformValue(mt->m_matrixUniform, m_scene->m_projection * node->matrix);
+//void SGView::drawItem(SGNode *node, SGFlatColorMaterial* mt)
+//{
+//    if(!node) return;
+//    //...
+//    
+//    mt->m_program->setUniformValue(mt->m_matrixUniform, m_scene->m_projection * node->matrix);
+//
+//    glGenBuffers(1, &mt->m_vbo);
+//    glBindBuffer(GL_ARRAY_BUFFER, mt->m_vbo);
+//
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(mt->vertices), mt->vertices, GL_STATIC_DRAW);
+//    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0));
+//    glEnableVertexAttribArray(0);
+//    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
+//    glEnableVertexAttribArray(1);
+//
+//
+//    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//
+//    glBindBuffer(GL_ARRAY_BUFFER, 0);
+//
+//    //
+//    if(node->m_children.size())
+//    {
+//        for(SGNode* child: node->m_children)
+//        {
+//            drawItem(child, mt);
+//        }
+//    }
+//}
 
-    glGenBuffers(1, &mt->m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, mt->m_vbo);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(mt->vertices), mt->vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0));
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    //
-    if(node->m_children.size())
-    {
-        for(SGNode* child: node->m_children)
-        {
-            drawItem(child, mt);
-        }
-    }
-}
-
-void SGView::render()
-{
-    const qreal retinaScale = devicePixelRatio();
-    glViewport(0, 0, width() * retinaScale, height() * retinaScale);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    SGMaterial *mt1 = SGShaderManager::find(FlatColorMaterialType);
-    Q_ASSERT(mt1->type() == E_MaterialType::FlatColorMaterialType);
-    SGFlatColorMaterial* mt = dynamic_cast<SGFlatColorMaterial*>(mt1);
-    
-    mt->m_program->bind();
-
-    glBindBuffer(GL_ARRAY_BUFFER, mt->m_vbo);
-    drawItem(m_scene->m_root, mt);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    mt->m_program->release();
-}
+//void SGView::render()
+//{
+//    const qreal retinaScale = devicePixelRatio();
+//    glViewport(0, 0, width() * retinaScale, height() * retinaScale);
+//
+//    glClear(GL_COLOR_BUFFER_BIT);
+//    
+//    SGMaterial *mt1 = SGShaderManager::find(FlatColorMaterialType);
+//    Q_ASSERT(mt1->type() == E_MaterialType::FlatColorMaterialType);
+//    SGFlatColorMaterial* mt = dynamic_cast<SGFlatColorMaterial*>(mt1);
+//    
+//    mt->m_program->bind();
+//
+//    glBindBuffer(GL_ARRAY_BUFFER, mt->m_vbo);
+//    drawItem(m_scene->m_root, mt);
+//    glBindBuffer(GL_ARRAY_BUFFER, 0);
+//
+//    mt->m_program->release();
+//}
 
 void SGView::renderLater()
 {
@@ -85,7 +88,7 @@ bool SGView::event(QEvent *event)
 {
     switch (event->type()) {
     case QEvent::UpdateRequest:
-        renderNow();
+        render();
         return true;
     default:
         return QWindow::event(event);
@@ -102,10 +105,10 @@ void SGView::exposeEvent(QExposeEvent *event)
     Q_UNUSED(event);
 
     if (isExposed())
-        renderNow();
+        render();
 }
 
-void SGView::renderNow()
+void SGView::render()
 {
     if (!isExposed())
         return;
@@ -123,11 +126,11 @@ void SGView::renderNow()
     m_context->makeCurrent(this);
 
     if (needsInitialize) {
-        initializeOpenGLFunctions();
-        initialize();
+        m_render->initializeGL();
     }
 
-    render();
+    const qreal retinaScale = devicePixelRatio();
+    m_render->render(width() * retinaScale, height() * retinaScale);
 
     m_context->swapBuffers(this);
 }

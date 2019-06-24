@@ -1,6 +1,7 @@
 INCLUDEPATH += $$PWD
 SOURCES += \
     $$PWD/sgnode.cpp \
+    $$PWD/sgstruct.cpp \
     #$$PWD/graph2d.cpp \
     #$$PWD/sgbatcher.cpp \
     $$PWD/sgrenderer.cpp \
@@ -10,6 +11,7 @@ SOURCES += \
     $$PWD/sggeometry.cpp
 HEADERS += \
     $$PWD/sgnode.h \
+    $$PWD/sgstruct.h \
     #$$PWD/graph2d.h \
     #$$PWD/sgbatcher.h \
     $$PWD/sgrenderer.h \

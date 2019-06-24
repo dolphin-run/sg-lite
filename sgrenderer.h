@@ -6,12 +6,16 @@
 #include <list>
 
 struct Node {
-    SGNode *node = nullptr;
-    Node *sibling = nullptr;
+    SGNode *gnode = nullptr;
+
+    Node *prev = nullptr;
+    Node *next = nullptr;
 };
 
 struct Buffer {
     GLuint id = 0;
+
+    size_t verticeNum = 0;
     size_t size = 0;
     void *data = nullptr;
 };
@@ -26,8 +30,9 @@ class SGRenderer : public QOpenGLFunctions
 {
 public:
     SGRenderer();
+    virtual void initializeGL();
 
-    virtual void render();
+    virtual void render(int width, int height);
 
 protected:
     void buildOpacityBatches();
@@ -35,6 +40,7 @@ protected:
     void map(Buffer *buffer);
     void unmap(Buffer *buffer);
 
+    void uploadBatches();
     void renderBatches();
 
 protected:
@@ -43,6 +49,7 @@ protected:
     std::list<Batch *> m_alphaBatches;
     std::list<Node*> m_opacity_nodes;
     std::list<Node*> m_alpha_nodes;
+    QMatrix4x4 m_projection;
 };
 
 #endif // SGRENDERER_H

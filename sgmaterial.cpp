@@ -6,6 +6,14 @@ SGMaterial::~SGMaterial()
         delete m_program;
 }
 
+void SGMaterial::active()
+{
+    if (!m_ok)
+    {
+        m_ok = build();
+    }
+}
+
 bool SGMaterial::compile()
 {
     m_program = new QOpenGLShaderProgram;
@@ -38,7 +46,6 @@ SGMaterial * SGShaderManager::find(E_MaterialType type)
     {
     case FlatColorMaterialType:
         material = new SGFlatColorMaterial();
-        material->build();
         break;
     default:
         break;

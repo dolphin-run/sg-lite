@@ -39,15 +39,19 @@ void SGNode::updateMatrix()
 SGRectangleNode::SGRectangleNode(SGNode * parent):
     SGNode(parent)
 {
+    m_material = SGShaderManager::find(FlatColorMaterialType);
+    m_geometry = &m_colorGeometry;
 }
 
 void SGRectangleNode::setColor(int32_t c)
 {
 //    color.a = c&0xff;
 //    c>>=8;
-    color.b = c&0xff;
+    m_color.b = c&0xff;
     c>>=8;
-    color.g = c&0xff;
+    m_color.g = c&0xff;
     c>>=8;
-    color.r = c&0xff;
+    m_color.r = c&0xff;
+
+    m_colorGeometry.setColor(m_color);
 }

@@ -7,8 +7,9 @@
 
 class SGNode;
 class SGScene;
+class SGRenderer;
 class SGFlatColorMaterial;
-class SGView : public QWindow, protected QOpenGLFunctions
+class SGView : public QWindow
 {
     Q_OBJECT
 public:
@@ -22,7 +23,6 @@ public:
 
 public slots:
     void renderLater();
-    void renderNow();
 
 protected:
     bool event(QEvent *event) override;
@@ -30,12 +30,13 @@ protected:
 
     void exposeEvent(QExposeEvent *event) override;
 
-    void drawItem(SGNode *node, SGFlatColorMaterial* mt);
+    //void drawItem(SGNode *node, SGFlatColorMaterial* mt);
 
 private:
     QOpenGLContext *m_context;
 
-    SGScene *m_scene=nullptr;
+    SGScene *m_scene = nullptr;
+    SGRenderer *m_render = nullptr;
 };
 
 #endif // SGVIEW_H

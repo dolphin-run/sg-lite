@@ -26,6 +26,14 @@ struct Batch {
     Buffer vbo;
 };
 
+class SGShaderManager
+{
+public:
+    SGMaterialShader* find(SGMaterial *material);
+private:
+    std::map<E_MaterialType, SGMaterialShader*> g_ms;
+};
+
 class SGRenderer : public QOpenGLFunctions
 {
 public:
@@ -50,6 +58,8 @@ protected:
     std::list<Node*> m_opacity_nodes;
     std::list<Node*> m_alpha_nodes;
     QMatrix4x4 m_projection;
+
+    SGShaderManager m_shrMgr;
 };
 
 #endif // SGRENDERER_H

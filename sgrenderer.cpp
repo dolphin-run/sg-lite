@@ -1,5 +1,17 @@
 #include "sgrenderer.h"
 
+
+SGMaterialShader * SGShaderManager::find(SGMaterial *material)
+{
+    E_MaterialType type = material->type();
+    if (g_ms.count(type)) return g_ms[type];
+
+    SGMaterialShader *shader = material->createShader();
+    
+    g_ms.insert(std::make_pair(type, shader));
+    return shader;
+}
+
 SGRenderer::SGRenderer()
 {
     test_Alloc();
@@ -65,7 +77,7 @@ void SGRenderer::uploadBatches()
             memcpy(pdmain, gg->data(), gg->size());
 
             //apply transformation
-            VertexAsColorRectangle *pvr = (VertexAsColorRectangle *)pdmain;
+            VertexAsPointColor *pvr = (VertexAsPointColor *)pdmain;
             for (int i = 0; i < gg->verticeNum(); i++)
             {
                 Pt *pt = (Pt *)(pvr+i);
@@ -104,24 +116,20 @@ void SGRenderer::renderBatches()
         
         SGNode *gn = n->gnode;
 
-        SGMaterial *mt1 = SGShaderManager::find(FlatColorMaterialType);
-        mt1->active();
-        Q_ASSERT(mt1->type() == E_MaterialType::FlatColorMaterialType);
-        SGFlatColorMaterial* mt = dynamic_cast<SGFlatColorMaterial*>(mt1);
+        SGMaterialShader *shader = m_shrMgr.find(gn->m_material);
 
-        bool ret = mt->m_program->bind();
+        bool ret = shader->program()->bind();
 
-
-        mt->m_program->setUniformValue(mt->m_matrixUniform, m_projection);
-
-        
+        shader->updateState(m_projection);
 
         glBindBuffer(GL_ARRAY_BUFFER, batch->vbo.id);
 
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0));
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
-        glEnableVertexAttribArray(1);
+        auto attrs = gn->m_geometry->attributes();
+        for (int i = 0; i < attrs->vparanum; i++)
+        {
+            glVertexAttribPointer(i, attrs->vas[i].size, GL_FLOAT, GL_FALSE, attrs->vsize, (void*)(attrs->vas[i].offset));
+            glEnableVertexAttribArray(i);
+        }
 
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, batch->vbo.verticeNum);
@@ -172,7 +180,7 @@ void SGRenderer::test_Alloc()
     Batch *b0 = new Batch;
     b0->firstChild = n2;
     b0->vbo.verticeNum = 3 * 4 + 2 * 2;
-    b0->vbo.size = b0->vbo.verticeNum * 8 * sizeof(GLfloat);
+    b0->vbo.size = b0->vbo.verticeNum * n2->gnode->m_geometry->verticeSize();
 
     //
     Node *n3 = new Node; n3->gnode = sn3;
@@ -180,9 +188,37 @@ void SGRenderer::test_Alloc()
     Batch *b1 = new Batch;
     b1->firstChild = n3;
     b1->vbo.verticeNum = 1 * 4;
-    b1->vbo.size = b1->vbo.verticeNum * 8 * sizeof(GLfloat);
+    b1->vbo.size = b1->vbo.verticeNum * n3->gnode->m_geometry->verticeSize();
+
+
+    //add some ring
+    SGCircularNode *sn10 = new SGCircularNode;
+    sn10->x = 100;
+    sn10->y = 550;
+    sn10->width = 400;
+    sn10->height = 400;
+    sn10->setColor(0x1C86EE);
+    sn10->updateMatrix();
+    SGCircularNode *sn11 = new SGCircularNode;
+    sn11->x = 0;
+    sn11->y = 0;
+    sn11->width = 400;
+    sn11->height = 400;
+    sn11->setColor(0xCD5C5C);
+    sn11->updateMatrix();
+
+    Node *n10 = new Node; n10->gnode = sn10;
+    Node *n11 = new Node; n11->gnode = sn11;
+    n10->next = n11;
+    n11->prev = n10;
+
+    Batch *b10 = new Batch;
+    b10->firstChild = n10;
+    b10->vbo.verticeNum = 2 * sn10->m_geometry->verticeNum() + 1 * 2;
+    b10->vbo.size = b10->vbo.verticeNum * n3->gnode->m_geometry->verticeSize();
 
     //
     m_opaqueBatches.push_back(b0);
     m_opaqueBatches.push_back(b1);
+    m_opaqueBatches.push_back(b10);
 }

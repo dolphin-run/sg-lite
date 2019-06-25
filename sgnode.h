@@ -68,5 +68,16 @@ class SGTextNode : public SGNode
 class SGLineNode : public SGRectangleNode
 {};
 
+class SGCircularNode : public SGNode
+{
+public:
+    SGCircularNode(SGNode* parent = nullptr);
+    void setColor(int32_t c);
+
+private:
+    Color m_color;
+    SGColorCircularGeometry m_colorGeometry;
+};
+
 class SGUserDefined : public SGNode{};
 #endif // SGNODE_H

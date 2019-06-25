@@ -5,6 +5,7 @@
 #include "sgnode.h"
 #include <list>
 
+class QOpenGLTexture;
 struct Node {
     SGNode *gnode = nullptr;
 
@@ -60,6 +61,9 @@ protected:
     QMatrix4x4 m_projection;
 
     SGShaderManager m_shrMgr;
+
+    //
+    QOpenGLTexture *m_tex;
 };
 
 #endif // SGRENDERER_H

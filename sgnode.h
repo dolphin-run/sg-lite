@@ -28,13 +28,6 @@ public:
     void renderProcessor();
     void updateMatrix();
 
-    int gx = 0;//global coordinate to the scene
-    int gy = 0;
-    int gwid = 0;
-    int ghei = 0;
-    int gopacity=1.f;
-
-
     QMatrix4x4 matrix;
 
 //protected:
@@ -59,7 +52,15 @@ private:
 };
 
 class SGImageNode : public SGNode
-{};
+{
+public:
+    SGImageNode(SGNode* parent = nullptr);
+    void setImage(int32_t c);
+
+private:
+    Color m_color;
+    SGTextureRectangleGeometry m_texGeometry;
+};
 
 class SGTextNode : public SGNode
 {};

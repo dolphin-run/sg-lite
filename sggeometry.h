@@ -17,6 +17,11 @@ struct VertexAsPointColor
     float r, g, b, a;
 };
 
+struct VertexAsPointTexture
+{
+    float x, y, z, w;
+    float vx, vy, vz, vw;
+};
 
 struct VertexAttribute
 {
@@ -42,6 +47,7 @@ public:
     SGGeometry();
     virtual ~SGGeometry();
     VertexAsPointColor* dataAsPointColor();
+    VertexAsPointTexture* dataAsPointTexture();
 
     inline const VertexAttributeSet* attributes() const { return m_attrs; }
     inline void* data() { return m_data; }
@@ -65,6 +71,20 @@ private:
         -0.5,  0.5, 0, 1,   0.0f, 1.0f, 0.0f, 1.0f,/*topleft*/
         0.5, -0.5, 0, 1,   0.0f, 0.0f, 1.0f, 1.0f,/*buttomright*/
         -0.5, -0.5, 0, 1,   1.0f, 1.0f, 1.0f, 1.0f/*buttomleft*/
+    };
+};
+
+class SGTextureRectangleGeometry : public SGGeometry
+{
+public:
+    SGTextureRectangleGeometry();
+    void setTexCoord(float top, float left, float right, float buttom);
+private:
+    float vertices[32] = {
+        0.5,  0.5, 0, 1,   1.0f, 1.0f, 0.0f, 1.0f,/*topright*/
+        -0.5,  0.5, 0, 1,   0.0f, 1.0f, 0.0f, 1.0f,/*topleft*/
+        0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*buttomright*/
+        -0.5, -0.5, 0, 1,   0.0f, 0.0f, 0.0f, 1.0f/*buttomleft*/
     };
 };
 

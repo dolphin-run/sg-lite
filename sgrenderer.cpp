@@ -1,5 +1,5 @@
 #include "sgrenderer.h"
-
+#include <qopengltexture.h>
 
 SGMaterialShader * SGShaderManager::find(SGMaterial *material)
 {
@@ -22,6 +22,13 @@ SGRenderer::SGRenderer()
 void SGRenderer::initializeGL()
 {
     initializeOpenGLFunctions();
+
+    QImage localImg("F:\\doc\\mk\\VAT\\src\\glmv\\src\\tools\\resource-gen\\allentities.png");
+    Q_ASSERT(!localImg.isNull());
+    m_tex = new QOpenGLTexture(localImg);
+    m_tex->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    m_tex->setMagnificationFilter(QOpenGLTexture::Linear);
+    m_tex->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void SGRenderer::render(int width, int height)
@@ -119,6 +126,7 @@ void SGRenderer::renderBatches()
         SGMaterialShader *shader = m_shrMgr.find(gn->m_material);
 
         bool ret = shader->program()->bind();
+        m_tex->bind();
 
         shader->updateState(m_projection);
 
@@ -215,10 +223,37 @@ void SGRenderer::test_Alloc()
     Batch *b10 = new Batch;
     b10->firstChild = n10;
     b10->vbo.verticeNum = 2 * sn10->m_geometry->verticeNum() + 1 * 2;
-    b10->vbo.size = b10->vbo.verticeNum * n3->gnode->m_geometry->verticeSize();
+    b10->vbo.size = b10->vbo.verticeNum * n10->gnode->m_geometry->verticeSize();
+
+    //add image
+    SGImageNode *sn20 = new SGImageNode;
+    sn20->x = 1500;
+    sn20->y = 0;
+    sn20->width = 160;
+    sn20->height = 160;
+    sn20->setImage(5);
+    sn20->updateMatrix();
+    SGImageNode *sn21 = new SGImageNode;
+    sn21->x = 1500;
+    sn21->y = 600;
+    sn21->width = 80;
+    sn21->height = 80;
+    sn21->setImage(15);
+    sn21->updateMatrix();
+
+    Node *n20 = new Node; n20->gnode = sn20;
+    Node *n21 = new Node; n21->gnode = sn21;
+    n20->next = n21;
+    n21->prev = n20;
+
+    Batch *b20 = new Batch;
+    b20->firstChild = n20;
+    b20->vbo.verticeNum = 2 * sn20->m_geometry->verticeNum() + 1 * 2;
+    b20->vbo.size = b20->vbo.verticeNum * n20->gnode->m_geometry->verticeSize();
 
     //
     m_opaqueBatches.push_back(b0);
     m_opaqueBatches.push_back(b1);
     m_opaqueBatches.push_back(b10);
+    m_opaqueBatches.push_back(b20);
 }

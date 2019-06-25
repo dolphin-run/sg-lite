@@ -7,7 +7,7 @@
 //define shader used to render
 enum E_MaterialType{
     FlatColorMaterialType,
-    CircularMaterialType
+    TextureMaterialType
 };
 
 class SGMaterialShader
@@ -36,6 +36,13 @@ public:
 
 
 class SGFlatColorMaterial : public SGMaterial
+{
+public:
+    virtual E_MaterialType type() const override;
+    virtual SGMaterialShader *createShader() const override;
+};
+
+class SGTextureMaterial : public SGMaterial
 {
 public:
     virtual E_MaterialType type() const override;

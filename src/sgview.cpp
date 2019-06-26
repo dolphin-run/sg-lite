@@ -11,7 +11,7 @@ SGView::SGView(QWindow *parent)
 {
     setSurfaceType(QWindow::OpenGLSurface);
 
-    m_render = new SGRenderer;
+    m_render = new SGRenderer(this);
 }
 
 SGView::~SGView()
@@ -77,8 +77,7 @@ void SGView::render()
         m_render->initializeGL();
     }
 
-    const qreal retinaScale = devicePixelRatio();
-    m_render->render(width() * retinaScale, height() * retinaScale);
+    m_render->render(&m_scene->m_root);
 
     m_context->swapBuffers(this);
 }

@@ -3,11 +3,11 @@
 
 #include <QMatrix4x4>
 
-struct Pt {
+struct Point {
     float x, y;
 
     void map(const QMatrix4x4 &mat) {
-        Pt r;
+        Point r;
         const float *m = mat.constData();
         r.x = x * m[0] + y * m[4] + m[12];
         r.y = x * m[1] + y * m[5] + m[13];
@@ -21,7 +21,7 @@ struct Pt {
     }
 };
 
-inline QDebug operator << (QDebug d, const Pt &p) {
+inline QDebug operator << (QDebug d, const Point &p) {
     d << "Pt(" << p.x << p.y << ")";
     return d;
 }
@@ -29,9 +29,9 @@ inline QDebug operator << (QDebug d, const Pt &p) {
 
 
 struct Rect {
-    Pt tl, br; // Top-Left (min) and Bottom-Right (max)
+    Point tl, br; // Top-Left (min) and Bottom-Right (max)
 
-    void operator |= (const Pt &pt) {
+    void operator |= (const Point &pt) {
         if (pt.x < tl.x)
             tl.x = pt.x;
         if (pt.x > br.x)
@@ -83,7 +83,19 @@ struct Color {
     uint8_t r;
     uint8_t g;
     uint8_t b;
-    //uint8_t a;
+    uint8_t a;
+
+    Color() : r(0), g(0), b(0)
+    {
+    }
+
+    Color(int x) {
+        b = x & 0xff;
+        x >>= 8;
+        g = x & 0xff;
+        x >>= 8;
+        r = x & 0xff;
+    }
 };
 
 #endif // SGSTRUCT_H

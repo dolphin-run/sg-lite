@@ -11,17 +11,14 @@ public:
     void build();
     void walk();
 
-    static void test();
 protected:
-    SGNode *m_root = nullptr;
-
-    QList<QSGNode*> m_opacity_nodes;
-    QList<QSGNode*> m_alpha_nodes;
+    void testAlloc();
+    SGRootNode m_root;
 
     int m_width = 1920;
     int m_height = 1080;
 
-    QMatrix4x4 m_projection;
+    //QMatrix4x4 m_projection;
 };
 
 #endif // SGSCENE_H

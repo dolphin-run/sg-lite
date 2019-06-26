@@ -56,7 +56,7 @@ public:
     inline int verticeNum() { return m_attrs->vnum; }
 
 protected:
-    VertexAttributeSet *m_attrs = nullptr;
+    const VertexAttributeSet *m_attrs = nullptr;
     void *m_data;
 };
 

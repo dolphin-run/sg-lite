@@ -5,7 +5,7 @@
 #include "material/sgtexturematerial.h"
 
 SGRectangleNode::SGRectangleNode(SGNode * parent):
-    SGNode(parent)
+    SGNode(E_NodeType::RectangleNodeType, parent)
 {
     m_material = new SGFlatColorMaterial;
     m_geometry = m_colorGeometry = new SGColorRectangleGeometry;
@@ -24,7 +24,8 @@ void SGRectangleNode::setColor(int32_t c)
     m_colorGeometry->setColor(m_color);
 }
 
-SGImageNode::SGImageNode(SGNode * parent)
+SGImageNode::SGImageNode(SGNode * parent) :
+    SGNode(E_NodeType::ImageNodeType, parent)
 {
     m_material = new SGTextureMaterial;
     m_geometry = m_texGeometry = new SGTextureRectangleGeometry;

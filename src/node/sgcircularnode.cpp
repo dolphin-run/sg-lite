@@ -2,21 +2,24 @@
 #include "../geometry/sgcirculargeometry.h"
 #include "../material/sgcolormaterial.h"
 
-SGCircularNode::SGCircularNode(SGNode * parent)
+SGCircularNode::SGCircularNode(SGNode * parent):
+    SGNode(E_NodeType::CircularNodeType, parent)
 {
     m_material = new SGFlatColorMaterial;
     m_geometry = m_colorGeometry = new SGCircularGeometry;
 }
 
-void SGCircularNode::setColor(int32_t c)
+void SGCircularNode::setColor(const Color &c)
 {
-    //    color.a = c&0xff;
-    //    c>>=8;
-    m_color.b = c & 0xff;
-    c >>= 8;
-    m_color.g = c & 0xff;
-    c >>= 8;
-    m_color.r = c & 0xff;
+    m_colorInside = m_colorOutside = c;
 
-    m_colorGeometry->setColor(m_color);
+    m_colorGeometry->setColor(m_colorInside);
+}
+
+void SGCircularNode::setColor(const Color &inside, const Color &outside)
+{
+    m_colorInside = inside;
+    m_colorOutside = outside;
+
+    m_colorGeometry->setColor(m_colorInside, m_colorOutside);
 }

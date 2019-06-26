@@ -4,13 +4,21 @@
 #include <QOpenGLFunctions>
 #include "sgnode.h"
 #include <list>
+#include <map>
 
 class QOpenGLTexture;
+class SGView;
 struct Node {
-    SGNode *gnode = nullptr;
+    const SGNode *gnode = nullptr;
 
     Node *prev = nullptr;
     Node *next = nullptr;
+
+    void renderProcessor();
+    void updateMatrix();
+
+    QMatrix4x4 matrix;
+    unsigned batch : 1;
 };
 
 struct Buffer {
@@ -38,12 +46,14 @@ private:
 class SGRenderer : public QOpenGLFunctions
 {
 public:
-    SGRenderer();
+    SGRenderer(SGView *view);
     virtual void initializeGL();
 
-    virtual void render(int width, int height);
+    virtual void render(const SGRootNode *root);
 
 protected:
+    void findRenderNodesFromScratch(const SGNode *root);
+    void findRenderNodes(const SGNode *node);
     void buildOpacityBatches();
 
     void map(Buffer *buffer);
@@ -56,14 +66,17 @@ protected:
     void test_Alloc();
     std::list<Batch *> m_opaqueBatches;
     std::list<Batch *> m_alphaBatches;
-    std::list<Node*> m_opacity_nodes;
-    std::list<Node*> m_alpha_nodes;
+    std::vector<Node*> m_opacityNodes;
+    std::vector<Node*> m_alphaNodes;
+    std::map<SGNode*, Node*> m_nodes;
     QMatrix4x4 m_projection;
 
     SGShaderManager m_shrMgr;
 
     //
     QOpenGLTexture *m_tex;
+
+    SGView *m_view = nullptr;
 };
 
 #endif // SGRENDERER_H

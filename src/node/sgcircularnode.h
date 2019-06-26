@@ -8,10 +8,12 @@ class SGCircularNode : public SGNode
 {
 public:
     SGCircularNode(SGNode* parent = nullptr);
-    void setColor(int32_t c);
+    void setColor(const Color &c);
+    void setColor(const Color &inside, const Color &outside);
 
 private:
-    Color m_color;
+    Color m_colorInside;
+    Color m_colorOutside;
     SGCircularGeometry *m_colorGeometry = nullptr;
 };
 

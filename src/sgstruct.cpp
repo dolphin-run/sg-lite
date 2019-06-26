@@ -24,10 +24,10 @@ void Rect::map(const QMatrix4x4 &matrix)
             qSwap(tl.y, br.y);
     }
     else {
-        Pt mtl = tl;
-        Pt mtr = { br.x, tl.y };
-        Pt mbl = { tl.x, br.y };
-        Pt mbr = br;
+        Point mtl = tl;
+        Point mtr = { br.x, tl.y };
+        Point mbl = { tl.x, br.y };
+        Point mbr = br;
 
         mtl.map(matrix);
         mtr.map(matrix);

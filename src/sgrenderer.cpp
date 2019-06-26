@@ -2,6 +2,25 @@
 #include <QOpenGLTexture>
 #include "node/sgcircularnode.h"
 #include "node/sgrectanglenode.h"
+#include "sgview.h"
+
+
+void Node::renderProcessor()
+{
+    //rx = 
+}
+
+void Node::updateMatrix()
+{
+    if (gnode->m_dirty)
+    {
+        matrix.setToIdentity();
+        matrix.translate(gnode->m_x + gnode->m_width / 2, gnode->m_y + gnode->m_height / 2);
+        matrix.scale(gnode->m_width, gnode->m_height);
+
+        gnode->m_dirty = 0;
+    }
+}
 
 SGMaterialShader * SGShaderManager::find(SGMaterial *material)
 {
@@ -14,9 +33,10 @@ SGMaterialShader * SGShaderManager::find(SGMaterial *material)
     return shader;
 }
 
-SGRenderer::SGRenderer()
+SGRenderer::SGRenderer(SGView *view) :
+    m_view(view)
 {
-    test_Alloc();
+    //test_Alloc();
     m_projection.setToIdentity();
     m_projection.ortho(0, 1920, 1080, 0, -1, 1);
 }
@@ -33,21 +53,100 @@ void SGRenderer::initializeGL()
     m_tex->setWrapMode(QOpenGLTexture::Repeat);
 }
 
-void SGRenderer::render(int width, int height)
+void SGRenderer::render(const SGRootNode *root)
 {
-    buildOpacityBatches();
+    static bool init = false;
+    if (!init)
+    {
+        init = true;
+        findRenderNodesFromScratch(root);
+        buildOpacityBatches();
+    }
 
     uploadBatches();
 
-    glViewport(0, 0, width, height);
+    const qreal retinaScale = m_view->devicePixelRatio();
+    glViewport(0, 0, m_view->width() * retinaScale, m_view->height() * retinaScale);
     glClear(GL_COLOR_BUFFER_BIT);
 
     renderBatches();
 }
 
+void SGRenderer::findRenderNodesFromScratch(const SGNode * root)
+{
+    assert(root->type() == SGNode::E_NodeType::RootNodeType);
+
+    for (auto itm : m_opacityNodes)
+    {
+        delete itm;
+    }
+    m_opacityNodes.clear();
+    m_alphaNodes.clear();
+    for (auto itm : root->m_children)
+        findRenderNodes(itm);
+}
+
+void SGRenderer::findRenderNodes(const SGNode * node)
+{
+    //if (node->type() == SGNode::E_NodeType::RectangleNodeType)
+    {
+        if (node->visible())
+        {
+            Node *n = new Node; n->gnode = node; n->updateMatrix();
+            n->batch = 0;
+            m_opacityNodes.push_back(n);
+
+            for (auto child : node->m_children)
+            {
+                findRenderNodes(child);
+            }
+        }
+    }
+}
+
 void SGRenderer::buildOpacityBatches()
 {
-    //...
+    for (auto itm : m_opaqueBatches)
+    {
+        delete itm;
+    }
+    m_opaqueBatches.clear();
+
+    for (int i = 0; i < m_opacityNodes.size(); i++)
+    {
+        Node *node = m_opacityNodes[i];
+
+        if (node->batch) continue;
+
+        Batch *batch = new Batch;
+        batch->firstChild = node;
+        node->prev = nullptr;
+        node->batch = 1;
+
+        SGNode::E_NodeType ntype = node->gnode->type();
+        int nodenum = 1;
+        for (int j = i + 1; j < m_opacityNodes.size(); j++)
+        {
+            Node *nj = m_opacityNodes[j];
+
+            if (nj->batch ||
+                ntype != nj->gnode->type())
+                continue;
+
+            node->next = nj;
+            nj->prev = node;
+            nj->batch = 1;
+
+            node = nj;
+            nodenum++;
+        }
+        node->next = nullptr;
+
+        batch->vbo.verticeNum = nodenum * node->gnode->m_geometry->verticeNum() + (nodenum-1) * 2;
+        batch->vbo.size = batch->vbo.verticeNum * node->gnode->m_geometry->verticeSize();
+
+        m_opaqueBatches.push_back(batch);
+    }
 }
 
 void SGRenderer::map(Buffer *buffer)
@@ -89,8 +188,8 @@ void SGRenderer::uploadBatches()
             VertexAsPointColor *pvr = (VertexAsPointColor *)pdmain;
             for (int i = 0; i < gg->verticeNum(); i++)
             {
-                Pt *pt = (Pt *)(pvr+i);
-                pt->map(node->gnode->matrix);
+                Point *pt = (Point *)(pvr+i);
+                pt->map(node->matrix);
             }
 
             if (node->prev)
@@ -123,7 +222,7 @@ void SGRenderer::renderBatches()
         Node *n = batch->firstChild;
         Q_ASSERT(n);
         
-        SGNode *gn = n->gnode;
+        const SGNode *gn = n->gnode;
 
         SGMaterialShader *shader = m_shrMgr.find(gn->m_material);
 
@@ -143,6 +242,7 @@ void SGRenderer::renderBatches()
 
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, batch->vbo.verticeNum);
+        //break;
     }
 }
 
@@ -151,37 +251,33 @@ void SGRenderer::test_Alloc()
 {
     //Add SGNode
     SGRectangleNode *sn0 = new SGRectangleNode;
-    sn0->x = 100;
-    sn0->y = 50;
-    sn0->width = 400;
-    sn0->height = 100;
+    sn0->setX(100);
+    sn0->setY(50);
+    sn0->setWidth(400);
+    sn0->setHeight(100);
     sn0->setColor(0xff0000);
-    sn0->updateMatrix();
     SGRectangleNode *sn1 = new SGRectangleNode;
-    sn1->x = 800;
-    sn1->y = 200;
-    sn1->width = 400;
-    sn1->height = 100;
+    sn1->setX(800);
+    sn1->setY(200);
+    sn1->setWidth(400);
+    sn1->setHeight(100);
     sn1->setColor(0x00ff00);
-    sn1->updateMatrix();
     SGRectangleNode *sn2 = new SGRectangleNode;
-    sn2->x = 300;
-    sn2->y = 250;
-    sn2->width = 400;
-    sn2->height = 100;
+    sn2->setX(300);
+    sn2->setY(250);
+    sn2->setWidth(400);
+    sn2->setHeight(100);
     sn2->setColor(0x0000ff);
-    sn2->updateMatrix();
     SGRectangleNode *sn3 = new SGRectangleNode;
-    sn3->x = 1300;
-    sn3->y = 750;
-    sn3->width = 400;
-    sn3->height = 100;
-    sn3->updateMatrix();
+    sn3->setX(1300);
+    sn3->setY(750);
+    sn3->setWidth(400);
+    sn3->setHeight(100);
 
     //build Node&Batch from SGNode
-    Node *n0 = new Node; n0->gnode = sn0;
-    Node *n1 = new Node; n1->gnode = sn1;
-    Node *n2 = new Node; n2->gnode = sn2;
+    Node *n0 = new Node; n0->gnode = sn0; n0->updateMatrix();
+    Node *n1 = new Node; n1->gnode = sn1; n1->updateMatrix();
+    Node *n2 = new Node; n2->gnode = sn2; n2->updateMatrix();
     n2->next = n1;
     n1->prev = n2;
     n1->next = n0;
@@ -193,7 +289,7 @@ void SGRenderer::test_Alloc()
     b0->vbo.size = b0->vbo.verticeNum * n2->gnode->m_geometry->verticeSize();
 
     //
-    Node *n3 = new Node; n3->gnode = sn3;
+    Node *n3 = new Node; n3->gnode = sn3; n3->updateMatrix();
 
     Batch *b1 = new Batch;
     b1->firstChild = n3;
@@ -203,22 +299,20 @@ void SGRenderer::test_Alloc()
 
     //add some ring
     SGCircularNode *sn10 = new SGCircularNode;
-    sn10->x = 100;
-    sn10->y = 550;
-    sn10->width = 400;
-    sn10->height = 400;
+    sn10->setX(100);
+    sn10->setY(550);
+    sn10->setWidth(400);
+    sn10->setHeight(400);
     sn10->setColor(0x1C86EE);
-    sn10->updateMatrix();
     SGCircularNode *sn11 = new SGCircularNode;
-    sn11->x = 0;
-    sn11->y = 0;
-    sn11->width = 400;
-    sn11->height = 400;
+    sn11->setX(0);
+    sn11->setY(0);
+    sn11->setWidth(400);
+    sn11->setHeight(400);
     sn11->setColor(0xCD5C5C);
-    sn11->updateMatrix();
 
-    Node *n10 = new Node; n10->gnode = sn10;
-    Node *n11 = new Node; n11->gnode = sn11;
+    Node *n10 = new Node; n10->gnode = sn10; n10->updateMatrix();
+    Node *n11 = new Node; n11->gnode = sn11; n11->updateMatrix();
     n10->next = n11;
     n11->prev = n10;
 
@@ -229,22 +323,20 @@ void SGRenderer::test_Alloc()
 
     //add image
     SGImageNode *sn20 = new SGImageNode;
-    sn20->x = 1500;
-    sn20->y = 0;
-    sn20->width = 160;
-    sn20->height = 160;
+    sn20->setX(1500);
+    sn20->setY(0);
+    sn20->setWidth(160);
+    sn20->setHeight(160);
     sn20->setImage(5);
-    sn20->updateMatrix();
     SGImageNode *sn21 = new SGImageNode;
-    sn21->x = 1500;
-    sn21->y = 600;
-    sn21->width = 80;
-    sn21->height = 80;
+    sn21->setX(1500);
+    sn21->setY(600);
+    sn21->setWidth(80);
+    sn21->setHeight(80);
     sn21->setImage(15);
-    sn21->updateMatrix();
 
-    Node *n20 = new Node; n20->gnode = sn20;
-    Node *n21 = new Node; n21->gnode = sn21;
+    Node *n20 = new Node; n20->gnode = sn20; n20->updateMatrix();
+    Node *n21 = new Node; n21->gnode = sn21; n21->updateMatrix();
     n20->next = n21;
     n21->prev = n20;
 

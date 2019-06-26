@@ -22,12 +22,14 @@ SGColorRectangleGeometry::SGColorRectangleGeometry()
 
 void SGColorRectangleGeometry::setColor(const Color & c)
 {
+    auto pt = dataAsPointColor();
     for (int i = 0; i < 4; i++)
     {
-        vertices[8 * i + 4] = c.r / 255.f;
-        vertices[8 * i + 5] = c.g / 255.f;
-        vertices[8 * i + 6] = c.b / 255.f;
-        vertices[8 * i + 7] = 1.f;
+        pt->r = c.r / 255.f;
+        pt->g = c.g / 255.f;
+        pt->b = c.b / 255.f;
+        pt->a = 1.f;
+        pt++;
     }
 }
 

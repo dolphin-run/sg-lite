@@ -40,45 +40,4 @@ public:
     SGMaterial *m_material = nullptr;
 };
 
-class SGRectangleNode : public SGNode
-{
-public:
-    SGRectangleNode(SGNode* parent = nullptr);
-    void setColor(int32_t c);
-
-private:
-    Color m_color;
-    SGColorRectangleGeometry m_colorGeometry;
-};
-
-class SGImageNode : public SGNode
-{
-public:
-    SGImageNode(SGNode* parent = nullptr);
-    void setImage(int32_t c);
-
-private:
-    Color m_color;
-    SGTextureRectangleGeometry m_texGeometry;
-};
-
-class SGTextNode : public SGNode
-{};
-
-
-class SGLineNode : public SGRectangleNode
-{};
-
-class SGCircularNode : public SGNode
-{
-public:
-    SGCircularNode(SGNode* parent = nullptr);
-    void setColor(int32_t c);
-
-private:
-    Color m_color;
-    SGColorCircularGeometry m_colorGeometry;
-};
-
-class SGUserDefined : public SGNode{};
 #endif // SGNODE_H

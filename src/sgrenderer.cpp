@@ -1,5 +1,7 @@
 #include "sgrenderer.h"
-#include <qopengltexture.h>
+#include <QOpenGLTexture>
+#include "node/sgcircularnode.h"
+#include "node/sgrectanglenode.h"
 
 SGMaterialShader * SGShaderManager::find(SGMaterial *material)
 {

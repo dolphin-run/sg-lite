@@ -34,26 +34,4 @@ public:
     virtual SGMaterialShader *createShader() const = 0;
 };
 
-
-class SGFlatColorMaterial : public SGMaterial
-{
-public:
-    virtual E_MaterialType type() const override;
-    virtual SGMaterialShader *createShader() const override;
-};
-
-class SGTextureMaterial : public SGMaterial
-{
-public:
-    virtual E_MaterialType type() const override;
-    virtual SGMaterialShader *createShader() const override;
-};
-
-class SGCircularMaterial : public SGMaterial
-{
-public:
-    virtual E_MaterialType type() const override;
-    virtual SGMaterialShader *createShader() const override;
-};
-
 #endif // SGMATERIAL_H

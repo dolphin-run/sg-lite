@@ -75,9 +75,12 @@ void SGView::render()
 
     if (needsInitialize) {
         m_render->initializeGL();
+        m_render->sync(&m_scene->m_root);
     }
 
-    m_render->render(&m_scene->m_root);
+    m_render->render();
 
     m_context->swapBuffers(this);
+
+    requestUpdate();
 }

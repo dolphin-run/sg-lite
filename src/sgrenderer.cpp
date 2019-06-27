@@ -53,15 +53,28 @@ void SGRenderer::initializeGL()
     m_tex->setWrapMode(QOpenGLTexture::Repeat);
 }
 
-void SGRenderer::render(const SGRootNode *root)
+void SGRenderer::sync(const SGRootNode *root)
 {
-    static bool init = false;
-    if (!init)
+    for (auto itm : root->m_children)
+        syncGnode(itm);
+}
+
+void SGRenderer::syncGnode(const SGNode * node)
+{
+    Node *n = new Node; n->gnode = node;
+
+    m_mapNodes.insert(std::make_pair(node, n));
+
+    for (auto child : node->m_children)
     {
-        init = true;
-        findRenderNodesFromScratch(root);
-        buildOpacityBatches();
+        syncGnode(child);
     }
+}
+
+void SGRenderer::render()
+{
+    selectRenderNodes();
+    buildOpacityBatches();
 
     uploadBatches();
 
@@ -72,34 +85,18 @@ void SGRenderer::render(const SGRootNode *root)
     renderBatches();
 }
 
-void SGRenderer::findRenderNodesFromScratch(const SGNode * root)
+void SGRenderer::selectRenderNodes()
 {
-    assert(root->type() == SGNode::E_NodeType::RootNodeType);
-
-    for (auto itm : m_opacityNodes)
-    {
-        delete itm;
-    }
     m_opacityNodes.clear();
     m_alphaNodes.clear();
-    for (auto itm : root->m_children)
-        findRenderNodes(itm);
-}
-
-void SGRenderer::findRenderNodes(const SGNode * node)
-{
-    //if (node->type() == SGNode::E_NodeType::RectangleNodeType)
+    for (auto itm : m_mapNodes)
     {
-        if (node->visible())
+        //if (node->type() == SGNode::E_NodeType::RectangleNodeType)
+        if (itm.first->visible())
         {
-            Node *n = new Node; n->gnode = node; n->updateMatrix();
-            n->batch = 0;
-            m_opacityNodes.push_back(n);
-
-            for (auto child : node->m_children)
-            {
-                findRenderNodes(child);
-            }
+            itm.second->updateMatrix();
+            itm.second->batch = 0;
+            m_opacityNodes.push_back(itm.second);
         }
     }
 }
@@ -108,7 +105,7 @@ void SGRenderer::buildOpacityBatches()
 {
     for (auto itm : m_opaqueBatches)
     {
-        delete itm;
+        m_batchPool.free(itm);
     }
     m_opaqueBatches.clear();
 
@@ -118,7 +115,7 @@ void SGRenderer::buildOpacityBatches()
 
         if (node->batch) continue;
 
-        Batch *batch = new Batch;
+        Batch *batch = m_batchPool.alloc();
         batch->firstChild = node;
         node->prev = nullptr;
         node->batch = 1;
@@ -151,7 +148,12 @@ void SGRenderer::buildOpacityBatches()
 
 void SGRenderer::map(Buffer *buffer)
 {
-    if (!buffer->data) buffer->data = new char[buffer->size];
+    //to do ... add memory pool
+
+    if (buffer->data)
+        delete buffer->data;
+    
+    buffer->data = new char[buffer->size];
 }
 
 void SGRenderer::unmap(Buffer *buffer)

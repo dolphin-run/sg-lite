@@ -4,7 +4,7 @@
 #include <QOpenGLFunctions>
 #include "sgnode.h"
 #include <list>
-#include <map>
+#include <unordered_map>
 
 class QOpenGLTexture;
 class SGView;
@@ -35,6 +35,29 @@ struct Batch {
     Buffer vbo;
 };
 
+class BatchPool 
+{
+public:
+    Batch* alloc() {
+        if (pool.size())
+        {
+            auto it = pool.back();
+            pool.pop_back();
+            return it;
+        }
+        else
+        {
+            return new Batch;
+        }
+    }
+    void free(Batch *p) {
+        pool.push_back(p);
+    }
+
+private:
+    std::vector<Batch*> pool;
+};
+
 class SGShaderManager
 {
 public:
@@ -49,11 +72,12 @@ public:
     SGRenderer(SGView *view);
     virtual void initializeGL();
 
-    virtual void render(const SGRootNode *root);
+    void sync(const SGRootNode *root);
+    void syncGnode(const SGNode *node);
+    virtual void render();
 
 protected:
-    void findRenderNodesFromScratch(const SGNode *root);
-    void findRenderNodes(const SGNode *node);
+    void selectRenderNodes();
     void buildOpacityBatches();
 
     void map(Buffer *buffer);
@@ -64,11 +88,12 @@ protected:
 
 protected:
     void test_Alloc();
+    BatchPool m_batchPool;
     std::list<Batch *> m_opaqueBatches;
     std::list<Batch *> m_alphaBatches;
     std::vector<Node*> m_opacityNodes;
     std::vector<Node*> m_alphaNodes;
-    std::map<SGNode*, Node*> m_nodes;
+    std::unordered_map<const SGNode*, Node*> m_mapNodes;
     QMatrix4x4 m_projection;
 
     SGShaderManager m_shrMgr;

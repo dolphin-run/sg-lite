@@ -2,6 +2,7 @@
 
 SGScene::SGScene()
 {
+    startTimer(40);
 }
 
 void SGScene::build()
@@ -14,6 +15,14 @@ void SGScene::build()
 void SGScene::walk()
 {
     //m_opacity_nodes.append();
+}
+
+void SGScene::timerEvent(QTimerEvent * event)
+{
+    for (auto it : m_root.m_children)
+    {
+        it->setWidth(100+(it->m_width+1)%100);
+    }
 }
 
 

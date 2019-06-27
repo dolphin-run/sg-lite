@@ -3,8 +3,9 @@
 
 #include "sgnode.h"
 class QSGNode;
-class SGScene
+class SGScene : public QObject
 {
+    Q_OBJECT
     friend class SGView;
 public:
     SGScene();
@@ -12,6 +13,7 @@ public:
     void walk();
 
 protected:
+    virtual void timerEvent(QTimerEvent *event) override;
     void testAlloc();
     SGRootNode m_root;
 

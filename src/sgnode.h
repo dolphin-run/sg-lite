@@ -65,6 +65,7 @@ protected:
 
     friend class Node;
     friend class SGRenderer;
+    friend class SGScene;
 };
 
 class SGRootNode : public SGNode

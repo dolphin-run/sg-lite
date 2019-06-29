@@ -87,14 +87,12 @@ protected:
     void renderBatches();
 
 protected:
-    void test_Alloc();
     BatchPool m_batchPool;
     std::list<Batch *> m_opaqueBatches;
     std::list<Batch *> m_alphaBatches;
     std::vector<Node*> m_opacityNodes;
     std::vector<Node*> m_alphaNodes;
     std::unordered_map<const SGNode*, Node*> m_mapNodes;
-    QMatrix4x4 m_projection;
 
     SGShaderManager m_shrMgr;
 

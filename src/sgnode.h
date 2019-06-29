@@ -53,6 +53,7 @@ protected:
     int m_height = 0;
 
     float m_opacity = 1.f;
+    float m_scale = 1.f;
     bool m_visible = true;
 
     SGNode* m_parent = nullptr;

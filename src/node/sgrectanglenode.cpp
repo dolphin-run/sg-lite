@@ -27,14 +27,13 @@ void SGRectangleNode::setColor(int32_t c)
 SGImageNode::SGImageNode(SGNode * parent) :
     SGNode(E_NodeType::ImageNodeType, parent)
 {
-    m_material = new SGTextureMaterial;
+    m_material = m_texMaterial = new SGTextureMaterial;
     m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
 }
 
-void SGImageNode::setImage(int32_t c)
+void SGImageNode::setImage(const char* src)
 {
-    //10,5
-    int row = c / 10;
-    int col = c % 10;
-    m_texGeometry->setTexCoord(0.2f*(row + 1), 0.1f*col, 0.1f*(col + 1), 0.2f*row);
+    const RectF &rec = m_texMaterial->addImage(src);
+    
+    m_texGeometry->setTexCoord(rec);
 }

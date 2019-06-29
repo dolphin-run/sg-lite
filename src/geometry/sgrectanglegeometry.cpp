@@ -52,15 +52,22 @@ SGTextureRectangleGeometry::SGTextureRectangleGeometry()
     m_data = vertices;
 }
 
-void SGTextureRectangleGeometry::setTexCoord(float top, float left, float right, float buttom)
+void SGTextureRectangleGeometry::setTexCoord(const RectF & rec)
+{
+    setTexCoord(rec.tl.x, rec.tl.y, rec.br.x, rec.br.y);
+}
+
+//use screen coordinate
+void SGTextureRectangleGeometry::setTexCoord(float left, float top, float right, float buttom)
 {
     auto pt = dataAsPointTexture();
+    //translate to gl rendering coordinate
     pt[0].vx = right;
-    pt[0].vy = top;
+    pt[0].vy = buttom;
     pt[1].vx = left;
-    pt[1].vy = top;
+    pt[1].vy = buttom;
     pt[2].vx = right;
-    pt[2].vy = buttom;
+    pt[2].vy = top;
     pt[3].vx = left;
-    pt[3].vy = buttom;
+    pt[3].vy = top;
 }

@@ -21,6 +21,7 @@ int main(int argc, char **argv)
     window.setScene(&scene);
     window.setFormat(format);
     window.resize(640, 480);
+    window.initialize();
     window.show();
 
     return app.exec();

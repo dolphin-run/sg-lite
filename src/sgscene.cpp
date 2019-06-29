@@ -2,7 +2,7 @@
 
 SGScene::SGScene()
 {
-    startTimer(40);
+    //startTimer(20);
 }
 
 void SGScene::build()
@@ -21,7 +21,8 @@ void SGScene::timerEvent(QTimerEvent * event)
 {
     for (auto it : m_root.m_children)
     {
-        it->setWidth(100+(it->m_width+1)%100);
+        it->setWidth(100 + (it->m_width + 1) % 100);
+        it->setHeight(100 + (it->m_width + 1) % 100);
     }
 }
 
@@ -135,7 +136,7 @@ void SGScene::testAlloc()
         sn->setWidth(100);
         sn->setHeight(100);
 
-        sn->setImage(i);
+        sn->setImage("F:/doc/mk/VAT/entity/en/256/1-Person/family.png");
     }
 }
 #endif

@@ -48,6 +48,11 @@ private:
     GLuint m_matrixUniform;
 };
 
+SGTextureMaterial::SGTextureMaterial()
+{
+    m_tex = &m_imgTex;
+}
+
 E_MaterialType SGTextureMaterial::type() const
 {
     return E_MaterialType::TextureMaterialType;
@@ -56,4 +61,30 @@ E_MaterialType SGTextureMaterial::type() const
 SGMaterialShader * SGTextureMaterial::createShader() const
 {
     return new SGTextureMaterialShader;
+}
+
+const RectF& SGTextureMaterial::addImage(const char * path)
+{
+    unsigned uid = 0;
+    if (m_nameMapToKey.count(path))
+    {
+        uid = m_nameMapToKey.at(path);
+    }
+    else
+    {
+        uid = m_imgTex.add(path);
+    }
+
+    if (uid)
+    {
+        //only add valid file to map
+        m_nameMapToKey.emplace(std::make_pair(path, uid));
+    }
+
+    return m_imgTex.retrieve(uid);
+}
+
+SGTexture * SGTextureMaterial::texture() const
+{
+    return m_tex;
 }

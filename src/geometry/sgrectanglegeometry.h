@@ -21,6 +21,7 @@ class SGTextureRectangleGeometry : public SGGeometry
 {
 public:
     SGTextureRectangleGeometry();
+    void setTexCoord(const RectF &rec);
     void setTexCoord(float top, float left, float right, float buttom);
 private:
     float vertices[32] = {

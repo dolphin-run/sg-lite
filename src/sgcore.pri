@@ -1,4 +1,5 @@
-INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD\common\include
+
 SOURCES += \
     $$PWD/sgnode.cpp \
     $$PWD/sgstruct.cpp \
@@ -12,7 +13,10 @@ SOURCES += \
     $$PWD/material/sgcolormaterial.cpp \
     $$PWD/material/sgtexturematerial.cpp \
     $$PWD/node/sgrectanglenode.cpp \
-    $$PWD/node/sgcircularnode.cpp
+    $$PWD/node/sgcircularnode.cpp \
+    $$PWD/util/sgtexture.cpp \
+    $$PWD/util/sgimagetexture.cpp \
+    $$PWD/viewinteraction.cpp
 
 HEADERS += \
     $$PWD/sgnode.h \
@@ -27,4 +31,7 @@ HEADERS += \
     $$PWD/material/sgcolormaterial.h \
     $$PWD/material/sgtexturematerial.h \
     $$PWD/node/sgrectanglenode.h \
-    $$PWD/node/sgcircularnode.h
+    $$PWD/node/sgcircularnode.h \
+    $$PWD/util/sgtexture.h \
+    $$PWD/util/sgimagetexture.h \
+    $$PWD/viewinteraction.h

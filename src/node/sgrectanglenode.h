@@ -3,6 +3,7 @@
 
 #include "sgnode.h"
 
+class SGTextureMaterial;
 class SGColorRectangleGeometry;
 class SGTextureRectangleGeometry;
 class SGRectangleNode : public SGNode
@@ -20,10 +21,11 @@ class SGImageNode : public SGNode
 {
 public:
     SGImageNode(SGNode* parent = nullptr);
-    void setImage(int32_t c);
+    void setImage(const char* src);
 
 private:
     Color m_color;
+    SGTextureMaterial *m_texMaterial = nullptr;
     SGTextureRectangleGeometry *m_texGeometry=nullptr;
 };
 

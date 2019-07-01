@@ -11,13 +11,11 @@ public:
     virtual E_MaterialType type() const override;
     virtual SGMaterialShader *createShader() const override;
 
-    const RectF& addImage(const char *path);
+    const RectF& setImage(const char *path);
     SGTexture *texture() const;
 
 private:
     SGTexture *m_tex = nullptr;
-    std::unordered_map<std::string, unsigned> m_nameMapToKey;
-    SGImageTexture m_imgTex;
 };
 
 #endif // SGTEXTUREMATERIAL_H

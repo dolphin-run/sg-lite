@@ -1,5 +1,4 @@
 #include "sgrenderer.h"
-#include <QOpenGLTexture>
 #include "node/sgcircularnode.h"
 #include "node/sgrectanglenode.h"
 #include "sgview.h"
@@ -41,13 +40,6 @@ SGRenderer::SGRenderer(SGView *view) :
 void SGRenderer::initializeGL()
 {
     initializeOpenGLFunctions();
-
-    QImage localImg("F:\\doc\\mk\\VAT\\src\\glmv\\src\\tools\\resource-gen\\allentities.png");
-    Q_ASSERT(!localImg.isNull());
-    m_tex = new QOpenGLTexture(localImg);
-    m_tex->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    m_tex->setMagnificationFilter(QOpenGLTexture::Linear);
-    m_tex->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void SGRenderer::sync(const SGRootNode *root)
@@ -77,7 +69,12 @@ void SGRenderer::render()
 
     const qreal retinaScale = m_view->devicePixelRatio();
     glViewport(0, 0, m_view->width() * retinaScale, m_view->height() * retinaScale);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT); 
+
+    //to do...
+    //will be move to other function
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     renderBatches();
 }
@@ -226,7 +223,6 @@ void SGRenderer::renderBatches()
         SGMaterialShader *shader = m_shrMgr.find(gn->m_material);
 
         bool ret = shader->program()->bind();
-        m_tex->bind();
 
         shader->updateState(m_view->transform());
 
@@ -241,6 +237,5 @@ void SGRenderer::renderBatches()
 
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, batch->vbo.verticeNum);
-        //break;
     }
 }

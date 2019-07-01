@@ -6,7 +6,6 @@
 #include <list>
 #include <unordered_map>
 
-class QOpenGLTexture;
 class SGView;
 struct Node {
     const SGNode *gnode = nullptr;
@@ -95,9 +94,6 @@ protected:
     std::unordered_map<const SGNode*, Node*> m_mapNodes;
 
     SGShaderManager m_shrMgr;
-
-    //
-    QOpenGLTexture *m_tex;
 
     SGView *m_view = nullptr;
 };

@@ -33,7 +33,7 @@ SGImageNode::SGImageNode(SGNode * parent) :
 
 void SGImageNode::setImage(const char* src)
 {
-    const RectF &rec = m_texMaterial->addImage(src);
+    const RectF &rec = m_texMaterial->setImage(src);
     
     m_texGeometry->setTexCoord(rec);
 }

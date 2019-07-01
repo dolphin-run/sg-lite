@@ -1,8 +1,18 @@
 #include "sgscene.h"
 
+//test
+#include "node/sgrectanglenode.h"
+#include "node/sgcircularnode.h"
+#include <QTimerEvent>
+SGImageNode *g_sn;
+int timer1 = 0;
+int timer2 = 0;
+
+
 SGScene::SGScene()
 {
-    //startTimer(20);
+    //timer1 = startTimer(20);
+    timer2 = startTimer(5000);
 }
 
 void SGScene::build()
@@ -19,16 +29,21 @@ void SGScene::walk()
 
 void SGScene::timerEvent(QTimerEvent * event)
 {
-    for (auto it : m_root.m_children)
+    auto id = event->timerId();
+    if (timer1 == id)
     {
-        it->setWidth(100 + (it->m_width + 1) % 100);
-        it->setHeight(100 + (it->m_width + 1) % 100);
+        for (auto it : m_root.m_children)
+        {
+            it->setWidth(100 + (it->m_width + 1) % 100);
+            it->setHeight(100 + (it->m_width + 1) % 100);
+        }
+    }
+    else if (timer2 == id)
+    {
+        g_sn->setImage("F:/doc/mk/VAT/entity/en/256/1-Person/Courier.png");
     }
 }
 
-
-#include "node/sgrectanglenode.h"
-#include "node/sgcircularnode.h"
 #if 0
 void SGScene::testAlloc()
 {
@@ -136,7 +151,15 @@ void SGScene::testAlloc()
         sn->setWidth(100);
         sn->setHeight(100);
 
-        sn->setImage("F:/doc/mk/VAT/entity/en/256/1-Person/family.png");
+        sn->setImage("F:/doc/mk/VAT/entity/en/256/1-Person/Man.png");
     }
+
+    g_sn = new SGImageNode(&m_root);
+    g_sn->setX(800);
+    g_sn->setY(800);
+    g_sn->setWidth(140);
+    g_sn->setHeight(140);
+
+    g_sn->setImage("F:/doc/mk/VAT/entity/en/256/1-Person/Man.png");
 }
 #endif

@@ -1,15 +1,20 @@
 #include "sgtexturematerial.h"
 
 
+std::unordered_map<std::string, unsigned> g_nameMapToKey;
+SGImageTexture g_imgTex;
+
 class SGTextureMaterialShader : public SGMaterialShader
 {
 public:
-    SGTextureMaterialShader() { build(); }
+    SGTextureMaterialShader(const SGTextureMaterial *parent) : m_parent(parent) { build(); }
     ~SGTextureMaterialShader() {}
 
     virtual void updateState(const QMatrix4x4 &projection) override
     {
         m_program.setUniformValue(m_matrixUniform, projection);
+
+        m_parent->texture()->bind();
     }
 
     virtual const char* vertexShader() const override
@@ -46,11 +51,12 @@ private:
     GLuint m_posAttr;
     GLuint m_texAttr;
     GLuint m_matrixUniform;
+    const SGTextureMaterial *m_parent;
 };
 
 SGTextureMaterial::SGTextureMaterial()
 {
-    m_tex = &m_imgTex;
+    m_tex = &g_imgTex;
 }
 
 E_MaterialType SGTextureMaterial::type() const
@@ -60,28 +66,28 @@ E_MaterialType SGTextureMaterial::type() const
 
 SGMaterialShader * SGTextureMaterial::createShader() const
 {
-    return new SGTextureMaterialShader;
+    return new SGTextureMaterialShader(this);
 }
 
-const RectF& SGTextureMaterial::addImage(const char * path)
+const RectF& SGTextureMaterial::setImage(const char * path)
 {
     unsigned uid = 0;
-    if (m_nameMapToKey.count(path))
+    if (g_nameMapToKey.count(path))
     {
-        uid = m_nameMapToKey.at(path);
+        uid = g_nameMapToKey.at(path);
     }
     else
     {
-        uid = m_imgTex.add(path);
+        uid = g_imgTex.add(path);
     }
 
     if (uid)
     {
         //only add valid file to map
-        m_nameMapToKey.emplace(std::make_pair(path, uid));
+        g_nameMapToKey.emplace(std::make_pair(path, uid));
     }
 
-    return m_imgTex.retrieve(uid);
+    return g_imgTex.retrieve(uid);
 }
 
 SGTexture * SGTextureMaterial::texture() const

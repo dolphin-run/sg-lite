@@ -73,3 +73,11 @@ void RectF::map(const QMatrix4x4 & matrix)
         (*this) |= mbr;
     }
 }
+
+Color Color::random()
+{
+    unsigned char r = rand() % 256;
+    unsigned char g = rand() % 256;
+    unsigned char b = rand() % 256;
+    return Color(r, g, b);
+}

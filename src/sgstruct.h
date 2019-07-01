@@ -214,13 +214,16 @@ struct Color {
     {
     }
 
-    Color(int x) {
+    Color(uint32_t x) {
         b = x & 0xff;
         x >>= 8;
         g = x & 0xff;
         x >>= 8;
         r = x & 0xff;
     }
+    Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+
+    static Color random();
 };
 
 #endif // SGSTRUCT_H

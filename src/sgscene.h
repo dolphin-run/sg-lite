@@ -3,24 +3,19 @@
 
 #include "sgnode.h"
 class QSGNode;
-class SGScene : public QObject
+class SGScene
 {
-    Q_OBJECT
     friend class SGView;
 public:
     SGScene();
-    void build();
-    void walk();
+
+    void addItem(SGNode *item);
 
 protected:
-    virtual void timerEvent(QTimerEvent *event) override;
-    void testAlloc();
     SGRootNode m_root;
 
     int m_width = 1920;
     int m_height = 1080;
-
-    //QMatrix4x4 m_projection;
 };
 
 #endif // SGSCENE_H

@@ -11,17 +11,9 @@ SGRectangleNode::SGRectangleNode(SGNode * parent):
     m_geometry = m_colorGeometry = new SGColorRectangleGeometry;
 }
 
-void SGRectangleNode::setColor(int32_t c)
+void SGRectangleNode::setColor(Color c)
 {
-//    color.a = c&0xff;
-//    c>>=8;
-    m_color.b = c&0xff;
-    c>>=8;
-    m_color.g = c&0xff;
-    c>>=8;
-    m_color.r = c&0xff;
-
-    m_colorGeometry->setColor(m_color);
+    m_colorGeometry->setColor(c);
 }
 
 SGImageNode::SGImageNode(SGNode * parent) :

@@ -64,7 +64,7 @@ protected:
     SGMaterial *m_material = nullptr;
     mutable unsigned m_dirty = 0;
 
-    friend class Node;
+    friend struct Node;
     friend class SGRenderer;
     friend class SGScene;
 };

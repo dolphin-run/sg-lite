@@ -1,7 +1,7 @@
 #ifndef SGCIRCULARNODE_H
 #define SGCIRCULARNODE_H
 
-#include "sgnode.h"
+#include "../sgnode.h"
 
 class SGCircularGeometry;
 class SGCircularNode : public SGNode

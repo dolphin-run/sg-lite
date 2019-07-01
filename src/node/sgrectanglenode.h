@@ -1,7 +1,7 @@
 #ifndef SGRECTANGLENODE_H
 #define SGRECTANGLENODE_H
 
-#include "sgnode.h"
+#include "../sgnode.h"
 
 class SGTextureMaterial;
 class SGColorRectangleGeometry;
@@ -10,7 +10,7 @@ class SGRectangleNode : public SGNode
 {
 public:
     SGRectangleNode(SGNode* parent = nullptr);
-    void setColor(int32_t c);
+    void setColor(Color c);
 
 private:
     Color m_color;

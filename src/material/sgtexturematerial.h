@@ -1,8 +1,8 @@
 #ifndef SGTEXTUREMATERIAL_H
 #define SGTEXTUREMATERIAL_H
 
-#include "sgmaterial.h"
-#include "util/sgimagetexture.h"
+#include "../sgmaterial.h"
+#include "../util/sgimagetexture.h"
 
 class SGTextureMaterial : public SGMaterial
 {

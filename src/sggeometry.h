@@ -2,7 +2,7 @@
 #define SGGEOMETRY_H
 
 #include <cstdint>
-#include <sgstruct.h>
+#include "sgstruct.h"
 #include <math.h>
 //store vertex data
 //define how data should be explained

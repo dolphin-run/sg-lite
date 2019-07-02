@@ -27,6 +27,13 @@ SGMaterialShader * SGShaderManager::find(SGMaterial *material)
     if (g_ms.count(type)) return g_ms[type];
 
     SGMaterialShader *shader = material->createShader();
+
+    QOpenGLShaderProgram *p = shader->program();
+    char const *const *attr = shader->attributeNames();
+    for (int i = 0; attr[i]; ++i) {
+        if (*attr[i])
+            p->bindAttributeLocation(attr[i], i);
+    }
     
     g_ms.insert(std::make_pair(type, shader));
     return shader;

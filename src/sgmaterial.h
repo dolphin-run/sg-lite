@@ -16,6 +16,7 @@ public:
     SGMaterialShader() {}
     virtual ~SGMaterialShader() {}
     virtual void updateState(const QMatrix4x4 &projection) {}
+    virtual char const* const* attributeNames() const = 0;
     inline QOpenGLShaderProgram *program() { return &m_program; }
 protected:
     virtual void compile();

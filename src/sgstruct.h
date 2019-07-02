@@ -2,6 +2,7 @@
 #define SGSTRUCT_H
 
 #include <QMatrix4x4>
+#include <cfloat>
 
 struct Point {
     int x, y;
@@ -122,13 +123,6 @@ struct Rect {
         bool yOverlap = r.tl.y < br.y && r.br.y > tl.y;
         return xOverlap && yOverlap;
     }
-
-    bool isOutsideFloatRange() const {
-        return tl.x < -FLT_EPSILON
-            || tl.y < -FLT_EPSILON
-            || br.x > FLT_EPSILON
-            || br.y > FLT_EPSILON;
-    }
 };
 
 struct RectF {
@@ -194,13 +188,6 @@ struct RectF {
         bool xOverlap = r.tl.x < br.x && r.br.x > tl.x;
         bool yOverlap = r.tl.y < br.y && r.br.y > tl.y;
         return xOverlap && yOverlap;
-    }
-
-    bool isOutsideFloatRange() const {
-        return tl.x < -FLT_EPSILON
-            || tl.y < -FLT_EPSILON
-            || br.x > FLT_EPSILON
-            || br.y > FLT_EPSILON;
     }
 };
 

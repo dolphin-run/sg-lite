@@ -1,5 +1,6 @@
 include(src/sgcore.pri)
-INCLUDEPATH += $$PWD\src
+INCLUDEPATH += $$PWD/src
+
 CONFIG -= flat
 
 HEADERS += scene.h

@@ -32,18 +32,20 @@ public:
             "}\n";
     }
     
+    virtual char const* const* attributeNames() const override
+    {
+        static const char* const attr[] = { "posAttr", "colAttr", 0 };
+        return attr;
+    }
+    
     bool build()
     {
         compile();
-        m_posAttr = m_program.attributeLocation("posAttr");
-        m_colAttr = m_program.attributeLocation("colAttr");
         m_matrixUniform = m_program.uniformLocation("matrix");
 
         return true;
     }
 private:
-    GLuint m_posAttr;
-    GLuint m_colAttr;
     GLuint m_matrixUniform;
 };
 

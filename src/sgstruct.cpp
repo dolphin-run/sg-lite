@@ -34,7 +34,7 @@ void Rect::map(const QMatrix4x4 &matrix)
         mbl.map(matrix);
         mbr.map(matrix);
 
-        set(FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX);
+        set(INT_MAX, INT_MAX, INT_MIN, INT_MIN);
         (*this) |= mtl;
         (*this) |= mtr;
         (*this) |= mbl;

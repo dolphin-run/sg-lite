@@ -38,18 +38,20 @@ public:
             "}\n";
     }
 
+    virtual char const* const* attributeNames() const override
+    {
+        static const char* const attr[] = { "posAttr", "texAttr", 0 };
+        return attr;
+    }
+
     bool build()
     {
         compile();
-        m_posAttr = m_program.attributeLocation("posAttr");
-        m_texAttr = m_program.attributeLocation("texAttr");
         m_matrixUniform = m_program.uniformLocation("matrix");
 
         return true;
     }
 private:
-    GLuint m_posAttr;
-    GLuint m_texAttr;
     GLuint m_matrixUniform;
     const SGTextureMaterial *m_parent;
 };

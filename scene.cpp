@@ -36,9 +36,9 @@ void Scene::timerEvent(QTimerEvent * event)
             {
                 SGImageNode* imgNode = dynamic_cast<SGImageNode*>(it);
                 if(odd)
-                    imgNode->setImage("F:/doc/mk/VAT/entity/en/256/1-Person/Courier.png");
+                    imgNode->setImage("images/img1.png");
                 else
-                    imgNode->setImage("F:/doc/mk/VAT/entity/en/256/1-Person/Man.png");
+                    imgNode->setImage("images/img2.png");
             }
         }
     }
@@ -91,7 +91,7 @@ void Scene::testAlloc()
         sn->setWidth(100);
         sn->setHeight(100);
 
-        sn->setImage("F:/doc/mk/VAT/entity/en/256/1-Person/Man.png");
+        sn->setImage("images/img0.png");
 
         this->addItem(sn);
         m_nodes.append(sn);

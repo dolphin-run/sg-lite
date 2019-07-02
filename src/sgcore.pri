@@ -1,4 +1,4 @@
-INCLUDEPATH += $$PWD\common\include
+INCLUDEPATH += $$PWD/common/include
 
 SOURCES += \
     $$PWD/sgnode.cpp \

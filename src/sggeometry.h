@@ -47,7 +47,7 @@ public:
     SGGeometry();
     virtual ~SGGeometry();
     VertexAsPointColor* dataAsPointColor();
-    VertexAsPointTexture* dataAsPointTexture();
+    VertexAsPointTexture* dataAsPointTexture(size_t offset = 0);
 
     inline const VertexAttributeSet* attributes() const { return m_attrs; }
     inline void* data() { return m_data; }

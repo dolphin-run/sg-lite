@@ -42,6 +42,7 @@ SGMaterialShader * SGShaderManager::find(SGMaterial *material)
 SGRenderer::SGRenderer(SGView *view) :
     m_view(view)
 {
+    m_mapMemoryCache.reserve(1024);
 }
 
 void SGRenderer::initializeGL()
@@ -142,19 +143,20 @@ void SGRenderer::buildOpacityBatches()
 
         batch->vbo.verticeNum = nodenum * node->gnode->m_geometry->verticeNum() + (nodenum-1) * 2;
         batch->vbo.size = batch->vbo.verticeNum * node->gnode->m_geometry->verticeSize();
-
+        
+        batch->dirty = true;
         m_opaqueBatches.push_back(batch);
     }
 }
 
 void SGRenderer::map(Buffer *buffer)
 {
-    //to do ... add memory pool
-
-    if (buffer->data)
-        delete buffer->data;
+    if (buffer->size > m_mapMemoryCache.capacity())
+    {
+        m_mapMemoryCache.reserve((buffer->size + 1023) / 1024 * 1024);
+    }
     
-    buffer->data = new char[buffer->size];
+    buffer->data = m_mapMemoryCache.data();
 }
 
 void SGRenderer::unmap(Buffer *buffer)
@@ -171,6 +173,9 @@ void SGRenderer::uploadBatches()
 {
     for (Batch *batch : m_opaqueBatches)
     {
+        if (!batch->dirty) continue; 
+        batch->dirty = false;
+
         map(&batch->vbo);
 
         //write data

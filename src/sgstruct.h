@@ -3,6 +3,8 @@
 
 #include <QMatrix4x4>
 #include <cfloat>
+#include <assert.h>
+#include <memory>
 
 struct Point {
     int x, y;
@@ -211,6 +213,19 @@ struct Color {
     Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 
     static Color random();
+};
+
+struct Image {
+    enum E_ImageFormat {Format_RGBA, Format_Alpha};
+    Image();
+    Image(uint32_t width, uint32_t height, uint8_t *data, E_ImageFormat fmt);
+
+    bool m_valid = false;
+    uint32_t m_width = 0;
+    uint32_t m_height = 0;
+    uint32_t m_component = 0;
+    std::shared_ptr<uint8_t *> m_data = nullptr;
+    E_ImageFormat m_format;
 };
 
 #endif // SGSTRUCT_H

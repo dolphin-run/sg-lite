@@ -30,6 +30,7 @@ struct Buffer {
 
 struct Batch {
     Node *firstChild = nullptr;
+    bool dirty = true;
 
     Buffer vbo;
 };
@@ -87,6 +88,7 @@ protected:
 
 protected:
     BatchPool m_batchPool;
+    std::vector<char> m_mapMemoryCache;
     std::list<Batch *> m_opaqueBatches;
     std::list<Batch *> m_alphaBatches;
     std::vector<Node*> m_opacityNodes;

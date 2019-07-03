@@ -1,4 +1,5 @@
 INCLUDEPATH += $$PWD/common/include
+LIBS += -L$$PWD/common/lib$${ARCH_SUFFIX} -lfreetype$${BUILD_SUFFIX}
 
 SOURCES += \
     $$PWD/sgnode.cpp \
@@ -12,10 +13,13 @@ SOURCES += \
     $$PWD/geometry/sgcirculargeometry.cpp \
     $$PWD/material/sgcolormaterial.cpp \
     $$PWD/material/sgtexturematerial.cpp \
+    $$PWD/material/sgglyphmaterial.cpp \
     $$PWD/node/sgrectanglenode.cpp \
     $$PWD/node/sgcircularnode.cpp \
+    $$PWD/node/sgtextnode.cpp \
     $$PWD/util/sgtexture.cpp \
     $$PWD/util/sgimagetexture.cpp \
+    $$PWD/util/sgglyphtexture.cpp \
     $$PWD/viewinteraction.cpp
 
 HEADERS += \
@@ -30,8 +34,11 @@ HEADERS += \
     $$PWD/geometry/sgcirculargeometry.h \
     $$PWD/material/sgcolormaterial.h \
     $$PWD/material/sgtexturematerial.h \
+    $$PWD/material/sgglyphmaterial.h \
     $$PWD/node/sgrectanglenode.h \
     $$PWD/node/sgcircularnode.h \
+    $$PWD/node/sgtextnode.h \
     $$PWD/util/sgtexture.h \
     $$PWD/util/sgimagetexture.h \
+    $$PWD/util/sgglyphtexture.h \
     $$PWD/viewinteraction.h

@@ -14,7 +14,7 @@ VertexAsPointColor * SGGeometry::dataAsPointColor()
     return (VertexAsPointColor*)m_data;
 }
 
-VertexAsPointTexture * SGGeometry::dataAsPointTexture()
+VertexAsPointTexture * SGGeometry::dataAsPointTexture(size_t offset)
 {
-    return (VertexAsPointTexture*)m_data;
+    return offset + (VertexAsPointTexture*)m_data;
 }

@@ -81,3 +81,33 @@ Color Color::random()
     unsigned char b = rand() % 256;
     return Color(r, g, b);
 }
+
+Image::Image() {}
+
+Image::Image(uint32_t width, uint32_t height, uint8_t * data, E_ImageFormat fmt):
+    m_width(width),
+    m_height(height),
+    m_format(fmt),
+    m_valid(true)
+{
+    switch (fmt)
+    {
+    case Image::Format_RGBA:
+        m_component = 4;
+        break;
+    case Image::Format_Alpha:
+        m_component = 1;
+        break;
+    default:
+        m_valid = false;
+        break;
+    }
+
+    if (m_valid)
+    {
+        uint32_t size = m_width*m_height*m_component;
+        uint8_t *p = (uint8_t*)malloc(size);
+        memcpy(p, data, size);
+        //m_data = std::shared_ptr<uint8_t *>(p);
+    }
+}

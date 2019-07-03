@@ -32,4 +32,18 @@ private:
     };
 };
 
+
+class SGTextRectangleGeometry : public SGGeometry
+{
+public:
+    SGTextRectangleGeometry(int n = 1);
+    ~SGTextRectangleGeometry();
+    void setTexCoord(int idx, const RectF &rec);
+    void setTexCoord(int idx, float top, float left, float right, float buttom);
+private:
+    VertexAttributeSet attrs;
+    float *vertices = nullptr;
+    size_t num = 0;
+};
+
 #endif // SGRECTANGLEGEOMETRY_H

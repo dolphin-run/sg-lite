@@ -1,7 +1,7 @@
 #ifndef SGRECTANGLENODE_H
 #define SGRECTANGLENODE_H
 
-#include "../sgnode.h"
+#include "sgnode.h"
 
 class SGTextureMaterial;
 class SGColorRectangleGeometry;

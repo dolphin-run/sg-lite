@@ -1,6 +1,6 @@
 #include "sgcircularnode.h"
-#include "../geometry/sgcirculargeometry.h"
-#include "../material/sgcolormaterial.h"
+#include "geometry/sgcirculargeometry.h"
+#include "material/sgcolormaterial.h"
 
 SGCircularNode::SGCircularNode(SGNode * parent):
     SGNode(E_NodeType::CircularNodeType, parent)

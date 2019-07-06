@@ -1,7 +1,7 @@
 
 #include "sgtextnode.h"
 #include "geometry/sgrectanglegeometry.h"
-#include "util/sgglyphtexture.h"
+#include "texture/sgglyphtexture.h"
 
 SGTextNode::SGTextNode(SGNode * parent) :
     SGNode(E_NodeType::TextNodeType, parent)
@@ -20,14 +20,11 @@ void SGTextNode::addLineText(const std::wstring & s, size_t first, size_t last)
     for (int i = first; i < last && i < s.size(); i++)
     {
         auto &glyinf = m_glyphMaterial->setGlyph(s.at(i));
-        //auto &inf = g_glyphLoader.retrieve(s.at(i));
 
-        //cx += inf->m_width + inf->m_leftBearing;
         cx += glyinf.advance;
         lineinf.lineInf.push_back(&glyinf);
     }
     lineinf.width = cx;
-    //rendinf.m_startHPix = cx / 2 - WORDLOADER_PIXEL / 2;
     m_glyphLines.push_back(lineinf);
 }
 
@@ -46,7 +43,7 @@ void SGTextNode::setText(const std::wstring & txt)
     } while (pos != std::wstring::npos);
 
     int boundingWidth = 0;
-    int boundingHeight = m_glyphLines.size()*WORDLOADER_WORD_PIXEL;
+    int boundingHeight = m_glyphLines.size()*GLYPH_PIXEL_SIZE;
     int chnum = 0;
     //rewrite geometry position and texture.
     for (auto line : m_glyphLines)
@@ -75,9 +72,10 @@ void SGTextNode::setText(const std::wstring & txt)
             posX += inf->advance;
             chidx++;
         }
-        posY += WORDLOADER_WORD_PIXEL;
+        posY += GLYPH_PIXEL_SIZE;
     }
 
+    //to do...
     SGNode::m_width = boundingWidth;
     SGNode::m_height = boundingHeight;
 }

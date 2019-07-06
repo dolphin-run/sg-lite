@@ -50,29 +50,4 @@ private:
     size_t num = 0;
 };
 
-
-class SGTextRectangleGeometryT : public SGGeometry
-{
-public:
-    SGTextRectangleGeometryT(int n = 1);
-    ~SGTextRectangleGeometryT();
-
-    void resize(int n);
-    void setCoord(int idx, const RectF &rec);
-    void setCoord(int idx, float left, float top, float right, float buttom);
-    void setTexCoord(int idx, const RectF &rec);
-    void setTexCoord(int idx, float left, float top, float right, float buttom);
-private:
-    VertexAttributeSet attrs;
-    float vertices[48] = {
-        0.5,  0.5, 0, 1,   1.0f, 1.0f, 0.0f, 1.0f,/*topright*/
-        -0.5,  0.5, 0, 1,   0.0f, 1.0f, 0.0f, 1.0f,/*topleft*/
-        0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f,/*buttomright*/
-        -0.5, -0.5, 0, 1,   0.0f, 0.0f, 0.0f, 1.0f,/*buttomleft*/
-        - 0.5,  0.5, 0, 1,   0.0f, 1.0f, 0.0f, 1.0f,/*topleft*/
-        0.5, -0.5, 0, 1,   1.0f, 0.0f, 0.0f, 1.0f/*buttomright*/
-    };
-    size_t num = 0;
-};
-
 #endif // SGRECTANGLEGEOMETRY_H

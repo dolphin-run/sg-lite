@@ -32,8 +32,9 @@ struct Batch {
     Node *firstChild = nullptr;
     bool dirty = true;
 
-    bool text = false;
     Buffer vbo;
+
+    unsigned int degenerate : 1;
 };
 
 class BatchPool 

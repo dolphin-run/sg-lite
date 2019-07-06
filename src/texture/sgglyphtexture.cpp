@@ -105,25 +105,29 @@ unsigned SGGlyphTexture::add(const Image &img)
         m_rects.emplace(std::make_pair(keyUid, rec));
         key = keyUid++;
 
-        //write data
-        int offset = m_glyphBuf.cellHei*row*m_glyphBuf.pxWid*m_glyphBuf.pxComp;
-        int xstep = m_glyphBuf.cellWid*m_glyphBuf.pxComp*col;
-
-        char *p = (char *)m_glyphBuf.data + offset + xstep;
-        const uchar *psrc = *img.data.get();
-        for (int i = 0; i < img.height; i++)
+        if (!m_id)
         {
-            memcpy(p, psrc, img.width *m_glyphBuf.pxComp);
-            p += m_glyphBuf.pxWid*m_glyphBuf.pxComp;
-            psrc += img.width*m_glyphBuf.pxComp;
+            //write to cache
+            int offset = m_glyphBuf.cellHei*row*m_glyphBuf.pxWid*m_glyphBuf.pxComp;
+            int xstep = m_glyphBuf.cellWid*m_glyphBuf.pxComp*col;
+
+            char *p = (char *)m_glyphBuf.data + offset + xstep;
+            const uchar *psrc = img.data.get();
+            for (int i = 0; i < img.height; i++)
+            {
+                memcpy(p, psrc, img.width *m_glyphBuf.pxComp);
+                p += m_glyphBuf.pxWid*m_glyphBuf.pxComp;
+                psrc += img.width*m_glyphBuf.pxComp;
+            }
         }
-
-        //sync to 
-        if (m_id)
+        else
         {
+            //sync to gl
             QOpenGLFunctions *funcs = QOpenGLContext::currentContext()->functions();
             funcs->glBindTexture(GL_TEXTURE_2D, m_id);
-            funcs->glTexSubImage2D(GL_TEXTURE_2D, 0, m_glyphBuf.cellWid*col, m_glyphBuf.cellHei*row, img.width, img.height, GL_R8, GL_UNSIGNED_BYTE, *img.data.get());
+            funcs->glTexSubImage2D(GL_TEXTURE_2D, 0,
+                m_glyphBuf.cellWid*col, m_glyphBuf.cellHei*row,
+                img.width, img.height, GL_R8, GL_UNSIGNED_BYTE, img.data.get());
         }
     }
     return key;

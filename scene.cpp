@@ -104,7 +104,7 @@ void Scene::testAlloc()
     SGTextNode *sn = new SGTextNode(&m_root);
     sn->setX(500);
     sn->setY(500);
-    sn->setText(L"\niQgdKjABCDEFGH司马懿一心29。ik,.\"'\n\nhello");
+    sn->setText(L"\niQgdKjABCDEFGH司马懿一心29。ik,.\"'\nhello");
     //sn->setWidth(100);//auto width
 
     sn = new SGTextNode(&m_root);

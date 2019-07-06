@@ -234,7 +234,7 @@ struct Image {
     uint32_t width = 0;
     uint32_t height = 0;
     uint32_t component = 0;
-    std::shared_ptr<uint8_t *> data = nullptr;
+    std::shared_ptr<uint8_t> data = nullptr;
     E_ImageFormat format;
 };
 

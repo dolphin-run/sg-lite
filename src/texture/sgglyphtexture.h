@@ -13,8 +13,8 @@
 
 struct TexGlyphBuffer : TexBuffer
 {
-    int cellWid = 128;
-    int cellHei = 128;
+    int cellWid = 64;
+    int cellHei = 64;
 
     int sentinal = 0;//next empty cell.
     int maxRow = 0;

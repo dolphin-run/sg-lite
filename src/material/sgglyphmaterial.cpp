@@ -1,5 +1,12 @@
 #include "sgglyphmaterial.h"
-#include "../util/sgglyphtexture.h"
+#include "texture/sgglyphtexture.h"
+
+//font loader
+#include "ft2build.h"
+#include "freetype/freetype.h"
+#include "freetype/ftglyph.h"
+#include "freetype/ftoutln.h"
+#include "freetype/fttrigon.h"
 
 #include <QStandardPaths>
 
@@ -77,7 +84,7 @@ GlyphInfo GlyphLoader::loadChar(wchar_t ch)
     inf.width = m_ftFace->glyph->bitmap.width;
     inf.height = m_ftFace->glyph->bitmap.rows;
     inf.leftBearing = m_ftFace->glyph->bitmap_left;
-    inf.topBearing = WORDLOADER_WORD_PIXEL - m_ftFace->glyph->bitmap_top;
+    inf.topBearing = GLYPH_PIXEL_SIZE - m_ftFace->glyph->bitmap_top;
     inf.advance = m_ftFace->glyph->advance.x >> 6;
     inf.buffer = m_ftFace->glyph->bitmap.buffer;
 
@@ -94,7 +101,7 @@ void GlyphLoader_initialize()
 
     QString fontPath = QStandardPaths::writableLocation(QStandardPaths::FontsLocation) + "/msyh.ttc";
 
-    g_glyphLoader.load(fontPath.toLocal8Bit(), WORDLOADER_WORD_PIXEL, WORDLOADER_WORD_PIXEL);
+    g_glyphLoader.load(fontPath.toLocal8Bit(), GLYPH_PIXEL_SIZE, GLYPH_PIXEL_SIZE);
 }
 
 ///////

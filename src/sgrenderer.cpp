@@ -123,7 +123,7 @@ void SGRenderer::buildOpacityBatches()
         node->batch = 1;
 
         SGNode::E_NodeType ntype = node->gnode->type();
-        batch->text = ntype == SGNode::E_NodeType::TextNodeType;
+        batch->degenerate = node->gnode->m_geometry->renderType() == E_RenderType::E_RenderTriangleStrip;
         int nodenum = 1;
         batch->vbo.verticeNum = node->gnode->m_geometry->verticeNum();
         for (int j = i + 1; j < m_opacityNodes.size(); j++)
@@ -144,8 +144,10 @@ void SGRenderer::buildOpacityBatches()
         }
         node->next = nullptr;
 
-        if(!batch->text)
-            batch->vbo.verticeNum += (nodenum-1) * 2;
+        if (batch->degenerate)
+        {
+            batch->vbo.verticeNum += (nodenum - 1) * 2;
+        }
         batch->vbo.size = batch->vbo.verticeNum * node->gnode->m_geometry->verticeSize();
         
         batch->dirty = true;
@@ -190,7 +192,7 @@ void SGRenderer::uploadBatches()
             SGGeometry *gg = node->gnode->m_geometry;
 
             char* pdmain = pd;
-            if (node->prev && !batch->text)
+            if (node->prev && batch->degenerate)
             {
                 pdmain = pd + gg->verticeSize();
             }
@@ -204,7 +206,7 @@ void SGRenderer::uploadBatches()
                 pt->map(node->matrix);
             }
 
-            if (node->prev && !batch->text)
+            if (node->prev && batch->degenerate)
             {
                 memcpy(pd, pdmain, gg->verticeSize());
                 pd += gg->verticeSize();
@@ -213,7 +215,7 @@ void SGRenderer::uploadBatches()
 
             node = node->next;
 
-            if (node && !batch->text)
+            if (node && batch->degenerate)
             {
                 //add degenerate node
                 memcpy(pd, pd - gg->verticeSize(), gg->verticeSize());
@@ -251,9 +253,6 @@ void SGRenderer::renderBatches()
             glEnableVertexAttribArray(i);
         }
 
-        if (batch->text)
-            glDrawArrays(GL_TRIANGLES, 0, batch->vbo.verticeNum);
-        else
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, batch->vbo.verticeNum);
+        glDrawArrays(gn->m_geometry->renderType(), 0, batch->vbo.verticeNum);
     }
 }

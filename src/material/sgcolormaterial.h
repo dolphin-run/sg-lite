@@ -1,7 +1,7 @@
 #ifndef SGCOLORMATERIAL_H
 #define SGCOLORMATERIAL_H
 
-#include "../sgmaterial.h"
+#include "sgmaterial.h"
 
 class SGFlatColorMaterial : public SGMaterial
 {

@@ -1,16 +1,9 @@
 #ifndef SGGLYPHMATERIAL_H
 #define SGGLYPHMATERIAL_H
 
-#include "../sgmaterial.h"
+#include "sgmaterial.h"
 
-//font loader
-#include "ft2build.h"
-#include "freetype/freetype.h"
-#include "freetype/ftglyph.h"
-#include "freetype/ftoutln.h"
-#include "freetype/fttrigon.h"
-
-const int WORDLOADER_WORD_PIXEL = 60;
+const int GLYPH_PIXEL_SIZE = 64;
 
 struct GlyphInfo
 {

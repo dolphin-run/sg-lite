@@ -12,8 +12,8 @@ enum E_GeometryType {
 };
 
 enum E_RenderType {
-    E_RenderTriangles,
-    E_RenderTriangleStrip
+    E_RenderTriangles = 0x0004,
+    E_RenderTriangleStrip = 0x0005
 };
 
 struct VertexAsPointColor

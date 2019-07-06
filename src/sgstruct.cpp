@@ -108,6 +108,6 @@ Image::Image(uint32_t w, uint32_t h, const uint8_t * px, E_ImageFormat fmt):
         uint32_t size = width*height*component;
         uint8_t *p = (uint8_t*)malloc(size);
         memcpy(p, px, size);
-        data = std::make_shared<uint8_t*>(p);
+        data = std::shared_ptr<uint8_t>(p, free);
     }
 }

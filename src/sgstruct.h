@@ -2,6 +2,7 @@
 #define SGSTRUCT_H
 
 #include <QMatrix4x4>
+#include <QImage>
 #include <cfloat>
 #include <assert.h>
 #include <memory>
@@ -216,16 +217,25 @@ struct Color {
 };
 
 struct Image {
-    enum E_ImageFormat {Format_RGBA, Format_Alpha};
+    //       1           grey
+    //       2           grey, alpha
+    //       3           red, green, blue
+    //       4           red, green, blue, alpha
+    enum E_ImageFormat {
+        Format_Alpha = 1,
+        Format_RA,
+        Format_RGB,
+        Format_RGBA
+    };
     Image();
-    Image(uint32_t width, uint32_t height, uint8_t *data, E_ImageFormat fmt);
+    Image(uint32_t w, uint32_t h, const uint8_t *px, E_ImageFormat fmt);
 
-    bool m_valid = false;
-    uint32_t m_width = 0;
-    uint32_t m_height = 0;
-    uint32_t m_component = 0;
-    std::shared_ptr<uint8_t *> m_data = nullptr;
-    E_ImageFormat m_format;
+    bool valid = false;
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t component = 0;
+    std::shared_ptr<uint8_t *> data = nullptr;
+    E_ImageFormat format;
 };
 
 #endif // SGSTRUCT_H

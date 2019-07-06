@@ -32,6 +32,7 @@ struct Batch {
     Node *firstChild = nullptr;
     bool dirty = true;
 
+    bool text = false;
     Buffer vbo;
 };
 

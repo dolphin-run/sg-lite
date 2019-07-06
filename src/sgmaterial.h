@@ -7,7 +7,8 @@
 //define shader used to render
 enum E_MaterialType{
     FlatColorMaterialType,
-    TextureMaterialType
+    TextureMaterialType,
+    GlyphMaterialType
 };
 
 class SGMaterialShader

@@ -4,11 +4,13 @@
 
 #include <QGuiApplication>
 
-
+void GlyphLoader_initialize();
 //! [2]
 int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
+
+    GlyphLoader_initialize();
 
     QSurfaceFormat format;
     format.setSamples(16);

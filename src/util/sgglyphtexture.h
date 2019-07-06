@@ -34,6 +34,7 @@ public:
     virtual int textureId() const override;
     virtual Size size() const override;
     virtual unsigned add(const char* filename) override;
+    unsigned add(const Image &img);
 
 protected:
 

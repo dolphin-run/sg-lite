@@ -1,6 +1,7 @@
 #include "sggeometry.h"
 
-SGGeometry::SGGeometry()
+SGGeometry::SGGeometry(E_RenderType type):
+    m_rtype(type)
 {
 
 }

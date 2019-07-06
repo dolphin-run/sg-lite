@@ -3,6 +3,7 @@
 //test
 #include "src/node/sgrectanglenode.h"
 #include "src/node/sgcircularnode.h"
+#include "src/node/sgtextnode.h"
 #include <QTimerEvent>
 
 int timer1 = 0;
@@ -22,8 +23,11 @@ void Scene::timerEvent(QTimerEvent * event)
     {
         for (auto it : m_nodes)
         {
-            it->setWidth(100 + (it->width() + 1) % 100);
-            it->setHeight(100 + (it->width() + 1) % 100);
+            if (it->type() != SGNode::E_NodeType::TextNodeType)
+            {
+                it->setWidth(100 + (it->width() + 1) % 100);
+                it->setHeight(100 + (it->width() + 1) % 100);
+            }
         }
     }
     else if (timer2 == id)
@@ -96,4 +100,16 @@ void Scene::testAlloc()
         this->addItem(sn);
         m_nodes.append(sn);
     }
+    
+    SGTextNode *sn = new SGTextNode(&m_root);
+    sn->setX(500);
+    sn->setY(500);
+    sn->setText(L"\niQgdKjABCDEFGH司马懿一心29。ik,.\"'\n\nhello");
+    //sn->setWidth(100);//auto width
+
+    sn = new SGTextNode(&m_root);
+    sn->setX(100);
+    sn->setY(850);
+    sn->setText(L"idaeswhjfrewfew");
+
 }

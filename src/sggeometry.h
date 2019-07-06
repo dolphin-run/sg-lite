@@ -11,6 +11,11 @@ enum E_GeometryType {
     ColorRectangleGeometryType
 };
 
+enum E_RenderType {
+    E_RenderTriangles,
+    E_RenderTriangleStrip
+};
+
 struct VertexAsPointColor
 {
     float x, y, z, w;
@@ -44,7 +49,7 @@ struct VertexAttributeSet
 class SGGeometry
 {
 public:
-    SGGeometry();
+    SGGeometry(E_RenderType type);
     virtual ~SGGeometry();
     VertexAsPointColor* dataAsPointColor();
     VertexAsPointTexture* dataAsPointTexture(size_t offset = 0);
@@ -54,10 +59,12 @@ public:
     inline int size() { return m_attrs->size; }
     inline int verticeSize() { return m_attrs->vsize; }
     inline int verticeNum() { return m_attrs->vnum; }
+    inline E_RenderType renderType() { return m_rtype; }
 
 protected:
     const VertexAttributeSet *m_attrs = nullptr;
     void *m_data;
+    E_RenderType m_rtype;
 };
 
 #endif // SGGEOMETRY_H

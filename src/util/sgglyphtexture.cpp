@@ -1,7 +1,5 @@
 #include "sgglyphtexture.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 
@@ -49,9 +47,13 @@ void SGGlyphTexture::bind()
         funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_texBuffer->pxWid, m_texBuffer->pxHei
-            , 0, GL_RGBA, GL_UNSIGNED_BYTE, m_texBuffer->data);
+        funcs->glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_texBuffer->pxWid, m_texBuffer->pxHei
+            , 0, GL_RED, GL_UNSIGNED_BYTE, m_texBuffer->data);
         funcs->glGenerateMipmap(GL_TEXTURE_2D);
+
+        //Qt debug
+        //QImage img((uchar*)m_texBuffer->data, m_texBuffer->pxWid, m_texBuffer->pxHei, QImage::Format::Format_Alpha8);
+        //img.save("img.png");
     }
     else
     {
@@ -72,6 +74,13 @@ Size SGGlyphTexture::size() const
 
 unsigned SGGlyphTexture::add(const char * filename)
 {
+    assert(false);
+    
+    return 0;
+}
+
+unsigned SGGlyphTexture::add(const Image &img)
+{
     int col = m_glyphBuf.sentinal % m_glyphBuf.maxCol;
     int row = m_glyphBuf.sentinal / m_glyphBuf.maxCol;
     if (row >= m_glyphBuf.maxRow)
@@ -80,28 +89,18 @@ unsigned SGGlyphTexture::add(const char * filename)
         return 0;
     }
 
-    int x=0, y=0, n=0;
-    //stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
-    if (!data)
-    {
-        printf("image open failed...[%s]\n", filename);
-        return 0;
-    }
-    
+
     int key = 0;
-    if (n == m_glyphBuf.pxComp && x <= m_glyphBuf.cellWid && y <= m_glyphBuf.cellHei)
+    if (img.format == m_glyphBuf.pxComp && img.width <= m_glyphBuf.cellWid && img.height <= m_glyphBuf.cellHei)
     {
         //write data and move sentinel to next;
         m_glyphBuf.sentinal++;
 
-        RectF rec;// (0, 0, 0.1, 0.2);
-        rec.set(
-            col / float(m_glyphBuf.maxCol),
-            row / float(m_glyphBuf.maxRow),
-            (col + 1) / float(m_glyphBuf.maxCol),
-            (row + 1) / float(m_glyphBuf.maxRow)
-        );
+        float rleft = col / float(m_glyphBuf.maxCol);
+        float rwid = float(img.width) / m_glyphBuf.pxWid;
+        float rtop = row / float(m_glyphBuf.maxRow);
+        float rhei = float(img.height) / m_glyphBuf.pxHei;
+        RectF rec(rleft, rtop, rwid, rhei);
 
         m_rects.emplace(std::make_pair(keyUid, rec));
         key = keyUid++;
@@ -111,12 +110,12 @@ unsigned SGGlyphTexture::add(const char * filename)
         int xstep = m_glyphBuf.cellWid*m_glyphBuf.pxComp*col;
 
         char *p = (char *)m_glyphBuf.data + offset + xstep;
-        uchar *psrc = data;
-        for (int i = 0; i < y; i++)
+        const uchar *psrc = *img.data.get();
+        for (int i = 0; i < img.height; i++)
         {
-            memcpy(p, psrc, x*4);
+            memcpy(p, psrc, img.width *m_glyphBuf.pxComp);
             p += m_glyphBuf.pxWid*m_glyphBuf.pxComp;
-            psrc += m_glyphBuf.cellWid*m_glyphBuf.pxComp;
+            psrc += img.width*m_glyphBuf.pxComp;
         }
 
         //sync to 
@@ -124,13 +123,8 @@ unsigned SGGlyphTexture::add(const char * filename)
         {
             QOpenGLFunctions *funcs = QOpenGLContext::currentContext()->functions();
             funcs->glBindTexture(GL_TEXTURE_2D, m_id);
-            funcs->glTexSubImage2D(GL_TEXTURE_2D, 0, m_glyphBuf.cellWid*col, m_glyphBuf.cellHei*row, x, y, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            funcs->glTexSubImage2D(GL_TEXTURE_2D, 0, m_glyphBuf.cellWid*col, m_glyphBuf.cellHei*row, img.width, img.height, GL_R8, GL_UNSIGNED_BYTE, *img.data.get());
         }
     }
-    else
-    {
-        printf("image illegal...[%s]\n", filename);
-    }
-    stbi_image_free(data);
     return key;
 }

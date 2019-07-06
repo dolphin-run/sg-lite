@@ -84,30 +84,30 @@ Color Color::random()
 
 Image::Image() {}
 
-Image::Image(uint32_t width, uint32_t height, uint8_t * data, E_ImageFormat fmt):
-    m_width(width),
-    m_height(height),
-    m_format(fmt),
-    m_valid(true)
+Image::Image(uint32_t w, uint32_t h, const uint8_t * px, E_ImageFormat fmt):
+    width(w),
+    height(h),
+    format(fmt),
+    valid(true)
 {
     switch (fmt)
     {
     case Image::Format_RGBA:
-        m_component = 4;
+        component = 4;
         break;
     case Image::Format_Alpha:
-        m_component = 1;
+        component = 1;
         break;
     default:
-        m_valid = false;
+        valid = false;
         break;
     }
 
-    if (m_valid)
+    if (valid)
     {
-        uint32_t size = m_width*m_height*m_component;
+        uint32_t size = width*height*component;
         uint8_t *p = (uint8_t*)malloc(size);
-        memcpy(p, data, size);
-        //m_data = std::shared_ptr<uint8_t *>(p);
+        memcpy(p, px, size);
+        data = std::make_shared<uint8_t*>(p);
     }
 }

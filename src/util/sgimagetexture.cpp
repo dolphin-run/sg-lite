@@ -114,7 +114,7 @@ unsigned SGImageTexture::add(const char * filename)
         uchar *psrc = data;
         for (int i = 0; i < y; i++)
         {
-            memcpy(p, psrc, x*4);
+            memcpy(p, psrc, x*m_imgBuf.pxComp);
             p += m_imgBuf.pxWid*m_imgBuf.pxComp;
             psrc += m_imgBuf.cellWid*m_imgBuf.pxComp;
         }

@@ -16,6 +16,7 @@ public:
         RectangleNodeType,
         CircularNodeType,
         ImageNodeType,
+        TextNodeType,
         UndefinedNodeType
     };
     enum E_DirtyType {

@@ -37,7 +37,8 @@ struct CircularMesh
     }
 };
 
-SGCircularGeometry::SGCircularGeometry()
+SGCircularGeometry::SGCircularGeometry():
+    SGGeometry(E_RenderTriangleStrip)
 {
     static CircularMesh mesh;
 

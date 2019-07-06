@@ -123,7 +123,9 @@ void SGRenderer::buildOpacityBatches()
         node->batch = 1;
 
         SGNode::E_NodeType ntype = node->gnode->type();
+        batch->text = ntype == SGNode::E_NodeType::TextNodeType;
         int nodenum = 1;
+        batch->vbo.verticeNum = node->gnode->m_geometry->verticeNum();
         for (int j = i + 1; j < m_opacityNodes.size(); j++)
         {
             Node *nj = m_opacityNodes[j];
@@ -135,13 +137,15 @@ void SGRenderer::buildOpacityBatches()
             node->next = nj;
             nj->prev = node;
             nj->batch = 1;
+            batch->vbo.verticeNum += nj->gnode->m_geometry->verticeNum();
 
             node = nj;
             nodenum++;
         }
         node->next = nullptr;
 
-        batch->vbo.verticeNum = nodenum * node->gnode->m_geometry->verticeNum() + (nodenum-1) * 2;
+        if(!batch->text)
+            batch->vbo.verticeNum += (nodenum-1) * 2;
         batch->vbo.size = batch->vbo.verticeNum * node->gnode->m_geometry->verticeSize();
         
         batch->dirty = true;
@@ -186,7 +190,7 @@ void SGRenderer::uploadBatches()
             SGGeometry *gg = node->gnode->m_geometry;
 
             char* pdmain = pd;
-            if (node->prev)
+            if (node->prev && !batch->text)
             {
                 pdmain = pd + gg->verticeSize();
             }
@@ -200,7 +204,7 @@ void SGRenderer::uploadBatches()
                 pt->map(node->matrix);
             }
 
-            if (node->prev)
+            if (node->prev && !batch->text)
             {
                 memcpy(pd, pdmain, gg->verticeSize());
                 pd += gg->verticeSize();
@@ -209,7 +213,7 @@ void SGRenderer::uploadBatches()
 
             node = node->next;
 
-            if (node)
+            if (node && !batch->text)
             {
                 //add degenerate node
                 memcpy(pd, pd - gg->verticeSize(), gg->verticeSize());
@@ -247,7 +251,9 @@ void SGRenderer::renderBatches()
             glEnableVertexAttribArray(i);
         }
 
-
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, batch->vbo.verticeNum);
+        if (batch->text)
+            glDrawArrays(GL_TRIANGLES, 0, batch->vbo.verticeNum);
+        else
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, batch->vbo.verticeNum);
     }
 }

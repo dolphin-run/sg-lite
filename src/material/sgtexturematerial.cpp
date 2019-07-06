@@ -80,12 +80,10 @@ const RectF& SGTextureMaterial::setImage(const char * path)
     }
     else
     {
+        //come new image
         uid = g_imgTex.add(path);
-    }
 
-    if (uid)
-    {
-        //only add valid file to map
+        //update cache
         g_nameMapToKey.emplace(std::make_pair(path, uid));
     }
 

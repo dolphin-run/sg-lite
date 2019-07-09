@@ -18,6 +18,17 @@ struct Node {
 
     QMatrix4x4 matrix;
     unsigned batch : 1;
+    unsigned visible : 1;
+
+    //absolute properties according to the scene.
+    int x;
+    int y;
+    float z;
+    int width;
+    int height;
+    float opacity;
+
+    RectF bounding;
 };
 
 struct Buffer {
@@ -75,31 +86,39 @@ public:
     virtual void initializeGL();
 
     void sync(const SGRootNode *root);
-    void syncGnode(const SGNode *node);
+    void syncGnode(const SGNode *node, Node *p);
     virtual void render();
 
 protected:
-    void selectRenderNodes();
+    void selectRenderNodes(const SGNode *node);
     void buildOpacityBatches();
+    void buildAlphaBatches();
 
     void map(Buffer *buffer);
     void unmap(Buffer *buffer);
 
-    void uploadBatches();
-    void renderBatches();
+    void uploadBatches(Batch *batch);
+    void renderOpacityBatches();
+    void renderAlphaBatches();
+    void renderBatch(Batch *batch);
+
+    bool checkOverlap(int first, int last, const RectF &bounds);
 
 protected:
     BatchPool m_batchPool;
     std::vector<char> m_mapMemoryCache;
-    std::list<Batch *> m_opaqueBatches;
-    std::list<Batch *> m_alphaBatches;
+    std::vector<Batch *> m_opaqueBatches;
+    std::vector<Batch *> m_alphaBatches;
     std::vector<Node*> m_opacityNodes;
     std::vector<Node*> m_alphaNodes;
     std::unordered_map<const SGNode*, Node*> m_mapNodes;
+    const SGRootNode *m_rootNode;
 
     SGShaderManager m_shrMgr;
 
     SGView *m_view = nullptr;
+
+    int m_zRenderOrder;
 };
 
 #endif // SGRENDERER_H

@@ -11,7 +11,7 @@ public:
 
     void addItem(SGNode *item);
 
-protected:
+private:
     SGRootNode m_root;
 
     int m_width = 1920;

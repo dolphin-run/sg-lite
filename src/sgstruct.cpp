@@ -76,10 +76,10 @@ void RectF::map(const QMatrix4x4 & matrix)
 
 Color Color::random()
 {
-    unsigned char r = rand() % 256;
-    unsigned char g = rand() % 256;
-    unsigned char b = rand() % 256;
-    return Color(r, g, b);
+    unsigned char r = rand() % 250;
+    unsigned char g = rand() % 250;
+    unsigned char b = rand() % 250;
+    return Color(r + 6, g + 6, b + 6);
 }
 
 Image::Image() {}

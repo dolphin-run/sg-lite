@@ -27,6 +27,7 @@ struct Node {
     int width;
     int height;
     float opacity;
+    float degree;
 
     RectF bounding;
 };
@@ -48,10 +49,11 @@ struct Batch {
     unsigned int degenerate : 1;
 };
 
-class BatchPool 
+template<typename Type>
+class AllocPool 
 {
 public:
-    Batch* alloc() {
+    Type* alloc() {
         if (pool.size())
         {
             auto it = pool.back();
@@ -60,15 +62,15 @@ public:
         }
         else
         {
-            return new Batch;
+            return new Type;
         }
     }
-    void free(Batch *p) {
+    void free(Type *p) {
         pool.push_back(p);
     }
 
 private:
-    std::vector<Batch*> pool;
+    std::vector<Type*> pool;
 };
 
 class SGShaderManager
@@ -105,7 +107,8 @@ protected:
     bool checkOverlap(int first, int last, const RectF &bounds);
 
 protected:
-    BatchPool m_batchPool;
+    AllocPool<Batch> m_batchPool;
+    AllocPool<Node> m_nodePool;
     std::vector<char> m_mapMemoryCache;
     std::vector<Batch *> m_opaqueBatches;
     std::vector<Batch *> m_alphaBatches;

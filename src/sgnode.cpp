@@ -66,6 +66,11 @@ float SGNode::opactity() const
     return m_opacity;
 }
 
+float SGNode::rotation() const
+{
+    return m_rotation;
+}
+
 bool SGNode::visible() const
 {
     return m_visible;
@@ -104,6 +109,11 @@ void SGNode::setHeight(int height)
 void SGNode::setOpactity(float opacity)
 {
     m_opacity = opacity;
+}
+
+void SGNode::setRotation(float rotation)
+{
+    m_rotation = rotation;
 }
 
 void SGNode::setVisible(bool visible)

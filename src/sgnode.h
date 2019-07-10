@@ -35,6 +35,7 @@ public:
     int width()const;
     int height()const;
     float opactity()const;
+    float rotation()const;
     bool visible()const;
     void setX(int x);
     void setY(int y);
@@ -42,6 +43,7 @@ public:
     void setWidth(int width);
     void setHeight(int height);
     void setOpactity(float opacity);
+    void setRotation(float rotation);
     void setVisible(bool visible = true);
 
 protected:
@@ -55,6 +57,7 @@ protected:
 
     float m_opacity = 1.f;
     float m_scale = 1.f;
+    float m_rotation = 0.f;
     bool m_visible = true;
 
     SGNode* m_parent = nullptr;

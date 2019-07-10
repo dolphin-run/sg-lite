@@ -2,6 +2,7 @@
 #include "node/sgcircularnode.h"
 #include "node/sgrectanglenode.h"
 #include "sgview.h"
+#include <glm/glm.hpp>
 
 
 void Node::renderProcessor()
@@ -15,6 +16,7 @@ void Node::updateMatrix()
     {
         matrix.setToIdentity();
         matrix.translate(x + width / 2, y + height / 2);
+        matrix.rotate(degree, 0, 0, -1);
         matrix.scale(width, height);
 
         gnode->m_dirty = 0;
@@ -53,35 +55,43 @@ void SGRenderer::initializeGL()
 void SGRenderer::sync(const SGRootNode *root)
 {
     m_rootNode = root;
-    m_zRenderOrder = 1;
-    Node *c = new Node; c->gnode = root;
-    c->opacity = 1.f;
-    c->x = 0;
-    c->y = 0;
 
-    auto children = root->m_children;
-    children.sort([](const SGNode *lop, const SGNode *rop) {
-        return lop->z() < rop->z();
-    });
-
-    for (auto itm : children)
-        syncGnode(itm, c);
+    //m_zRenderOrder = 1;
+    //syncGnode(m_rootNode, nullptr);
 }
 
 void SGRenderer::syncGnode(const SGNode * node, Node *p)
 {
     if (!node->m_visible) return;
 
-    Node *c = new Node; c->gnode = node;
-    c->opacity = p->opacity*node->m_opacity;
-    c->x = p->x + node->m_x;
-    c->y = p->y + node->m_y;
-    c->z = m_zRenderOrder++ / 1000.f;
+    Node *c = nullptr;
+    if (!m_mapNodes.count(node))
+    {
+        c = m_nodePool.alloc(); c->gnode = node;
+        m_mapNodes.insert(std::make_pair(node, c));
+    }
+    else
+    {
+        c = m_mapNodes.at(node);
+    }
+
+    if (p)
+    {
+        c->opacity = p->opacity*node->m_opacity;
+        c->x = p->x + node->m_x;
+        c->y = p->y + node->m_y;
+    }
+    else
+    {
+        c->opacity = node->m_opacity;
+        c->x = node->m_x;
+        c->y = node->m_y;
+    }
+    c->z = m_zRenderOrder++ / 10000.f;
     c->width = node->m_width;
     c->height = node->m_height;
+    c->degree = glm::degrees(node->m_rotation);
     c->bounding = RectF(c->x, c->y, c->width, c->height);
-
-    m_mapNodes.insert(std::make_pair(node, c));
 
     auto children = node->m_children;
     children.sort([](const SGNode *lop, const SGNode *rop) {
@@ -95,6 +105,9 @@ void SGRenderer::syncGnode(const SGNode * node, Node *p)
 
 void SGRenderer::render()
 {
+    m_zRenderOrder = 1;
+    syncGnode(m_rootNode, nullptr);
+
     m_opacityNodes.clear();
     m_alphaNodes.clear(); 
     selectRenderNodes(m_rootNode);

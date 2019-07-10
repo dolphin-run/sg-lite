@@ -1,6 +1,7 @@
 
 #include "src/sgview.h"
 #include "scene.h"
+//#include "scenefantacy.h"
 
 #include <QGuiApplication>
 

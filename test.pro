@@ -16,8 +16,6 @@ INCLUDEPATH += $$PWD/src
 
 CONFIG -= flat
 
-HEADERS += scene.h
+HEADERS += scene.h scenefantacy.h
 
-SOURCES += \
-    scene.cpp \
-    main.cpp
+SOURCES += main.cpp scene.cpp scenefantacy.cpp

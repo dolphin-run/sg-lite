@@ -17,9 +17,10 @@ SOURCES += \
     $$PWD/node/sgrectanglenode.cpp \
     $$PWD/node/sgcircularnode.cpp \
     $$PWD/node/sgtextnode.cpp \
+    $$PWD/util/sgglyph.cpp \
+    $$PWD/util/glyphloader.cpp \
     $$PWD/sgtexture.cpp \
-    $$PWD/texture/sgimagetexture.cpp \
-    $$PWD/texture/sgglyphtexture.cpp \
+    $$PWD/texture/sggridimagetexture.cpp \
     $$PWD/viewinteraction.cpp
 
 HEADERS += \
@@ -38,7 +39,8 @@ HEADERS += \
     $$PWD/node/sgrectanglenode.h \
     $$PWD/node/sgcircularnode.h \
     $$PWD/node/sgtextnode.h \
+    $$PWD/util/sgglyph.h \
+    $$PWD/util/glyphloader.h \
     $$PWD/sgtexture.h \
-    $$PWD/texture/sgimagetexture.h \
-    $$PWD/texture/sgglyphtexture.h \
+    $$PWD/texture/sggridimagetexture.h \
     $$PWD/viewinteraction.h

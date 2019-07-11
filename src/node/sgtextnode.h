@@ -2,8 +2,7 @@
 #define SGTEXTNODE_H
 
 #include "sgnode.h"
-#include <list>
-#include "material/sgglyphmaterial.h"
+#include "util/sgglyph.h"
 
 class SGGlyphMaterial;
 class SGTextRectangleGeometry;

@@ -2,28 +2,7 @@
 #define SGGLYPHMATERIAL_H
 
 #include "sgmaterial.h"
-
-const int GLYPH_PIXEL_SIZE = 64;
-
-struct GlyphInfo
-{
-    wchar_t ch = 0;
-
-    int width, height;//size
-    int leftBearing, topBearing;//offset from baseline, we change the top to fit gl rendering
-    int advance;//
-
-    //only valid when loading char, we mean it...
-    const unsigned char* buffer = nullptr;
-    RectF tex;
-};
-
-struct LineRenderInfo
-{
-    std::vector<const GlyphInfo*> lineInf;
-    //int m_startHPix;
-    int width = 0;
-};
+#include "util/sgglyph.h"
 
 
 class SGTexture;

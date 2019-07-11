@@ -1,7 +1,7 @@
 
 #include "sgtextnode.h"
 #include "geometry/sgrectanglegeometry.h"
-#include "texture/sgglyphtexture.h"
+#include "material/sgglyphmaterial.h"
 
 SGTextNode::SGTextNode(SGNode * parent) :
     SGNode(E_NodeType::TextNodeType, parent)

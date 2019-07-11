@@ -221,21 +221,21 @@ struct Image {
     //       2           grey, alpha
     //       3           red, green, blue
     //       4           red, green, blue, alpha
-    enum E_ImageFormat {
+    enum ImageFormat {
         Format_Alpha = 1,
         Format_RA,
         Format_RGB,
         Format_RGBA
     };
     Image();
-    Image(uint32_t w, uint32_t h, const uint8_t *px, E_ImageFormat fmt);
+    Image(uint32_t w, uint32_t h, const uint8_t *px, ImageFormat fmt);
 
     bool valid = false;
     uint32_t width = 0;
     uint32_t height = 0;
     uint32_t component = 0;
     std::shared_ptr<uint8_t> data = nullptr;
-    E_ImageFormat format;
+    ImageFormat format;
 };
 
 #endif // SGSTRUCT_H

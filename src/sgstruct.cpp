@@ -84,7 +84,7 @@ Color Color::random()
 
 Image::Image() {}
 
-Image::Image(uint32_t w, uint32_t h, const uint8_t * px, E_ImageFormat fmt):
+Image::Image(uint32_t w, uint32_t h, const uint8_t * px, ImageFormat fmt):
     width(w),
     height(h),
     format(fmt),

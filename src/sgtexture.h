@@ -29,7 +29,7 @@ public:
     virtual int textureId() const = 0;
     virtual Size size() const = 0;
 
-    virtual unsigned add(const char* filename) = 0;
+    virtual unsigned add(const Image &img) = 0;
     const RectF& retrieve(unsigned key) const;
 
 protected:

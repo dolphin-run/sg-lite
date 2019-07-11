@@ -1,8 +1,11 @@
 #include "sgtexturematerial.h"
+#include "texture/sggridimagetexture.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 std::unordered_map<std::string, unsigned> g_nameMapToKey;
-SGImageTexture g_imgTex;
+SGGridImageTexture g_imgTex(2048, 2048, Image::Format_RGBA, 256, 256);
 
 class SGTextureMaterialShader : public SGMaterialShader
 {
@@ -81,10 +84,20 @@ const RectF& SGTextureMaterial::setImage(const char * path)
     else
     {
         //come new image
-        uid = g_imgTex.add(path);
+        int x = 0, y = 0, n = 0;
+        unsigned char *data = stbi_load(path, &x, &y, &n, 0);
+        if (!data)
+        {
+            printf("image open failed...[%s]\n", path);
+        }
+        else
+        {
+            Image img(x, y, data, (Image::ImageFormat)n);
+            uid = g_imgTex.add(img);
 
-        //update cache
-        g_nameMapToKey.emplace(std::make_pair(path, uid));
+            //update cache
+            g_nameMapToKey.emplace(std::make_pair(path, uid));
+        }
     }
 
     return g_imgTex.retrieve(uid);

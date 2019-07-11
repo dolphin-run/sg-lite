@@ -1,5 +1,5 @@
-#ifndef SGIMAGETEXTURE_H
-#define SGIMAGETEXTURE_H
+#ifndef SGGRIDIMAGETEXTURE_H
+#define SGGRIDIMAGETEXTURE_H
 #include "sgtexture.h"
 
 /*
@@ -11,7 +11,7 @@
 ** 512*512
 */
 
-struct TexImageBuffer : TexBuffer
+struct ImageGridBuffer : TexBuffer
 {
     int cellWid = 256;
     int cellHei = 256;
@@ -20,26 +20,27 @@ struct TexImageBuffer : TexBuffer
     int maxRow = 0;
     int maxCol = 0;
 
-    virtual void init(int wid, int hei, int comp) override;
+    int gl_fmt;
 };
 
-class SGImageTexture : public SGTexture
+class SGGridImageTexture : public SGTexture
 {
 public:
-    SGImageTexture();
-    ~SGImageTexture();
+    //cell limit should be removed in the future.
+    SGGridImageTexture(int pxwid, int pxhei, Image::ImageFormat pxfmt, int cellwid, int cellhei);
+    ~SGGridImageTexture();
 
     virtual void build() override;
     virtual void bind() override;
     virtual int textureId() const override;
     virtual Size size() const override;
-    virtual unsigned add(const char* filename) override;
+    virtual unsigned add(const Image &img) override;
 
 protected:
 
 protected:
-    TexImageBuffer m_imgBuf;
+    ImageGridBuffer m_imgBuf;
     unsigned m_id = 0;
 };
 
-#endif // SGIMAGETEXTURE_H
+#endif // SGGRIDIMAGETEXTURE_H

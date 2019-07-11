@@ -2,8 +2,8 @@
 #define SGTEXTUREMATERIAL_H
 
 #include "sgmaterial.h"
-#include "texture/sgimagetexture.h"
 
+class SGTexture;
 class SGTextureMaterial : public SGMaterial
 {
 public:

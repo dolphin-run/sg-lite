@@ -13,10 +13,9 @@ struct Node {
     Node *prev = nullptr;
     Node *next = nullptr;
 
-    void renderProcessor();
     void updateMatrix();
 
-    QMatrix4x4 matrix;
+    glm::mat4 matrix;
     unsigned batch : 1;
     unsigned visible : 1;
 
@@ -27,7 +26,7 @@ struct Node {
     int width;
     int height;
     float opacity;
-    float degree;
+    float rotation;
 
     RectF bounding;
 };
@@ -78,7 +77,7 @@ class SGShaderManager
 public:
     SGMaterialShader* find(SGMaterial *material);
 private:
-    std::map<E_MaterialType, SGMaterialShader*> g_ms;
+    std::map<E_MaterialType, SGMaterialShader*> m_shaders;
 };
 
 class SGRenderer : public QOpenGLFunctions

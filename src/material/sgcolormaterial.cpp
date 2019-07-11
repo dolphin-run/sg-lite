@@ -7,9 +7,9 @@ public:
     SGFlatColorMaterialShader() { build(); }
     ~SGFlatColorMaterialShader() {}
 
-    virtual void updateState(const QMatrix4x4 &projection) override
+    virtual void updateState(const glm::mat4 &projection) override
     {
-        m_program.setUniformValue(m_matrixUniform, projection);
+        m_program.setUniformValue(m_matrixUniform, glmtoqmat(projection));
     }
 
     virtual const char* vertexShader() const override

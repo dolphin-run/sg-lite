@@ -2,6 +2,7 @@
 #define SGCIRCULARGEOMETRY_H
 
 #include "sggeometry.h"
+#include <vector>
 
 class SGCircularGeometry : public SGGeometry
 {

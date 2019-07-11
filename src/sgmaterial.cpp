@@ -1,5 +1,11 @@
 #include "sgmaterial.h"
 
+QMatrix4x4 glmtoqmat(const glm::mat4 &mat)
+{
+    QMatrix4x4 qmat;
+    memcpy(qmat.data(), &mat[0][0], sizeof(mat));
+    return qmat;
+};
 
 void SGMaterialShader::compile()
 {

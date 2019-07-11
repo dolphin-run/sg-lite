@@ -13,9 +13,9 @@ public:
     SGTextureMaterialShader(const SGTextureMaterial *parent) : m_parent(parent) { build(); }
     ~SGTextureMaterialShader() {}
 
-    virtual void updateState(const QMatrix4x4 &projection) override
+    virtual void updateState(const glm::mat4 &projection) override
     {
-        m_program.setUniformValue(m_matrixUniform, projection);
+        m_program.setUniformValue(m_matrixUniform, glmtoqmat(projection));
 
         m_parent->texture()->bind();
     }

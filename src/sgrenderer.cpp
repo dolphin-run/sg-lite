@@ -1,23 +1,21 @@
 #include "sgrenderer.h"
-#include "node/sgcircularnode.h"
-#include "node/sgrectanglenode.h"
 #include "sgview.h"
-#include <glm/glm.hpp>
 
 
-void Node::renderProcessor()
-{
-    //rx = 
-}
 
 void Node::updateMatrix()
 {
     if (gnode->m_dirty)
     {
-        matrix.setToIdentity();
-        matrix.translate(x + width / 2, y + height / 2);
-        matrix.rotate(degree, 0, 0, -1);
-        matrix.scale(width, height);
+        //matrix.setToIdentity();
+        //matrix.translate(x + width / 2, y + height / 2);
+        //matrix.rotate(degree, 0, 0, -1);
+        //matrix.scale(width, height);
+
+        matrix = glm::mat4();
+        matrix = glm::translate(matrix, glm::vec3(x + width / 2, y + height / 2, 0));
+        matrix = glm::rotate(matrix, rotation, glm::vec3(0, 0, -1));
+        matrix = glm::scale(matrix, glm::vec3(width, height, 1));
 
         gnode->m_dirty = 0;
     }
@@ -26,7 +24,7 @@ void Node::updateMatrix()
 SGMaterialShader * SGShaderManager::find(SGMaterial *material)
 {
     E_MaterialType type = material->type();
-    if (g_ms.count(type)) return g_ms[type];
+    if (m_shaders.count(type)) return m_shaders[type];
 
     SGMaterialShader *shader = material->createShader();
 
@@ -37,7 +35,7 @@ SGMaterialShader * SGShaderManager::find(SGMaterial *material)
             p->bindAttributeLocation(attr[i], i);
     }
     
-    g_ms.insert(std::make_pair(type, shader));
+    m_shaders.insert(std::make_pair(type, shader));
     return shader;
 }
 
@@ -90,7 +88,7 @@ void SGRenderer::syncGnode(const SGNode * node, Node *p)
     c->z = m_zRenderOrder++ / 10000.f;
     c->width = node->m_width;
     c->height = node->m_height;
-    c->degree = glm::degrees(node->m_rotation);
+    c->rotation = node->m_rotation;
     c->bounding = RectF(c->x, c->y, c->width, c->height);
 
     auto children = node->m_children;

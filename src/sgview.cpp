@@ -38,7 +38,7 @@ const Rect & SGView::viewRect() const
     return m_viewPortRect;
 }
 
-const QMatrix4x4 & SGView::transform() const
+const glm::mat4 & SGView::transform() const
 {
     return m_viewTransform;
 }
@@ -105,8 +105,7 @@ void SGView::updateViewRect()
     m_viewPortRect = Rect(0, 0, swid, shei);
     Point oldc = m_viewPortRect.center();
     m_viewPortRect.move(m_viewPortCenter - oldc);
-    m_viewTransform.setToIdentity();
-    m_viewTransform.ortho(m_viewPortRect.tl.x, m_viewPortRect.br.x, m_viewPortRect.br.y, m_viewPortRect.tl.y, -1, 1);
+    m_viewTransform = glm::ortho(float(m_viewPortRect.tl.x), float(m_viewPortRect.br.x), float(m_viewPortRect.br.y), float(m_viewPortRect.tl.y), -1.f, 1.f);
 }
 
 void SGView::render()

@@ -2,6 +2,7 @@
 #define SGGLYPH_H
 
 #include "sgstruct.h"
+#include <vector>
 
 const int GLYPH_PIXEL_SIZE = 64;
 

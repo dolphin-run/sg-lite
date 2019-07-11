@@ -1,7 +1,7 @@
 
 #include "src/sgview.h"
 #include "scene.h"
-//#include "scenefantacy.h"
+#include "scenefantacy.h"
 
 #include <QGuiApplication>
 
@@ -13,6 +13,7 @@ int main(int argc, char **argv)
     QSurfaceFormat format;
     format.setSamples(16);
 
+    //SceneFantacy scene;
     Scene scene;
     
     SGView window;

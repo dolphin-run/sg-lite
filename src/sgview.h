@@ -17,7 +17,7 @@ public:
 
     void setScene(SGScene *scene);
     const Rect &viewRect() const;
-    const QMatrix4x4 &transform() const;
+    const glm::mat4 &transform() const;
     void CameraMove(int x, int y);
     void CameraScale(bool zoom);
 
@@ -30,7 +30,7 @@ protected:
     void updateViewRect();
 
 protected:
-    virtual void render();
+    void render();
 
     virtual bool event(QEvent *event) override;
     virtual void resizeEvent(QResizeEvent *event) override;
@@ -46,7 +46,7 @@ private:
     float m_viewPortScale = 1.0;
     Rect m_viewPortRect;//dummy by view port's center&scale and viewWidth&viewHeight
 
-    QMatrix4x4 m_viewTransform;
+    glm::mat4 m_viewTransform;
     ViewInteraction *m_pUserInteraction;
 };
 

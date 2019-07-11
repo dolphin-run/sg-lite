@@ -2,6 +2,7 @@
 #define SGMATERIAL_H
 
 #include <QOpenGLShaderProgram>
+#include <qmatrix4x4.h>
 #include "sgstruct.h"
 
 //define shader used to render
@@ -11,12 +12,14 @@ enum E_MaterialType{
     GlyphMaterialType
 };
 
+QMatrix4x4 glmtoqmat(const glm::mat4 &mat);
+
 class SGMaterialShader
 {
 public:
     SGMaterialShader() {}
     virtual ~SGMaterialShader() {}
-    virtual void updateState(const QMatrix4x4 &projection) {}
+    virtual void updateState(const glm::mat4 &projection) = 0;
     virtual char const* const* attributeNames() const = 0;
     inline QOpenGLShaderProgram *program() { return &m_program; }
 protected:

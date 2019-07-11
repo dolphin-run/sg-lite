@@ -1,20 +1,20 @@
 #ifndef SGSTRUCT_H
 #define SGSTRUCT_H
 
-#include <QMatrix4x4>
-#include <QImage>
 #include <cfloat>
 #include <assert.h>
 #include <memory>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 struct Point {
     int x, y;
 
-    void map(const QMatrix4x4 &mat) {
+    void map(const glm::mat4 &m) {
         Point r;
-        const float *m = mat.constData();
-        r.x = x * m[0] + y * m[4] + m[12];
-        r.y = x * m[1] + y * m[5] + m[13];
+        r.x = x * m[0][0] + y * m[1][0] + m[3][0];
+        r.y = x * m[0][1] + y * m[1][1] + m[3][1];
         x = r.x;
         y = r.y;
     }
@@ -35,11 +35,10 @@ struct Point {
 struct PointF {
     float x, y;
 
-    void map(const QMatrix4x4 &mat) {
+    void map(const glm::mat4 &m) {
         PointF r;
-        const float *m = mat.constData();
-        r.x = x * m[0] + y * m[4] + m[12];
-        r.y = x * m[1] + y * m[5] + m[13];
+        r.x = x * m[0][0] + y * m[1][0] + m[3][0];
+        r.y = x * m[0][1] + y * m[1][1] + m[3][1];
         x = r.x;
         y = r.y;
     }
@@ -114,7 +113,7 @@ struct Rect {
             br.y = r.br.y;
     }
 
-    void map(const QMatrix4x4 &m);
+    //void map(const glm::mat4 &m);
 
     void set(int left, int top, int right, int bottom) {
         tl.set(left, top);
@@ -180,7 +179,7 @@ struct RectF {
             br.y = r.br.y;
     }
 
-    void map(const QMatrix4x4 &m);
+    //void map(const glm::mat4 &m);
 
     void set(float left, float top, float right, float bottom) {
         tl.set(left, top);

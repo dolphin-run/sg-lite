@@ -1,7 +1,7 @@
 #include "sgrenderer.h"
 #include "sgview.h"
 
-
+#include <glad/glad.h>
 
 void Node::updateMatrix()
 {
@@ -28,7 +28,7 @@ SGMaterialShader * SGShaderManager::find(SGMaterial *material)
 
     SGMaterialShader *shader = material->createShader();
 
-    QOpenGLShaderProgram *p = shader->program();
+    GLShaderProgram *p = shader->program();
     char const *const *attr = shader->attributeNames();
     for (int i = 0; attr[i]; ++i) {
         if (*attr[i])
@@ -47,7 +47,16 @@ SGRenderer::SGRenderer(SGView *view) :
 
 void SGRenderer::initializeGL()
 {
-    initializeOpenGLFunctions();
+    //initializeOpenGLFunctions();
+
+
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
+    int ret = gladLoadGL();
+    if (!ret)
+    {
+        printf("Failed to initialize GLAD\n");
+    }
 }
 
 void SGRenderer::sync(const SGRootNode *root)
@@ -358,7 +367,7 @@ void SGRenderer::uploadBatches(Batch *batch)
 
 void SGRenderer::renderOpacityBatches()
 {
-    glClearDepthf(1); // calls glClearDepth() under the hood for desktop OpenGL
+    //glClearDepthf(1); // calls glClearDepth() under the hood for desktop OpenGL
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthMask(true);
@@ -403,7 +412,7 @@ void SGRenderer::renderBatch(Batch * batch)
 
     SGMaterialShader *shader = m_shrMgr.find(gn->m_material);
 
-    bool ret = shader->program()->bind();
+    shader->program()->bind();
 
     shader->updateState(m_view->sceneTransform());
 

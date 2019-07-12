@@ -1,7 +1,6 @@
 #ifndef SGRENDERER_H
 #define SGRENDERER_H
 
-#include <QOpenGLFunctions>
 #include "sgnode.h"
 #include <list>
 #include <unordered_map>
@@ -80,7 +79,7 @@ private:
     std::map<E_MaterialType, SGMaterialShader*> m_shaders;
 };
 
-class SGRenderer : public QOpenGLFunctions
+class SGRenderer
 {
 public:
     SGRenderer(SGView *view);

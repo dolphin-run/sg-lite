@@ -49,7 +49,7 @@ void SGTextNode::setText(const std::wstring & txt)
     for (auto line : m_glyphLines)
     {
         chnum += line.lineInf.size();
-        boundingWidth = std::max(boundingWidth, line.width);
+        boundingWidth = max(boundingWidth, line.width);
     }
 
     m_textGeometry->resize(chnum);

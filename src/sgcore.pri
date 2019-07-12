@@ -19,8 +19,10 @@ SOURCES += \
     $$PWD/node/sgtextnode.cpp \
     $$PWD/util/sgglyph.cpp \
     $$PWD/util/glyphloader.cpp \
+    $$PWD/util/glshaderprogram.cpp \
     $$PWD/sgtexture.cpp \
-    $$PWD/texture/sggridimagetexture.cpp
+    $$PWD/texture/sggridimagetexture.cpp\
+    $$PWD/common/glad/glad.c
 
 HEADERS += \
     $$PWD/sgnode.h \
@@ -40,5 +42,6 @@ HEADERS += \
     $$PWD/node/sgtextnode.h \
     $$PWD/util/sgglyph.h \
     $$PWD/util/glyphloader.h \
+    $$PWD/util/glshaderprogram.h \
     $$PWD/sgtexture.h \
     $$PWD/texture/sggridimagetexture.h

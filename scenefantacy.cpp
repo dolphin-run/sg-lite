@@ -28,12 +28,12 @@ static Square g_root;
 static void initRoot()
 {
     g_root.generation = 0;
-    g_root.size = 400;
+    g_root.size = 200;
     g_root.rotation = 0.f;
-    g_root.p[0] = glm::vec2(960 - g_root.size / 2, 1380);
-    g_root.p[1] = glm::vec2(960 + g_root.size / 2, 1380);
-    g_root.p[2] = glm::vec2(960 + g_root.size / 2, 1380 - g_root.size);
-    g_root.p[3] = glm::vec2(960 - g_root.size / 2, 1380 - g_root.size);
+    g_root.p[0] = glm::vec2(960 - g_root.size / 2, 980);
+    g_root.p[1] = glm::vec2(960 + g_root.size / 2, 980);
+    g_root.p[2] = glm::vec2(960 + g_root.size / 2, 980 - g_root.size);
+    g_root.p[3] = glm::vec2(960 - g_root.size / 2, 980 - g_root.size);
     g_root.center = (g_root.p[0] + g_root.p[2]) / 2.f;
 }
 

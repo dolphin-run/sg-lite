@@ -9,15 +9,15 @@ public:
 
     virtual void updateState(const glm::mat4 &projection) override
     {
-        m_program.setUniformValue(m_matrixUniform, glmtoqmat(projection));
+        m_program.setMat4(m_matrixUniform, projection);
     }
 
     virtual const char* vertexShader() const override
     {
-        return  "attribute highp vec4 posAttr;\n"
-            "attribute lowp vec4 colAttr;\n"
-            "varying lowp vec4 col;\n"
-            "uniform highp mat4 matrix;\n"
+        return  "attribute vec4 posAttr;\n"
+            "attribute vec4 colAttr;\n"
+            "varying vec4 col;\n"
+            "uniform mat4 matrix;\n"
             "void main() {\n"
             "   col = colAttr;\n"
             "   gl_Position = matrix * posAttr;\n"
@@ -26,7 +26,7 @@ public:
 
     virtual const char* fragmentShader() const override
     {
-        return  "varying lowp vec4 col;\n"
+        return  "varying vec4 col;\n"
             "void main() {\n"
             "   gl_FragColor = col;\n"
             "}\n";

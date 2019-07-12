@@ -1,7 +1,7 @@
 #ifndef SGMATERIAL_H
 #define SGMATERIAL_H
 
-#include <QOpenGLShaderProgram>
+#include "util/glshaderprogram.h"
 #include <qmatrix4x4.h>
 #include "sgstruct.h"
 
@@ -21,13 +21,13 @@ public:
     virtual ~SGMaterialShader() {}
     virtual void updateState(const glm::mat4 &projection) = 0;
     virtual char const* const* attributeNames() const = 0;
-    inline QOpenGLShaderProgram *program() { return &m_program; }
+    inline GLShaderProgram *program() { return &m_program; }
 protected:
     virtual void compile();
     virtual const char *vertexShader() const = 0;
     virtual const char *fragmentShader() const = 0;
 protected:
-    QOpenGLShaderProgram m_program;
+    GLShaderProgram m_program;
 };
 
 class SGMaterial

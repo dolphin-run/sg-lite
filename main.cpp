@@ -1,5 +1,5 @@
 
-#include "src/sgview.h"
+#include "view.h"
 #include "scene.h"
 #include "scenefantacy.h"
 
@@ -16,12 +16,11 @@ int main(int argc, char **argv)
     //SceneFantacy scene;
     Scene scene;
     
-    SGView window;
-    window.setScene(&scene);
+    View window;
+    window.attach(&scene);
     window.setFormat(format);
-    window.resize(640, 480);
-    window.initialize();
-    window.show();
+    window.setMinimumSize(QSize(640, 480));
+    window.showMaximized();
 
     return app.exec();
 }

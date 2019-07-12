@@ -20,8 +20,7 @@ SOURCES += \
     $$PWD/util/sgglyph.cpp \
     $$PWD/util/glyphloader.cpp \
     $$PWD/sgtexture.cpp \
-    $$PWD/texture/sggridimagetexture.cpp \
-    $$PWD/viewinteraction.cpp
+    $$PWD/texture/sggridimagetexture.cpp
 
 HEADERS += \
     $$PWD/sgnode.h \
@@ -42,5 +41,4 @@ HEADERS += \
     $$PWD/util/sgglyph.h \
     $$PWD/util/glyphloader.h \
     $$PWD/sgtexture.h \
-    $$PWD/texture/sggridimagetexture.h \
-    $$PWD/viewinteraction.h
+    $$PWD/texture/sggridimagetexture.h

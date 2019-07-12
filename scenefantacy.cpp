@@ -14,18 +14,26 @@ struct Square
     float size;
     float rotation;
     glm::vec2 center;
+
+    int generation = 0;
 };
 
-static const int g_find_depth = 10;
+struct SquareNode : SGRectangleNode
+{
+    int generation;
+};
+
+static const int g_find_depth = 12;
 static Square g_root;
 static void initRoot()
 {
+    g_root.generation = 0;
     g_root.size = 400;
     g_root.rotation = 0.f;
-    g_root.p[0] = glm::vec2(960 - g_root.size / 2, 1080);
-    g_root.p[1] = glm::vec2(960 + g_root.size / 2, 1080);
-    g_root.p[2] = glm::vec2(960 + g_root.size / 2, 1080 - g_root.size);
-    g_root.p[3] = glm::vec2(960 - g_root.size / 2, 1080 - g_root.size);
+    g_root.p[0] = glm::vec2(960 - g_root.size / 2, 1380);
+    g_root.p[1] = glm::vec2(960 + g_root.size / 2, 1380);
+    g_root.p[2] = glm::vec2(960 + g_root.size / 2, 1380 - g_root.size);
+    g_root.p[3] = glm::vec2(960 - g_root.size / 2, 1380 - g_root.size);
     g_root.center = (g_root.p[0] + g_root.p[2]) / 2.f;
 }
 
@@ -56,6 +64,7 @@ static std::pair<Square, Square> spawn(const Square &sq, float degree)
 
     //right
     Square nsq0;
+    nsq0.generation = sq.generation + 1;
     nsq0.size = sq.size * glm::cos(degree);
     nsq0.rotation = sq.rotation - degree;
     nsq0.p[0] = n1;
@@ -66,6 +75,7 @@ static std::pair<Square, Square> spawn(const Square &sq, float degree)
 
     //left
     Square nsq1;
+    nsq1.generation = sq.generation + 1;
     nsq1.size = sq.size * glm::sin(degree);
     nsq1.rotation = sq.rotation + glm::pi<float>() / 2 - degree;
     nsq1.p[0] = p1;
@@ -91,19 +101,32 @@ static void spawnTree(const Square &root, float degree, int depth, std::vector<S
 
 //scene implementation
 static int timer1 = 0;
+static int timer2 = 0;
 SceneFantacy::SceneFantacy()
 {
     initRoot();
     testAlloc();
-    timer1 = startTimer(20);
+    //timer1 = startTimer(20);
+    timer2 = startTimer(500);
 }
 
 void SceneFantacy::timerEvent(QTimerEvent * event)
 {
+    static int igen = 0;
     auto id = event->timerId();
     if (timer1 == id)
     {
         testUpdate();
+    }
+    else if (timer2 == id)
+    {
+        testVisible(igen++);
+        if (igen > g_find_depth)
+        {
+            killTimer(timer2);
+            if (!timer1)
+                timer1 = startTimer(20);
+        }
     }
 }
 
@@ -114,7 +137,7 @@ void SceneFantacy::testAlloc()
 
     for (auto sq: result)
     {
-        SGRectangleNode *sn = new SGRectangleNode();
+        SquareNode *sn = new SquareNode();
         sn->setX(sq.center.x - sq.size / 2);
         sn->setY(sq.center.y - sq.size / 2);
         sn->setRotation(sq.rotation);
@@ -122,15 +145,27 @@ void SceneFantacy::testAlloc()
         sn->setHeight(sq.size);
 
         sn->setColor(Color::random());
+        sn->setVisible(false);
+        sn->generation = sq.generation;
         this->addItem(sn);
 
         m_nodes.push_back(sn);
     }
 }
 
+void SceneFantacy::testVisible(int gen)
+{
+    for (auto node : m_nodes)
+    {
+        auto sn = dynamic_cast<SquareNode*>(node);
+        if (sn->generation < gen)
+            sn->setVisible();
+    }
+}
+
 void SceneFantacy::testUpdate()
 {
-    static int dval = 0;
+    static int dval = 150;
     static bool dir = true;
 
     std::vector<Square> result;

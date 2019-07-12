@@ -3,9 +3,9 @@
 #include <QKeyEvent>
 #include <QTimer>
 #include <QDebug>
-#include "sgview.h"
+#include "view.h"
 
-ViewInteraction::ViewInteraction(SGView *parent) :
+ViewInteraction::ViewInteraction(View *parent) :
     QObject(parent),
     m_parent(parent),
     m_ptMousePosOld(-1, -1),

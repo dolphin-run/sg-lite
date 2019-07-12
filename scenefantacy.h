@@ -13,6 +13,7 @@ public:
 protected:
     virtual void timerEvent(QTimerEvent *event) override;
     void testAlloc();
+    void testVisible(int gen);
     void testUpdate();
 
     std::vector<SGNode *> m_nodes;

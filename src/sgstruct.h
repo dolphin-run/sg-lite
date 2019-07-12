@@ -191,6 +191,12 @@ struct RectF {
         bool yOverlap = r.tl.y < br.y && r.br.y > tl.y;
         return xOverlap && yOverlap;
     }
+
+    Rect toRect() const {
+        Rect rec;
+        rec.set(tl.x, tl.y, br.x, br.y);
+        return rec;
+    }
 };
 
 struct Color {

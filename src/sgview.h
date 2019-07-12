@@ -1,53 +1,64 @@
 #ifndef SGVIEW_H
 #define SGVIEW_H
 
-#include <QWindow>
 #include "sgstruct.h"
-#include "viewinteraction.h"
 
-class SGNode;
+class ViewCamera
+{
+public:
+    void setSceneSize(int wid, int hei);
+    void setViewSize(int wid, int hei);
+    void moveCenter();
+    void move(int x, int y);
+    void scale(float s);
+    const glm::mat4 &transform() const;
+    const Rect &viewRect() const;
+
+protected:
+    void update();
+private:
+    glm::mat4 m_transform;
+    //
+    float m_swid = 100;
+    float m_shei = 100;
+    float m_vwid = 100;
+    float m_vhei = 100;
+
+    PointF m_center;
+    float m_scale = 1.0;
+    RectF m_viewPort;
+    //bool stretch = false;
+};
+
 class SGScene;
 class SGRenderer;
-class SGView : public QWindow
+class SGView
 {
-    Q_OBJECT
 public:
-    explicit SGView(QWindow *parent = 0);
+    explicit SGView();
     ~SGView();
 
-    void setScene(SGScene *scene);
-    const Rect &viewRect() const;
-    const glm::mat4 &transform() const;
-    void CameraMove(int x, int y);
-    void CameraScale(bool zoom);
+    void attach(SGScene *scene);
+    void detach();
+    void sceneChanged();
 
+    const Rect &sceneRect() const;
+    const glm::mat4 &sceneTransform() const;
+
+    virtual int width() const = 0;
+    virtual int height() const = 0;
+    virtual float pixelRatio() const = 0;
+
+protected:
     virtual void initialize();
-
-public slots:
-    void renderLater();
+    virtual void renderFrame();
 
 protected:
-    void updateViewRect();
-
-protected:
-    void render();
-
-    virtual bool event(QEvent *event) override;
-    virtual void resizeEvent(QResizeEvent *event) override;
-    virtual void exposeEvent(QExposeEvent *event) override;
+    ViewCamera m_camera;
 
 private:
-    QOpenGLContext *m_context;
-
     SGScene *m_scene = nullptr;
     SGRenderer *m_render = nullptr;
-
-    Point m_viewPortCenter;
-    float m_viewPortScale = 1.0;
-    Rect m_viewPortRect;//dummy by view port's center&scale and viewWidth&viewHeight
-
-    glm::mat4 m_viewTransform;
-    ViewInteraction *m_pUserInteraction;
 };
 
 #endif // SGVIEW_H

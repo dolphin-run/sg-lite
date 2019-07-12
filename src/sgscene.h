@@ -9,7 +9,15 @@ class SGScene
 public:
     SGScene();
 
+    //to do...classify in the future.
+    void boundingRectChanged();
+    void itemAdded();
+    void itemChanged();
+
     void addItem(SGNode *item);
+
+protected:
+    std::list<SGView*> m_views;//view obeserver
 
 private:
     SGRootNode m_root;

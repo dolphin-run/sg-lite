@@ -1,17 +1,66 @@
 #include "sgview.h"
-#include <QScreen>
-#include <QWheelEvent>
-#include "sgnode.h"
 #include "sgscene.h"
 #include "sgrenderer.h"
 
-
-SGView::SGView(QWindow *parent)
-    : QWindow(parent)
-    , m_context(0)
+//camera
+void ViewCamera::setSceneSize(int wid, int hei)
 {
-    setSurfaceType(QWindow::OpenGLSurface);
+    m_swid = wid;
+    m_shei = hei;
+    update();
+}
 
+void ViewCamera::setViewSize(int wid, int hei)
+{
+    m_vwid = wid;
+    m_vhei = hei;
+    update();
+}
+
+void ViewCamera::moveCenter()
+{
+    m_center.x = m_swid / 2;
+    m_center.y = m_shei / 2;
+    update();
+}
+
+void ViewCamera::move(int x, int y)
+{
+    m_center.x += (x / m_scale);
+    m_center.y += (y / m_scale);
+    update();
+}
+
+void ViewCamera::scale(float s)
+{
+    m_scale *= s;
+
+    update();
+}
+
+const glm::mat4 &ViewCamera::transform() const
+{
+    return m_transform;
+}
+
+const Rect &ViewCamera::viewRect() const
+{
+    return m_viewPort.toRect();
+}
+
+void ViewCamera::update()
+{
+    float wid = m_vwid / m_scale;
+    float hei = m_vhei / m_scale;
+    m_viewPort = RectF(0, 0, wid, hei);
+    PointF oldcenter = m_viewPort.center();
+    m_viewPort.move(m_center - oldcenter);
+    m_transform = glm::ortho(m_viewPort.tl.x, m_viewPort.br.x, m_viewPort.br.y, m_viewPort.tl.y, -1.f, 1.f);
+}
+
+//SGView
+SGView::SGView()
+{
     m_render = new SGRenderer(this);
 }
 
@@ -19,120 +68,46 @@ SGView::~SGView()
 {
 }
 
+void SGView::attach(SGScene *scene)
+{
+    if (m_scene) detach();
+
+    m_scene = scene;
+    m_scene->m_views.push_back(this); 
+
+    sceneChanged();
+}
+
+void SGView::detach()
+{
+    m_scene->m_views.remove(this);
+    m_scene = nullptr;
+}
+
+void SGView::sceneChanged()
+{
+    m_camera.setSceneSize(m_scene->m_width, m_scene->m_height);
+}
+
+const Rect & SGView::sceneRect() const
+{
+    return m_camera.viewRect();
+}
+
+const glm::mat4 & SGView::sceneTransform() const
+{
+    return m_camera.transform();
+}
+
 void SGView::initialize()
 {
-    m_pUserInteraction = new ViewInteraction(this);
-    this->installEventFilter(m_pUserInteraction);
+    m_camera.moveCenter();
 
-    m_viewPortCenter.x = 960;
-    m_viewPortCenter.y = 540;
+    m_render->initializeGL();
+    m_render->sync(&m_scene->m_root);
 }
 
-void SGView::setScene(SGScene *scene)
+void SGView::renderFrame()
 {
-    m_scene = scene;
-}
-
-const Rect & SGView::viewRect() const
-{
-    return m_viewPortRect;
-}
-
-const glm::mat4 & SGView::transform() const
-{
-    return m_viewTransform;
-}
-
-void SGView::CameraMove(int x, int y)
-{
-    m_viewPortCenter.x += (x / m_viewPortScale);
-    m_viewPortCenter.y += (y / m_viewPortScale);
-
-    updateViewRect();
-}
-
-void SGView::CameraScale(bool zoom)
-{
-    if (zoom)
-    {
-        m_viewPortScale *= 1.01f;
-    }
-    else
-    {
-        m_viewPortScale /= 1.01f;
-    }
-
-    updateViewRect();
-}
-
-void SGView::renderLater()
-{
-    requestUpdate();
-}
-
-bool SGView::event(QEvent *event)
-{
-    switch (event->type()) {
-    case QEvent::UpdateRequest:
-        render();
-        return true;
-    default:
-        return QWindow::event(event);
-    }
-}
-
-void SGView::resizeEvent(QResizeEvent * event)
-{
-    //m_projection
-    updateViewRect();
-}
-
-void SGView::exposeEvent(QExposeEvent *event)
-{
-    Q_UNUSED(event);
-
-    if (isExposed())
-        render();
-}
-
-void SGView::updateViewRect()
-{
-    int vwid = this->width();
-    int vhei = this->height();
-
-    int swid = vwid / m_viewPortScale;
-    int shei = vhei / m_viewPortScale;
-    m_viewPortRect = Rect(0, 0, swid, shei);
-    Point oldc = m_viewPortRect.center();
-    m_viewPortRect.move(m_viewPortCenter - oldc);
-    m_viewTransform = glm::ortho(float(m_viewPortRect.tl.x), float(m_viewPortRect.br.x), float(m_viewPortRect.br.y), float(m_viewPortRect.tl.y), -1.f, 1.f);
-}
-
-void SGView::render()
-{
-    if (!isExposed())
-        return;
-
-    bool needsInitialize = false;
-
-    if (!m_context) {
-        m_context = new QOpenGLContext(this);
-        m_context->setFormat(requestedFormat());
-        m_context->create();
-
-        needsInitialize = true;
-    }
-
-    m_context->makeCurrent(this);
-
-    if (needsInitialize) {
-        m_render->initializeGL();
-        m_render->sync(&m_scene->m_root);
-    }
-
     m_render->render();
-
-    m_context->swapBuffers(this);
-
-    requestUpdate();
 }

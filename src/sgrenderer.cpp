@@ -126,7 +126,7 @@ void SGRenderer::render()
         uploadBatches(batch);
     }
 
-    const qreal retinaScale = m_view->devicePixelRatio();
+    const qreal retinaScale = m_view->pixelRatio();
     glViewport(0, 0, m_view->width() * retinaScale, m_view->height() * retinaScale);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -137,6 +137,7 @@ void SGRenderer::render()
 
 void SGRenderer::selectRenderNodes(const SGNode *node)
 {
+    if (!node->visible()) return;
     if (node->type() == SGNode::E_NodeType::ImageNodeType || node->type() == SGNode::E_NodeType::TextNodeType)
     {
         m_mapNodes[node]->updateMatrix();
@@ -404,7 +405,7 @@ void SGRenderer::renderBatch(Batch * batch)
 
     bool ret = shader->program()->bind();
 
-    shader->updateState(m_view->transform());
+    shader->updateState(m_view->sceneTransform());
 
     glBindBuffer(GL_ARRAY_BUFFER, batch->vbo.id);
 

@@ -7,12 +7,12 @@
 #include <QRect>
 
 enum E_SELECT_MODE { SELECT_NEW, SELECT_ADD, SELECT_MINUS };
-class SGView;
+class View;
 class ViewInteraction : public QObject
 {
     Q_OBJECT
 public:
-    ViewInteraction(SGView *parent);
+    ViewInteraction(View *parent);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
@@ -34,7 +34,7 @@ protected:
     void slotEatSpacePress();
 
 protected:
-    SGView *m_parent;
+    View *m_parent;
     QPoint m_ptMousePosOld;
 
 

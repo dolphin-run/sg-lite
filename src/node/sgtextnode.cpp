@@ -2,6 +2,7 @@
 #include "sgtextnode.h"
 #include "geometry/sgrectanglegeometry.h"
 #include "material/sgglyphmaterial.h"
+#include <algorithm>
 
 SGTextNode::SGTextNode(SGNode * parent) :
     SGNode(E_NodeType::TextNodeType, parent)
@@ -49,7 +50,7 @@ void SGTextNode::setText(const std::wstring & txt)
     for (auto line : m_glyphLines)
     {
         chnum += line.lineInf.size();
-        boundingWidth = max(boundingWidth, line.width);
+        boundingWidth = std::max(boundingWidth, line.width);
     }
 
     m_textGeometry->resize(chnum);

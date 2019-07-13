@@ -3,6 +3,7 @@
 
 #include "sgnode.h"
 #include <list>
+#include <vector>
 #include <unordered_map>
 
 class SGView;
@@ -31,7 +32,7 @@ struct Node {
 };
 
 struct Buffer {
-    GLuint id = 0;
+    unsigned id = 0;
 
     size_t verticeNum = 0;
     size_t size = 0;
@@ -76,7 +77,7 @@ class SGShaderManager
 public:
     SGMaterialShader* find(SGMaterial *material);
 private:
-    std::map<E_MaterialType, SGMaterialShader*> m_shaders;
+    std::unordered_map<E_MaterialType, SGMaterialShader*> m_shaders;
 };
 
 class SGRenderer

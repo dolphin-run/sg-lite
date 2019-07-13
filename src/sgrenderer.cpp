@@ -1,5 +1,6 @@
 #include "sgrenderer.h"
 #include "sgview.h"
+#include <algorithm>
 
 #include <glad/glad.h>
 
@@ -135,7 +136,7 @@ void SGRenderer::render()
         uploadBatches(batch);
     }
 
-    const qreal retinaScale = m_view->pixelRatio();
+    const float retinaScale = m_view->pixelRatio();
     glViewport(0, 0, m_view->width() * retinaScale, m_view->height() * retinaScale);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -406,7 +407,7 @@ void SGRenderer::renderAlphaBatches()
 void SGRenderer::renderBatch(Batch * batch)
 {
     Node *n = batch->firstChild;
-    Q_ASSERT(n);
+    assert(n);
 
     const SGNode *gn = n->gnode;
 

@@ -1,4 +1,5 @@
 ﻿#include "glshaderprogram.h"
+#include <glad/glad.h>
 
 void GLShaderProgram::setShader(const char* vShaderCode, const char* fShaderCode)
 {
@@ -93,12 +94,12 @@ void GLShaderProgram::setMat4(const std::string &name, const glm::mat4 &mat) con
     glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void GLShaderProgram::setMat4(GLint pos, const glm::mat4 & mat) const
+void GLShaderProgram::setMat4(unsigned pos, const glm::mat4 & mat) const
 {
     glUniformMatrix4fv(pos, 1, GL_FALSE, &mat[0][0]);
 }
 
-GLint GLShaderProgram::uniformLocation(const std::string & name)
+unsigned GLShaderProgram::uniformLocation(const std::string & name)
 {
     return glGetUniformLocation(ID, name.c_str());
 }

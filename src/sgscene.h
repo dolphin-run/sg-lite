@@ -2,7 +2,7 @@
 #define SGSCENE_H
 
 #include "sgnode.h"
-class QSGNode;
+class SGView;
 class SGScene
 {
     friend class SGView;

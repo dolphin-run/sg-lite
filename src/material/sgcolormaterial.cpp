@@ -46,7 +46,7 @@ public:
         return true;
     }
 private:
-    GLuint m_matrixUniform;
+    unsigned m_matrixUniform;
 };
 
 

@@ -1,5 +1,5 @@
-INCLUDEPATH += $$PWD/common/include
-LIBS += -L$$PWD/common/lib$${ARCH_SUFFIX} -lfreetype$${BUILD_SUFFIX}
+INCLUDEPATH += $$PWD/3rdparty/include
+LIBS += -L$$PWD/3rdparty/lib$${ARCH_SUFFIX} -lfreetype$${BUILD_SUFFIX}
 
 SOURCES += \
     $$PWD/sgnode.cpp \
@@ -22,7 +22,7 @@ SOURCES += \
     $$PWD/util/glshaderprogram.cpp \
     $$PWD/sgtexture.cpp \
     $$PWD/texture/sggridimagetexture.cpp\
-    $$PWD/common/glad/glad.c
+    $$PWD/3rdparty/glad/glad.c
 
 HEADERS += \
     $$PWD/sgnode.h \

@@ -2,7 +2,6 @@
 #define GLSHADERPROGRAM_H
 
 #include <glm/glm.hpp>
-#include <glad/glad.h>
 
 #include <string>
 #include <iostream>
@@ -39,9 +38,9 @@ public:
     void setMat3(const std::string &name, const glm::mat3 &mat) const;
     // ------------------------------------------------------------------------
     void setMat4(const std::string &name, const glm::mat4 &mat) const;
-    void setMat4(GLint pos, const glm::mat4 &mat) const;
+    void setMat4(unsigned pos, const glm::mat4 &mat) const;
 
-    GLint uniformLocation(const std::string &name);
+    unsigned uniformLocation(const std::string &name);
     void bindAttributeLocation(const char *name, int location);
 
 private:

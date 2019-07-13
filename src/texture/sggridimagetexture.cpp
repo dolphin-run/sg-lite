@@ -1,7 +1,5 @@
 #include "sggridimagetexture.h"
-
-#include <QOpenGLContext>
-#include <QOpenGLFunctions>
+#include "glad/glad.h"
 
 
 //
@@ -42,25 +40,24 @@ void SGGridImageTexture::build()
 
 void SGGridImageTexture::bind()
 {
-    QOpenGLFunctions *funcs = QOpenGLContext::currentContext()->functions();
     if (!m_id)
     {
-        funcs->glGenTextures(1, &m_id);
-        funcs->glActiveTexture(GL_TEXTURE0);
-        funcs->glBindTexture(GL_TEXTURE_2D, m_id);
-        funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        funcs->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glGenTextures(1, &m_id);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_id);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        funcs->glTexImage2D(GL_TEXTURE_2D, 0, m_imgBuf.gl_fmt, m_texBuffer->pxWid, m_texBuffer->pxHei
+        glTexImage2D(GL_TEXTURE_2D, 0, m_imgBuf.gl_fmt, m_texBuffer->pxWid, m_texBuffer->pxHei
             , 0, m_imgBuf.gl_fmt, GL_UNSIGNED_BYTE, m_texBuffer->data);
-        funcs->glGenerateMipmap(GL_TEXTURE_2D);
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
     {
-        funcs->glActiveTexture(GL_TEXTURE0);
-        funcs->glBindTexture(GL_TEXTURE_2D, m_id);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_id);
     }
 }
 
@@ -107,7 +104,7 @@ unsigned SGGridImageTexture::add(const Image &img)
             int xstep = m_imgBuf.cellWid*m_imgBuf.pxComp*col;
 
             char *p = (char *)m_imgBuf.data + offset + xstep;
-            const uchar *psrc = img.data.get();
+            const unsigned char *psrc = img.data.get();
             for (int i = 0; i < img.height; i++)
             {
                 memcpy(p, psrc, img.width *m_imgBuf.pxComp);
@@ -118,9 +115,8 @@ unsigned SGGridImageTexture::add(const Image &img)
         else
         {
             //sync to gl
-            QOpenGLFunctions *funcs = QOpenGLContext::currentContext()->functions();
-            funcs->glBindTexture(GL_TEXTURE_2D, m_id);
-            funcs->glTexSubImage2D(GL_TEXTURE_2D, 0,
+            glBindTexture(GL_TEXTURE_2D, m_id);
+            glTexSubImage2D(GL_TEXTURE_2D, 0,
                 m_imgBuf.cellWid*col, m_imgBuf.cellHei*row,
                 img.width, img.height, m_imgBuf.gl_fmt, GL_UNSIGNED_BYTE, img.data.get());
         }

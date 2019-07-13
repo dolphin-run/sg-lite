@@ -2,7 +2,6 @@
 #define SGMATERIAL_H
 
 #include "util/glshaderprogram.h"
-#include <qmatrix4x4.h>
 #include "sgstruct.h"
 
 //define shader used to render
@@ -11,8 +10,6 @@ enum E_MaterialType{
     TextureMaterialType,
     GlyphMaterialType
 };
-
-QMatrix4x4 glmtoqmat(const glm::mat4 &mat);
 
 class SGMaterialShader
 {

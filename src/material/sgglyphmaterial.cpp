@@ -3,8 +3,6 @@
 
 #include "util/glyphloader.h"
 
-#include <QStandardPaths>
-
 
 static std::unordered_map<wchar_t, GlyphInfo> g_mapGlyphs;
 static SGGridImageTexture g_glyphTex(2048, 2048, Image::Format_Alpha, 64, 64);
@@ -15,9 +13,9 @@ static void msyh_glyph_initialize()
     if (loaded) return;
     loaded = true;
 
-    QString fontPath = QStandardPaths::writableLocation(QStandardPaths::FontsLocation) + "/msyh.ttc";
+    const char* fontPath = "C:/Windows/Fonts/msyh.ttc";
 
-    g_msyhGlyph.load(fontPath.toLocal8Bit(), GLYPH_PIXEL_SIZE, GLYPH_PIXEL_SIZE);
+    g_msyhGlyph.load(fontPath, GLYPH_PIXEL_SIZE, GLYPH_PIXEL_SIZE);
 }
 
 class SGGlyphMaterialShader : public SGMaterialShader
@@ -70,7 +68,7 @@ public:
         return true;
     }
 private:
-    GLuint m_matrixUniform;
+    unsigned m_matrixUniform;
     const SGGlyphMaterial *m_parent;
 };
 

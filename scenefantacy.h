@@ -2,6 +2,7 @@
 #define SCENEFANTACY_H
 
 #include "src/sgscene.h"
+#include <QObject>
 
 class SceneFantacy : public QObject, public SGScene
 {

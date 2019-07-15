@@ -8,6 +8,7 @@
 #include "sgmaterial.h"
 
 
+class SGScene;
 class SGNode
 {
 public:
@@ -21,12 +22,14 @@ public:
     };
     enum E_DirtyType {
         GeometryDirty = 0x01,
-        OpacityDirty = 0x02
+        OpacityDirty = 0x02,
+        TreeDirty = 0x04
     };
-    SGNode(SGNode* parent = nullptr);
+    //SGNode(SGNode* parent = nullptr);
     virtual ~SGNode();
     E_NodeType type() const;
-    void add(SGNode* node);
+    void addChild(SGNode* node);
+    void remove(SGNode* child);
     Rect boundingRect() const;
 
     int x()const;
@@ -61,6 +64,7 @@ protected:
     bool m_visible = true;
 
     SGNode* m_parent = nullptr;
+    SGScene *m_scene = nullptr;//should only be modified in the SGScene
     E_NodeType m_type = RootNodeType;
     std::list<SGNode*> m_children;
 

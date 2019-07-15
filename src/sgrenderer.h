@@ -7,6 +7,8 @@
 #include <unordered_map>
 
 class SGView;
+
+//just for rendering
 struct Node {
     const SGNode *gnode = nullptr;
 
@@ -29,6 +31,8 @@ struct Node {
     float rotation;
 
     RectF bounding;
+
+    unsigned dirty;
 };
 
 struct Buffer {
@@ -86,11 +90,16 @@ public:
     SGRenderer(SGView *view);
     virtual void initializeGL();
 
-    void sync(const SGRootNode *root);
-    void syncGnode(const SGNode *node, Node *p);
+    void setRootNode(const SGRootNode *root);
     virtual void render();
 
+    //
+    virtual void itemAdded(SGNode *node);
+    virtual void itemDeleted(SGNode *node);
+    virtual void itemChanged(SGNode *node);
+
 protected:
+    void syncGnode(const SGNode *node, Node *p);
     void selectRenderNodes(const SGNode *node);
     void buildOpacityBatches();
     void buildAlphaBatches();

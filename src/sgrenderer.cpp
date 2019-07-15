@@ -8,11 +8,6 @@ void Node::updateMatrix()
 {
     if (gnode->m_dirty)
     {
-        //matrix.setToIdentity();
-        //matrix.translate(x + width / 2, y + height / 2);
-        //matrix.rotate(degree, 0, 0, -1);
-        //matrix.scale(width, height);
-
         matrix = glm::mat4();
         matrix = glm::translate(matrix, glm::vec3(x + width / 2, y + height / 2, 0));
         matrix = glm::rotate(matrix, rotation, glm::vec3(0, 0, -1));
@@ -48,11 +43,7 @@ SGRenderer::SGRenderer(SGView *view) :
 
 void SGRenderer::initializeGL()
 {
-    //initializeOpenGLFunctions();
-
-
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
+    //initialize GL;
     int ret = gladLoadGL();
     if (!ret)
     {
@@ -60,25 +51,25 @@ void SGRenderer::initializeGL()
     }
 }
 
-void SGRenderer::sync(const SGRootNode *root)
+void SGRenderer::setRootNode(const SGRootNode *root)
 {
     m_rootNode = root;
 
-    //m_zRenderOrder = 1;
-    //syncGnode(m_rootNode, nullptr);
+    assert(!m_mapNodes.count(root));
+    {
+        Node *c = m_nodePool.alloc(); c->gnode = root;
+        m_mapNodes.insert(std::make_pair(root, c));
+        c->dirty = 1;
+    }
+
 }
 
 void SGRenderer::syncGnode(const SGNode * node, Node *p)
 {
-    if (!node->m_visible) return;
+    //if (!node->m_visible) return;
 
     Node *c = nullptr;
-    if (!m_mapNodes.count(node))
-    {
-        c = m_nodePool.alloc(); c->gnode = node;
-        m_mapNodes.insert(std::make_pair(node, c));
-    }
-    else
+    assert(m_mapNodes.count(node));
     {
         c = m_mapNodes.at(node);
     }
@@ -143,6 +134,31 @@ void SGRenderer::render()
     //render
     renderOpacityBatches();
     renderAlphaBatches();
+}
+
+void SGRenderer::itemAdded(SGNode * node)
+{
+    Node *c = nullptr;
+    assert(!m_mapNodes.count(node));
+    {
+        c = m_nodePool.alloc(); c->gnode = node;
+        m_mapNodes.insert(std::make_pair(node, c));
+    }
+
+    c->dirty = 1;
+}
+
+void SGRenderer::itemDeleted(SGNode * node)
+{
+    assert(m_mapNodes.count(node));
+    {
+        m_nodePool.free(m_mapNodes.at(node));
+        m_mapNodes.erase(node);
+    }
+}
+
+void SGRenderer::itemChanged(SGNode * item)
+{
 }
 
 void SGRenderer::selectRenderNodes(const SGNode *node)

@@ -26,6 +26,8 @@ public slots:
 
 protected:
     void render();
+    virtual void mousePressEvent(QMouseEvent *ev) override;
+
 
 protected:
     virtual bool event(QEvent *event) override;

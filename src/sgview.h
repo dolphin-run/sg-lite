@@ -11,8 +11,11 @@ public:
     void moveCenter();
     void move(int x, int y);
     void scale(float s);
+
     const glm::mat4 &transform() const;
-    const Rect &viewRect() const;
+    const RectF &viewRect() const;
+
+    Point mapToScene(const Point &vp) const;
 
 protected:
     void update();
@@ -30,20 +33,32 @@ private:
     //bool stretch = false;
 };
 
+class SGNode;
 class SGScene;
 class SGRenderer;
 class SGView
 {
+    enum DirtyType {
+        ITEM_ADD
+    };
 public:
     explicit SGView();
     ~SGView();
 
     void attach(SGScene *scene);
     void detach();
-    void sceneChanged();
 
-    const Rect &sceneRect() const;
+    //notify renderer rebuild.
+    virtual void sceneChanged();
+    virtual void sceneSizeChanged();
+    virtual void itemAdded(SGNode *item);
+    virtual void itemDeleted(SGNode *item);
+    virtual void itemChanged(SGNode *item);
+
+    const RectF &sceneRect() const;
     const glm::mat4 &sceneTransform() const;
+
+    Point mapToScene(const Point &vp) const;
 
     virtual int width() const = 0;
     virtual int height() const = 0;
@@ -55,8 +70,6 @@ protected:
 
 protected:
     ViewCamera m_camera;
-
-private:
     SGScene *m_scene = nullptr;
     SGRenderer *m_render = nullptr;
 };

@@ -1,15 +1,31 @@
 #include "sgnode.h"
+#include "sgscene.h"
 
 
-SGNode::SGNode(SGNode* parent)
-{
-    if(parent) parent->add(this);
-}
+//SGNode::SGNode(SGNode* parent)
+//{
+//    if (parent)
+//    {
+//        parent->addChild(this);
+//    }
+//}
 
 SGNode::SGNode(E_NodeType type, SGNode * parent):
     m_type(type)
 {
-    if (parent) parent->add(this);
+    if (parent)
+    {
+        if(parent->m_scene)
+        {
+            //parent has in a scene.
+            parent->m_scene->addItem(this, parent);
+        }
+        else
+        {
+            //parent is  an isolated node
+            parent->addChild(this);
+        }
+    }
 }
 
 SGNode::~SGNode()
@@ -23,10 +39,19 @@ SGNode::E_NodeType SGNode::type() const
     return m_type;
 }
 
-void SGNode::add(SGNode* node)
+void SGNode::addChild(SGNode* node)
 {
     node->m_parent = this;
     m_children.push_back(node);
+}
+
+void SGNode::remove(SGNode * child)
+{
+    assert(child->m_parent);
+    assert(m_children.end() != std::find(m_children.begin(), m_children.end(), child));
+
+    m_children.remove(child);
+    child->m_parent = nullptr;
 }
 
 Rect SGNode::boundingRect() const
@@ -121,7 +146,7 @@ void SGNode::setVisible(bool visible)
     m_visible = visible;
 }
 
-SGRootNode::SGRootNode()
+SGRootNode::SGRootNode() : SGNode(SGNode::E_NodeType::RootNodeType)
 {
 
 }

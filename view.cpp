@@ -1,5 +1,8 @@
 #include "view.h"
 #include <QOpenGLContext>
+#include <QMouseEvent>
+#include "src/node/sgrectanglenode.h"
+#include "sgscene.h"
 
 
 
@@ -56,6 +59,24 @@ void View::render()
     m_context->swapBuffers(this);
 
     renderLater();
+}
+
+void View::mousePressEvent(QMouseEvent * ev)
+{
+    auto pos = ev->pos();
+    Point pt;
+    pt.set(pos.x(), pos.y());
+    pt = mapToScene(pt);
+    
+    SGRectangleNode *sn = new SGRectangleNode();
+    sn->setX(pt.x);
+    sn->setY(pt.y);
+    sn->setWidth(150);
+    sn->setHeight(100);
+
+    sn->setColor(Color::random());
+
+    m_scene->addItem(sn);
 }
 
 View::View(QWindow *parent)

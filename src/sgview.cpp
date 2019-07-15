@@ -43,9 +43,18 @@ const glm::mat4 &ViewCamera::transform() const
     return m_transform;
 }
 
-const Rect &ViewCamera::viewRect() const
+const RectF &ViewCamera::viewRect() const
 {
-    return m_viewPort.toRect();
+    return m_viewPort;
+}
+
+Point ViewCamera::mapToScene(const Point & vp) const
+{
+    Point pt;
+    pt.x = m_viewPort.tl.x + vp.x / m_scale;
+    pt.y = m_viewPort.tl.y + vp.y / m_scale;
+
+    return pt;
 }
 
 void ViewCamera::update()
@@ -73,9 +82,10 @@ void SGView::attach(SGScene *scene)
     if (m_scene) detach();
 
     m_scene = scene;
-    m_scene->m_views.push_back(this); 
-
     sceneChanged();
+
+    //notify view' renderer
+    m_scene->addView(this);
 }
 
 void SGView::detach()
@@ -86,10 +96,35 @@ void SGView::detach()
 
 void SGView::sceneChanged()
 {
+    if (!m_scene) return;
+
+    m_render->setRootNode(&m_scene->m_root);
+    sceneSizeChanged();
+}
+
+void SGView::sceneSizeChanged()
+{
+    if (!m_scene) return;
+
     m_camera.setSceneSize(m_scene->m_width, m_scene->m_height);
 }
 
-const Rect & SGView::sceneRect() const
+void SGView::itemAdded(SGNode *item)
+{
+    m_render->itemAdded(item);
+}
+
+void SGView::itemDeleted(SGNode *item)
+{
+    m_render->itemDeleted(item);
+}
+
+void SGView::itemChanged(SGNode *item)
+{
+    m_render->itemChanged(item);
+}
+
+const RectF & SGView::sceneRect() const
 {
     return m_camera.viewRect();
 }
@@ -99,12 +134,18 @@ const glm::mat4 & SGView::sceneTransform() const
     return m_camera.transform();
 }
 
+Point SGView::mapToScene(const Point & vp) const
+{
+    return m_camera.mapToScene(vp);
+}
+
 void SGView::initialize()
 {
+    if (!m_scene) return;
+
     m_camera.moveCenter();
 
     m_render->initializeGL();
-    m_render->sync(&m_scene->m_root);
 }
 
 void SGView::renderFrame()

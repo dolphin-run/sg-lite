@@ -10,42 +10,45 @@
 class GLShaderProgram
 {
 public:
-    unsigned int ID;
-
-    void setShader(const char* vShaderCode, const char* fShaderCode);
-    // activate the shader
-    // ------------------------------------------------------------------------
+    void build(const char* vs, const char* fs);
+    
+    //use this shader
     void bind();
-    // utility uniform functions
-    // ------------------------------------------------------------------------
-    void setBool(const std::string &name, bool value) const;
-    // ------------------------------------------------------------------------
-    void setInt(const std::string &name, int value) const;
-    // ------------------------------------------------------------------------
-    void setFloat(const std::string &name, float value) const;
-    // ------------------------------------------------------------------------
-    void setVec2(const std::string &name, const glm::vec2 &value) const;
-    void setVec2(const std::string &name, float x, float y) const;
-    // ------------------------------------------------------------------------
-    void setVec3(const std::string &name, const glm::vec3 &value) const;
-    void setVec3(const std::string &name, float x, float y, float z) const;
-    // ------------------------------------------------------------------------
-    void setVec4(const std::string &name, const glm::vec4 &value) const;
-    void setVec4(const std::string &name, float x, float y, float z, float w);
-    // ------------------------------------------------------------------------
-    void setMat2(const std::string &name, const glm::mat2 &mat) const;
-    // ------------------------------------------------------------------------
-    void setMat3(const std::string &name, const glm::mat3 &mat) const;
-    // ------------------------------------------------------------------------
-    void setMat4(const std::string &name, const glm::mat4 &mat) const;
+
+    //get uniform location
+    unsigned uniformLocation(const char *name);
+
+    //set uniform value
+    void setInt(const char *name, int value) const;
+    void setInt(unsigned pos, int value) const;
+    
+    void setFloat(const char *name, float value) const;
+    void setFloat(unsigned pos, float value) const;
+    
+    void setVec2(const char *name, const glm::vec2 &value) const;
+    void setVec2(unsigned pos, const glm::vec2 &value) const;
+    void setVec2(const char *name, float x, float y) const;
+    void setVec2(unsigned pos, float x, float y) const;
+    
+    void setVec3(const char *name, const glm::vec3 &value) const;
+    void setVec3(unsigned pos, const glm::vec3 &value) const;
+    void setVec3(const char *name, float x, float y, float z) const;
+    void setVec3(unsigned pos, float x, float y, float z) const;
+    
+    void setVec4(const char *name, const glm::vec4 &value) const;
+    void setVec4(unsigned pos, const glm::vec4 &value) const;
+    void setVec4(const char *name, float x, float y, float z, float w);
+    void setVec4(unsigned pos, float x, float y, float z, float w);
+
+    void setMat4(const char *name, const glm::mat4 &mat) const;
     void setMat4(unsigned pos, const glm::mat4 &mat) const;
 
-    unsigned uniformLocation(const std::string &name);
     void bindAttributeLocation(const char *name, int location);
 
 private:
-    // utility function for checking shader compilation/linking errors.
-    // ------------------------------------------------------------------------
-    void checkCompileErrors(unsigned shader, std::string type);
+    void checkCompileError(unsigned shader);
+    void checkLinkError(unsigned shader);
+
+    unsigned m_id;
 };
 #endif

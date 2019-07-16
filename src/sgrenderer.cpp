@@ -6,14 +6,14 @@
 
 void Node::updateMatrix()
 {
-    if (gnode->m_dirty)
     {
         matrix = glm::mat4();
         matrix = glm::translate(matrix, glm::vec3(x + width / 2, y + height / 2, 0));
-        matrix = glm::rotate(matrix, rotation, glm::vec3(0, 0, -1));
+        if (abs(rotation) > FLT_EPSILON)
+        {
+            matrix = glm::rotate(matrix, rotation, glm::vec3(0, 0, -1));
+        }
         matrix = glm::scale(matrix, glm::vec3(width, height, 1));
-
-        gnode->m_dirty = 0;
     }
 }
 
@@ -55,47 +55,56 @@ void SGRenderer::setRootNode(const SGRootNode *root)
 {
     m_rootNode = root;
 
-    assert(!m_mapNodes.count(root));
-    {
-        Node *c = m_nodePool.alloc(); c->gnode = root;
-        m_mapNodes.insert(std::make_pair(root, c));
-        c->dirty = 1;
-    }
+    //assert(!m_mapNodes.count(root));
+    //{
+    //    Node *c = m_nodePool.alloc(); c->gnode = root;
+    //    m_mapNodes.insert(std::make_pair(root, c));
+    //}
 
+}
+
+void SGRenderer::clear()
+{
+    m_mapNodes.clear();
+}
+
+void SGRenderer::buildRenderNodes()
+{
+    m_zRenderOrder = 1;
+    syncGnode(m_rootNode, nullptr);
 }
 
 void SGRenderer::syncGnode(const SGNode * node, Node *p)
 {
-    //if (!node->m_visible) return;
+    //assert(m_mapNodes.count(node));
+    Node *c = m_mapNodes.at(node);
 
-    Node *c = nullptr;
-    assert(m_mapNodes.count(node));
-    {
-        c = m_mapNodes.at(node);
-    }
-
-    if (p)
-    {
-        c->opacity = p->opacity*node->m_opacity;
-        c->x = p->x + node->m_x;
-        c->y = p->y + node->m_y;
-    }
-    else
-    {
-        c->opacity = node->m_opacity;
-        c->x = node->m_x;
-        c->y = node->m_y;
-    }
     c->z = m_zRenderOrder++ / 10000.f;
-    c->width = node->m_width;
-    c->height = node->m_height;
-    c->rotation = node->m_rotation;
-    c->bounding = RectF(c->x, c->y, c->width, c->height);
+
+    if (c->dirty & SGNode::E_DirtyType::GeometryDirty)
+    {
+        if (p)
+        {
+            c->opacity = p->opacity*node->m_opacity;
+            c->x = p->x + node->m_x;
+            c->y = p->y + node->m_y;
+        }
+        else
+        {
+            c->opacity = node->m_opacity;
+            c->x = node->m_x;
+            c->y = node->m_y;
+        }
+        c->width = node->m_width;
+        c->height = node->m_height;
+        c->rotation = node->m_rotation;
+        c->bounding = RectF(c->x, c->y, c->width, c->height);
+
+        c->updateMatrix();
+        c->dirty = 0;
+    }
 
     auto children = node->m_children;
-    children.sort([](const SGNode *lop, const SGNode *rop) {
-        return lop->z() < rop->z();
-    });
     for (auto child : children)
     {
         syncGnode(child, c);
@@ -104,26 +113,32 @@ void SGRenderer::syncGnode(const SGNode * node, Node *p)
 
 void SGRenderer::render()
 {
-    m_zRenderOrder = 1;
-    syncGnode(m_rootNode, nullptr);
+    if (m_rebuild&E_RebuildFlag::BuildRenderLists)
+    {
+        buildRenderNodes();
+    }
 
     m_opacityNodes.clear();
     m_alphaNodes.clear(); 
     selectRenderNodes(m_rootNode);
 
-    buildOpacityBatches();
-    buildAlphaBatches();
+    if (m_rebuild&E_RebuildFlag::BuildBatches)
+    {
+        buildOpacityBatches();
+        buildAlphaBatches();
+    }
 
     for (Batch *batch : m_opaqueBatches)
     {
-        if (!batch->dirty) continue;
-        batch->dirty = false;
+        //to do...seperate build and upload
+        //if (!batch->dirty) continue;
+        //batch->dirty = false;
         uploadBatches(batch);
     }
     for (Batch *batch : m_alphaBatches)
     {
-        if (!batch->dirty) continue;
-        batch->dirty = false;
+        //if (!batch->dirty) continue;
+        //batch->dirty = false;
         uploadBatches(batch);
     }
 
@@ -134,18 +149,25 @@ void SGRenderer::render()
     //render
     renderOpacityBatches();
     renderAlphaBatches();
+
+    m_rebuild = 0;
 }
 
 void SGRenderer::itemAdded(SGNode * node)
 {
-    Node *c = nullptr;
     assert(!m_mapNodes.count(node));
     {
-        c = m_nodePool.alloc(); c->gnode = node;
-        m_mapNodes.insert(std::make_pair(node, c));
-    }
+        auto pnode = node->m_parent;
 
-    c->dirty = 1;
+        //parent should have been added before
+        assert(!pnode || m_mapNodes.count(pnode));
+
+        Node *c = m_nodePool.alloc(); c->gnode = node;
+        m_mapNodes.insert(std::make_pair(node, c));
+
+        c->dirty = SGNode::E_DirtyType::GeometryDirty;
+        m_rebuild |= E_RebuildFlag::FullRebuild;
+    }
 }
 
 void SGRenderer::itemDeleted(SGNode * node)
@@ -154,25 +176,44 @@ void SGRenderer::itemDeleted(SGNode * node)
     {
         m_nodePool.free(m_mapNodes.at(node));
         m_mapNodes.erase(node);
+
+        //can be no-rebuild
+        //m_rebuild |= E_RebuildFlag::FullRebuild;
     }
 }
 
-void SGRenderer::itemChanged(SGNode * item)
+void SGRenderer::itemChanged(SGNode * item, SGNode::E_DirtyType changes)
 {
+    //to do...avoid call multi-times
+    assert(m_mapNodes.count(item));
+    Node *node = m_mapNodes.at(item);
+    switch (changes)
+    {
+    case SGNode::E_DirtyType::GeometryDirty:
+        node->dirty |= SGNode::GeometryDirty;
+        m_rebuild |= E_RebuildFlag::BuildRenderLists;
+        break;
+    case SGNode::E_DirtyType::TreeDirty:
+        m_rebuild |= E_RebuildFlag::BuildRenderLists;
+        break;
+    case SGNode::E_DirtyType::OpacityDirty:
+        m_rebuild != E_RebuildFlag::BuildRenderLists;
+        break;
+    default:
+        break;
+    }
 }
 
 void SGRenderer::selectRenderNodes(const SGNode *node)
 {
-    if (!node->visible()) return;
+    if (!node || !node->visible()) return;
     if (node->type() == SGNode::E_NodeType::ImageNodeType || node->type() == SGNode::E_NodeType::TextNodeType)
     {
-        m_mapNodes[node]->updateMatrix();
         m_mapNodes[node]->batch = 0;
         m_alphaNodes.push_back(m_mapNodes[node]);
     }
     else if(node->type() == SGNode::E_NodeType::RectangleNodeType || node->type() == SGNode::E_NodeType::CircularNodeType)
     {
-        m_mapNodes[node]->updateMatrix();
         m_mapNodes[node]->batch = 0;
         m_opacityNodes.push_back(m_mapNodes[node]);
     }

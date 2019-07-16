@@ -2,6 +2,7 @@
 #define SGVIEW_H
 
 #include "sgstruct.h"
+#include "sgnode.h"
 
 class ViewCamera
 {
@@ -33,14 +34,10 @@ private:
     //bool stretch = false;
 };
 
-class SGNode;
 class SGScene;
 class SGRenderer;
 class SGView
 {
-    enum DirtyType {
-        ITEM_ADD
-    };
 public:
     explicit SGView();
     ~SGView();
@@ -53,7 +50,7 @@ public:
     virtual void sceneSizeChanged();
     virtual void itemAdded(SGNode *item);
     virtual void itemDeleted(SGNode *item);
-    virtual void itemChanged(SGNode *item);
+    virtual void itemChanged(SGNode *item, SGNode::E_DirtyType changes);
 
     const RectF &sceneRect() const;
     const glm::mat4 &sceneTransform() const;

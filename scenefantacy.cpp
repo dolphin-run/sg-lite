@@ -145,7 +145,7 @@ void SceneFantacy::testAlloc()
         sn->setHeight(sq.size);
 
         sn->setColor(Color::random());
-        sn->setVisible(false);
+        //sn->setVisible(false);
         sn->generation = sq.generation;
         this->addItem(sn);
 
@@ -181,10 +181,10 @@ void SceneFantacy::testUpdate()
     {
         const Square &sq = result.at(i);
         auto sn = m_nodes.at(i);
-        sn->setX(sq.center.x - sq.size / 2);
-        sn->setY(sq.center.y - sq.size / 2);
-        sn->setRotation(sq.rotation);
-        sn->setWidth(sq.size);
-        sn->setHeight(sq.size);
+        sn->setGeometry(sq.center.x - sq.size / 2,
+            sq.center.y - sq.size / 2,
+            sq.size,
+            sq.size, 
+            sq.rotation);
     }
 }

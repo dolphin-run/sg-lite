@@ -71,6 +71,7 @@ void View::mousePressEvent(QMouseEvent * ev)
     SGRectangleNode *sn = new SGRectangleNode();
     sn->setX(pt.x);
     sn->setY(pt.y);
+    sn->setZ(1);
     sn->setWidth(150);
     sn->setHeight(100);
 

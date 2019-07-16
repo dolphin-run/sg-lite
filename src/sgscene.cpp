@@ -3,6 +3,9 @@
 
 SGScene::SGScene()
 {
+    //initialize root node.
+    m_root.m_scene = this;
+    m_nodes.push_back(&m_root);
 }
 
 void SGScene::sizeChanged()
@@ -29,17 +32,17 @@ void SGScene::itemDeleted(SGNode *item)
     }
 }
 
-void SGScene::itemChanged(SGNode *item)
+void SGScene::itemChanged(SGNode *item, SGNode::E_DirtyType changes)
 {
     for (auto view : m_views)
     {
-        view->itemChanged(item);
+        view->itemChanged(item, changes);
     }
 }
 
 bool SGScene::addItem(SGNode * item, SGNode *attached)
 {
-    if (m_nodes.count(item)) return false;
+    if (m_nodes.end() != std::find(m_nodes.begin(), m_nodes.end(), item)) return false;
 
     if (!attached)
     {
@@ -57,11 +60,11 @@ bool SGScene::addItem(SGNode * item, SGNode *attached)
 
 bool SGScene::removeItem(SGNode * item)
 {
-    if (m_nodes.count(item))
+    if (m_nodes.end() != std::find(m_nodes.begin(), m_nodes.end(), item))
     {
         if (item->m_parent)
         {
-            item->m_parent->remove(item);
+            item->m_parent->removeChild(item);
         }
         remove(item);
 
@@ -80,9 +83,10 @@ void SGScene::clear()
 
 void SGScene::remove(SGNode * item)
 {
-    assert(m_nodes.count(item));
+    auto it = std::find(m_nodes.begin(), m_nodes.end(), item);
+    assert(m_nodes.end() != it);
 
-    m_nodes.erase(item);
+    m_nodes.erase(it);
     item->m_scene = nullptr;
     itemDeleted(item);
     for (auto child : item->m_children)
@@ -91,9 +95,9 @@ void SGScene::remove(SGNode * item)
 
 void SGScene::add(SGNode * item)
 {
-    assert(!m_nodes.count(item));
+    assert(m_nodes.end() == std::find(m_nodes.begin(), m_nodes.end(), item));
 
-    m_nodes.insert(item);
+    m_nodes.push_back(item);
     item->m_scene = this;
     itemAdded(item);
     for (auto child : item->m_children)

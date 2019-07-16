@@ -1,5 +1,6 @@
 #include "sgnode.h"
 #include "sgscene.h"
+#include <algorithm>
 
 
 //SGNode::SGNode(SGNode* parent)
@@ -42,10 +43,15 @@ SGNode::E_NodeType SGNode::type() const
 void SGNode::addChild(SGNode* node)
 {
     node->m_parent = this;
-    m_children.push_back(node);
+    //m_children.push_back(node);
+    //sort when insert
+    auto it = std::upper_bound(m_children.begin(), m_children.end(), node, [](const SGNode *lop, const SGNode *rop) {
+        return lop->m_z < rop->m_z;
+    });
+    m_children.insert(it, node);
 }
 
-void SGNode::remove(SGNode * child)
+void SGNode::removeChild(SGNode * child)
 {
     assert(child->m_parent);
     assert(m_children.end() != std::find(m_children.begin(), m_children.end(), child));
@@ -104,31 +110,43 @@ bool SGNode::visible() const
 void SGNode::setX(int x)
 {
     m_x = x;
-    m_dirty |= E_DirtyType::GeometryDirty;
+    //m_dirty |= E_DirtyType::GeometryDirty;
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
 }
 
 void SGNode::setY(int y)
 {
     m_y = y;
-    m_dirty |= E_DirtyType::GeometryDirty;
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
 }
 
 void SGNode::setZ(int z)
 {
     m_z = z;
-    m_dirty |= E_DirtyType::GeometryDirty;
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::TreeDirty);//to do...
+    if (m_parent)
+    {
+        m_parent->m_children.sort([](const SGNode *lop, const SGNode *rop) {
+            return lop->m_z < rop->m_z;
+        });
+    }
 }
 
 void SGNode::setWidth(int width)
 {
     m_width = width;
-    m_dirty |= E_DirtyType::GeometryDirty;
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
 }
 
 void SGNode::setHeight(int height)
 {
     m_height = height;
-    m_dirty |= E_DirtyType::GeometryDirty;
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
 }
 
 void SGNode::setOpactity(float opacity)
@@ -144,6 +162,18 @@ void SGNode::setRotation(float rotation)
 void SGNode::setVisible(bool visible)
 {
     m_visible = visible;
+}
+
+void SGNode::setGeometry(int x, int y, int wid, int hei, float rot)
+{
+    m_x = x;
+    m_y = y;
+    m_width = wid;
+    m_height = hei;
+    m_rotation = rot;
+    
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
 }
 
 SGRootNode::SGRootNode() : SGNode(SGNode::E_NodeType::RootNodeType)

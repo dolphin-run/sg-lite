@@ -9,6 +9,7 @@
 
 
 class SGScene;
+struct Node;
 class SGNode
 {
 public:
@@ -29,7 +30,7 @@ public:
     virtual ~SGNode();
     E_NodeType type() const;
     void addChild(SGNode* node);
-    void remove(SGNode* child);
+    void removeChild(SGNode* child);
     Rect boundingRect() const;
 
     int x()const;
@@ -48,6 +49,9 @@ public:
     void setOpactity(float opacity);
     void setRotation(float rotation);
     void setVisible(bool visible = true);
+
+    //advance interface
+    void setGeometry(int x, int y, int wid, int hei, float rot);
 
 protected:
     SGNode(E_NodeType type, SGNode* parent = nullptr);
@@ -70,7 +74,6 @@ protected:
 
     SGGeometry *m_geometry = nullptr;
     SGMaterial *m_material = nullptr;
-    mutable unsigned m_dirty = 0;
 
     friend struct Node;
     friend class SGRenderer;

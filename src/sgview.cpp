@@ -92,6 +92,8 @@ void SGView::detach()
 {
     m_scene->m_views.remove(this);
     m_scene = nullptr;
+    m_render->setRootNode(nullptr);
+    m_render->clear();
 }
 
 void SGView::sceneChanged()
@@ -119,9 +121,9 @@ void SGView::itemDeleted(SGNode *item)
     m_render->itemDeleted(item);
 }
 
-void SGView::itemChanged(SGNode *item)
+void SGView::itemChanged(SGNode *item, SGNode::E_DirtyType changes)
 {
-    m_render->itemChanged(item);
+    m_render->itemChanged(item, changes);
 }
 
 const RectF & SGView::sceneRect() const

@@ -86,19 +86,26 @@ private:
 
 class SGRenderer
 {
+    enum E_RebuildFlag {
+        BuildRenderLists = 0x0001,
+        BuildBatches = 0x0002,
+        FullRebuild = 0xffff
+    };
 public:
     SGRenderer(SGView *view);
     virtual void initializeGL();
 
     void setRootNode(const SGRootNode *root);
+    void clear();
     virtual void render();
 
     //
     virtual void itemAdded(SGNode *node);
     virtual void itemDeleted(SGNode *node);
-    virtual void itemChanged(SGNode *node);
+    virtual void itemChanged(SGNode *node, SGNode::E_DirtyType changes);
 
 protected:
+    void buildRenderNodes();
     void syncGnode(const SGNode *node, Node *p);
     void selectRenderNodes(const SGNode *node);
     void buildOpacityBatches();
@@ -130,6 +137,7 @@ protected:
     SGView *m_view = nullptr;
 
     int m_zRenderOrder;
+    unsigned m_rebuild;
 };
 
 #endif // SGRENDERER_H

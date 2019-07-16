@@ -4,8 +4,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-std::unordered_map<std::string, unsigned> g_nameMapToKey;
-SGGridImageTexture g_imgTex(2048, 2048, Image::Format_RGBA, 256, 256);
+static std::unordered_map<std::string, unsigned> g_nameMapToKey;
+static SGGridImageTexture g_imgTex(2048, 2048, Image::Format_RGBA, 256, 256);
 
 class SGTextureMaterialShader : public SGMaterialShader
 {

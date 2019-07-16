@@ -15,7 +15,7 @@ public:
     void sizeChanged();
     void itemAdded(SGNode *item);
     void itemDeleted(SGNode *item);
-    void itemChanged(SGNode *item);
+    void itemChanged(SGNode *item, SGNode::E_DirtyType changes);
 
     //add `item` as a child of `attached` or as a root node when not attached. this scene will take the ownership of `item`.
     //if item has a parent, it will be just ignored.
@@ -23,14 +23,15 @@ public:
     bool addItem(SGNode *item, SGNode *attached = nullptr);
 
     //disconnect `item` from this scene. ownership will return to the caller.
-    //this will change `item` relation-ship from its parent, but keep its children relation-ship.
+    //this will set `item` parent to null, but keep its children relation-ship.
     bool removeItem(SGNode *item);
 
     //remove all nodes from this scene and delete it.
     void clear();
 
 protected:
-    //just remove without edit inheritation
+    //add or remove item and its all generations from this scene
+    //item tree relation-ship keep the same
     void remove(SGNode *item);
     void add(SGNode *item);
 
@@ -43,7 +44,8 @@ protected:
 private:
     SGRootNode m_root;
 
-    std::unordered_set<SGNode*> m_nodes;
+    //use list, it can store parent and children from first to end.
+    std::list<SGNode*> m_nodes;
 
     int m_width = 1920;
     int m_height = 1080;

@@ -41,7 +41,7 @@ SGRenderer::SGRenderer(SGView *view) :
     m_mapMemoryCache.reserve(1024);
 }
 
-void SGRenderer::initializeGL()
+bool SGRenderer::initialize()
 {
     //initialize GL;
     int ret = gladLoadGL();
@@ -49,6 +49,7 @@ void SGRenderer::initializeGL()
     {
         printf("Failed to initialize GLAD\n");
     }
+    return ret;
 }
 
 void SGRenderer::setRootNode(const SGRootNode *root)

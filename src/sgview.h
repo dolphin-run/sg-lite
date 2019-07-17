@@ -36,6 +36,10 @@ private:
 
 class SGScene;
 class SGRenderer;
+
+/*
+** subclass should supply Render Context as needed.
+*/
 class SGView
 {
 public:
@@ -62,7 +66,8 @@ public:
     virtual float pixelRatio() const = 0;
 
 protected:
-    virtual void initialize();
+    bool m_renderInited = false;
+    virtual bool initializeRender();
     virtual void renderFrame();
 
 protected:

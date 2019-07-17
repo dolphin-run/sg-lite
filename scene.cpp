@@ -12,7 +12,7 @@ int timer2 = 0;
 Scene::Scene()
 {
     testAlloc();
-    timer1 = startTimer(20);
+    //timer1 = startTimer(20);
     timer2 = startTimer(5000);
 }
 

@@ -5,9 +5,41 @@
 #include "node/sgcircularnode.h"
 #include "node/sgtextnode.h"
 
+//timer
+#include <functional>
+#include <chrono>
+#include <future>
+#include <cstdio>
+
+class Later
+{
+public:
+    template <class callable, class... arguments>
+    Later(int after, bool async, callable&& f, arguments&&... args)
+    {
+        std::function<typename std::result_of<callable(arguments...)>::type()> task(std::bind(std::forward<callable>(f), std::forward<arguments>(args)...));
+
+        if (async)
+        {
+            std::thread([after, task]() {
+                std::this_thread::sleep_for(std::chrono::milliseconds(after));
+                task();
+            }).detach();
+        }
+        else
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(after));
+            task();
+        }
+    }
+
+};
+
 Scene::Scene()
 {
     testAlloc();
+    Later calllater(1000, true, [this] {this->testUpdate(); });
+
 }
 
 void Scene::testAlloc()
@@ -36,6 +68,9 @@ void Scene::testAlloc()
         sn1->setHeight(100);
 
         sn1->setImage("images/img0.png");
+
+        m_nodes.push_back(sn);
+        m_nodes.push_back(sn1);
     }
 
     //add some ring
@@ -63,7 +98,7 @@ void Scene::testAlloc()
         sn->setX(500);
         sn->setY(760);
         sn->setZ(3);
-        sn->setText(L"iQgdKjABCDEFGH˾��ܲһ��29��ik,.\"'\nhello");
+        sn->setText(L"ABCDEFGHIj\n1234567890");
         //sn->setWidth(100);//auto width
 
         sn = new SGTextNode();
@@ -71,7 +106,7 @@ void Scene::testAlloc()
         sn->setX(500);
         sn->setY(700);
         sn->setZ(1);
-        sn->setText(L"idaeswhjfrewfew");
+        sn->setText(L"ABCDEFGHIj1234567890");
 
         SGImageNode *sn1 = new SGImageNode();
         this->addItem(sn1);
@@ -81,5 +116,19 @@ void Scene::testAlloc()
         sn1->setWidth(100);
         sn1->setHeight(100);
         sn1->setImage("images/img0.png");
+    }
+}
+
+void Scene::testUpdate()
+{
+    int ts = 1000;
+    while (ts--)
+    {
+        for (auto it : m_nodes)
+        {
+            it->setWidth(100 + (it->width() + 1) % 100);
+            it->setHeight(100 + (it->width() + 1) % 100);
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
     }
 }

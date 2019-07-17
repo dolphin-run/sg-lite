@@ -16,17 +16,17 @@ int main(int argc, char **argv)
     //SceneFantacy scene;
     Scene scene;
     
-    View window;
-    window.attach(&scene);
-    window.setFormat(format);
-    window.setMinimumSize(QSize(640, 480));
-    window.showMaximized();
+    View *window = new View();
+    window->attach(&scene);
+    window->setFormat(format);
+    window->setMinimumSize(QSize(640, 480));
+    window->showMaximized();
 
-    //View window1;
-    //window1.attach(&scene);
-    //window1.setFormat(format);
-    //window1.setMinimumSize(QSize(640, 480));
-    //window1.show();
+    //View *window1 = new View();
+    //window1->attach(&scene);
+    //window1->setFormat(format);
+    //window1->setMinimumSize(QSize(640, 480));
+    //window1->show();
 
     return app.exec();
 }

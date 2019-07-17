@@ -75,6 +75,7 @@ SGView::SGView()
 
 SGView::~SGView()
 {
+    if (m_scene) detach();
 }
 
 void SGView::attach(SGScene *scene)
@@ -141,16 +142,20 @@ Point SGView::mapToScene(const Point & vp) const
     return m_camera.mapToScene(vp);
 }
 
-void SGView::initialize()
+bool SGView::initializeRender()
 {
-    if (!m_scene) return;
+    if (!m_scene) return false;
 
     m_camera.moveCenter();
 
-    m_render->initializeGL();
+    return m_render->initialize();
 }
 
 void SGView::renderFrame()
 {
+    if (!m_renderInited)
+    {
+        m_renderInited = initializeRender();
+    }
     m_render->render();
 }

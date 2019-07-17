@@ -4,7 +4,7 @@
 #include "src/node/sgrectanglenode.h"
 #include "sgscene.h"
 
-
+static QOpenGLContext *g_context = nullptr;
 
 void View::renderLater()
 {
@@ -17,6 +17,9 @@ bool View::event(QEvent *event)
     case QEvent::UpdateRequest:
         render();
         return true;
+    case QEvent::Close:
+        printf("close");
+        this->deleteLater();
     default:
         return QWindow::event(event);
     }
@@ -40,20 +43,22 @@ void View::render()
     if (!isExposed())
         return;
 
-    bool needsInitialize = false;
-
     if (!m_context) {
         m_context = new QOpenGLContext(this);
         m_context->setFormat(requestedFormat());
+        if (g_context)
+        {
+            m_context->setShareContext(g_context);
+        }
+        else
+        {
+            g_context = m_context;
+        }
         m_context->create();
-
-        needsInitialize = true;
     }
 
     m_context->makeCurrent(this);
 
-    if (needsInitialize)
-        SGView::initialize();
     SGView::renderFrame();
 
     m_context->swapBuffers(this);

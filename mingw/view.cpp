@@ -1,3 +1,4 @@
+
 #include "view.h"
 #include <functional>
 
@@ -10,7 +11,6 @@ void View::InitializeGlfw()
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
         g_glfwInitialized = true;
     }
@@ -58,24 +58,22 @@ void View::windowKeyCallback(GLFWwindow* window, int key, int scancode, int acti
         g_glfwView.at(window)->CameraMove(xmove, ymove);
 }
 
-void View::render()
-{
-    static bool needsInitialize = true;
-    if (needsInitialize)
-    {
-        SGView::initialize();
-        needsInitialize = false;
-    }
-    SGView::renderFrame();
-}
-
 void View::exec()
 {
-    while (!glfwWindowShouldClose(m_window))
+    while (g_glfwView.size())
     {
-        render();
-        glfwSwapBuffers(m_window);
-        glfwPollEvents();
+        for (auto it : g_glfwView)
+        {
+            if (glfwWindowShouldClose(it.first))
+            {
+                it.second->destroy();
+                break;
+            }
+            glfwMakeContextCurrent(it.first);
+            it.second->renderFrame();
+            glfwSwapBuffers(it.first);
+            glfwPollEvents();
+        }
         _sleep(40);
     }
 }
@@ -97,23 +95,37 @@ View::~View()
 {
 }
 
-bool View::create()
+bool View::create(const char* title)
 {
     if (!g_glfwInitialized) return false;
 
-    m_window = glfwCreateWindow(800, 600, "WASM OpenGL", NULL, NULL);
+    //The window and its OpenGL context are created with a single call to glfwCreateWindow, 
+    //which returns a handle to the created combined window and context object
+    GLFWwindow *window = NULL;
+    if (g_glfwView.size()) window = g_glfwView.begin()->first;
+    m_window = glfwCreateWindow(800, 600, title, NULL, window);
     if (m_window == NULL)
     {
         printf("Failed to create GLFW window\n");
         return false;
     }
-
     glfwMakeContextCurrent(m_window);
+
     glfwSetFramebufferSizeCallback(m_window, windowSizeCallback); 
     glfwSetKeyCallback(m_window, windowKeyCallback);
     glfwSetScrollCallback(m_window, windowScrollCallback);
 
     g_glfwView.insert(std::make_pair(m_window, this));
+}
+
+void View::destroy()
+{
+    if (m_window)
+    {
+        g_glfwView.erase(m_window);
+        glfwDestroyWindow(m_window);
+        m_window = nullptr;
+    }
 }
 
 int View::width() const

@@ -12,7 +12,8 @@ public:
     explicit View();
     ~View();
 
-    bool create();
+    bool create(const char* title);
+    void destroy();
 
 
     virtual int width() const override;
@@ -21,9 +22,8 @@ public:
 
     void CameraMove(int x, int y);
     void CameraScale(bool zoom);
-    void render();
 
-    void exec();
+    static void exec();
     static void windowSizeCallback(GLFWwindow* window, int width, int height); 
     static void windowKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void windowScrollCallback(GLFWwindow* window, double xoffset, double yoffset);

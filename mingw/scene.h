@@ -11,6 +11,8 @@ public:
 
 protected:
     void testAlloc();
+    void testUpdate();
+    std::list<SGNode*> m_nodes;
 };
 
 #endif // SCENE_H

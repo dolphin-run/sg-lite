@@ -93,7 +93,7 @@ class SGRenderer
     };
 public:
     SGRenderer(SGView *view);
-    virtual void initializeGL();
+    virtual bool initialize();
 
     void setRootNode(const SGRootNode *root);
     void clear();

@@ -8,6 +8,7 @@ class SGCircularNode : public SGNode
 {
 public:
     SGCircularNode(SGNode* parent = nullptr);
+    void setInnerRadius(float rate);
     void setColor(const Color &c);
     void setColor(const Color &inside, const Color &outside);
 

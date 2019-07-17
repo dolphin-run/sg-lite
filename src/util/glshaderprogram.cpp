@@ -1,5 +1,6 @@
 ﻿#include "glshaderprogram.h"
 #include <glad/glad.h>
+#include <cstdio>
 
 void GLShaderProgram::build(const char* vs, const char* fs)
 {
@@ -137,7 +138,7 @@ void GLShaderProgram::checkCompileError(unsigned shader)
     if (!ok)
     {
         glGetShaderInfoLog(shader, 1024, NULL, info);
-        std::cout << "[ERROR] gl compilation error: " << info << "\n" << std::endl;
+        printf("[ERROR] gl compilation error: %s\n", info);
     }
 }
 
@@ -150,6 +151,6 @@ void GLShaderProgram::checkLinkError(unsigned shader)
     if (!ok)
     {
         glGetProgramInfoLog(shader, 1024, NULL, info);
-        std::cout << "[ERROR] gl linking error: " << "\n" << info << "\n" << std::endl;
+        printf("[ERROR] gl linking error: %s\n", info);
     }
 }

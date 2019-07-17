@@ -8,7 +8,7 @@ class SGCircularGeometry : public SGGeometry
 {
 public:
     SGCircularGeometry();
-    //void setRing(float rate);
+    void setInnerRadius(float rate);//rate to outer radius
     void setColor(const Color &c);
     void setColor(const Color &inside, const Color &outside);
 private:

@@ -55,13 +55,6 @@ bool SGRenderer::initialize()
 void SGRenderer::setRootNode(const SGRootNode *root)
 {
     m_rootNode = root;
-
-    //assert(!m_mapNodes.count(root));
-    //{
-    //    Node *c = m_nodePool.alloc(); c->gnode = root;
-    //    m_mapNodes.insert(std::make_pair(root, c));
-    //}
-
 }
 
 void SGRenderer::clear()
@@ -77,7 +70,7 @@ void SGRenderer::buildRenderNodes()
 
 void SGRenderer::syncGnode(const SGNode * node, Node *p)
 {
-    //assert(m_mapNodes.count(node));
+    assert(m_mapNodes.count(node));
     Node *c = m_mapNodes.at(node);
 
     c->z = m_zRenderOrder++ / 10000.f;

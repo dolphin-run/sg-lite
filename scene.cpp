@@ -90,6 +90,7 @@ void Scene::testAlloc()
         sn->setZ(3);
         sn->setWidth(150);
         sn->setHeight(150);
+        sn->setInnerRadius(i / 10.f);
 
         sn->setColor(Color::random(), Color::random());
 

@@ -9,6 +9,11 @@ SGCircularNode::SGCircularNode(SGNode * parent):
     m_geometry = m_colorGeometry = new SGCircularGeometry;
 }
 
+void SGCircularNode::setInnerRadius(float rate)
+{
+    m_colorGeometry->setInnerRadius(rate);
+}
+
 void SGCircularNode::setColor(const Color &c)
 {
     m_colorInside = m_colorOutside = c;

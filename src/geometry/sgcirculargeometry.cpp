@@ -60,6 +60,20 @@ SGCircularGeometry::SGCircularGeometry():
     m_data = m_vertices.data();
 }
 
+void SGCircularGeometry::setInnerRadius(float rate)
+{
+    assert(0.f <= rate && rate <= 1.f);
+    auto pc = dataAsPointColor();
+    auto pc1 = pc + 1;
+    for (int i = 0; i < m_attrs->vnum; i += 2)
+    {
+        pc1->x = pc->x*rate;
+        pc1->y = pc->y*rate;
+        pc += 2;
+        pc1 += 2;
+    }
+}
+
 void SGCircularGeometry::setColor(const Color & c)
 {
     setColor(c, c);

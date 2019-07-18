@@ -61,11 +61,6 @@ void SGGridImageTexture::bind()
     }
 }
 
-int SGGridImageTexture::textureId() const
-{
-    return m_id;
-}
-
 Size SGGridImageTexture::size() const
 {
     return Size{ m_texBuffer->pxWid, m_texBuffer->pxHei };

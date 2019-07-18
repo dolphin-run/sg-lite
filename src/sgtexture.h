@@ -26,7 +26,6 @@ public:
     virtual ~SGTexture();
     virtual void build() = 0;
     virtual void bind() = 0;
-    virtual int textureId() const = 0;
     virtual Size size() const = 0;
 
     virtual unsigned add(const Image &img) = 0;

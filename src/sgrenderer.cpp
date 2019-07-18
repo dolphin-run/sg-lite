@@ -206,7 +206,9 @@ void SGRenderer::selectRenderNodes(const SGNode *node)
         m_mapNodes[node]->batch = 0;
         m_alphaNodes.push_back(m_mapNodes[node]);
     }
-    else if(node->type() == SGNode::E_NodeType::RectangleNodeType || node->type() == SGNode::E_NodeType::CircularNodeType)
+    else if(node->type() == SGNode::E_NodeType::RectangleNodeType
+        || node->type() == SGNode::E_NodeType::CircularNodeType
+        || node->type() == SGNode::E_NodeType::YuvNodeType)
     {
         m_mapNodes[node]->batch = 0;
         m_opacityNodes.push_back(m_mapNodes[node]);

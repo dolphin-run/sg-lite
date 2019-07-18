@@ -39,7 +39,10 @@ void TexBuffer::init(int wid, int hei, int comp)
 void TexBuffer::cleanup()
 {
     if (data)
+    {
         free(data);
+        data = nullptr;
+    }
 
     pxWid = 0;
     pxHei = 0;

@@ -4,6 +4,7 @@
 #include "sgnode.h"
 
 class SGTextureMaterial;
+class SGYuvMaterial;
 class SGColorRectangleGeometry;
 class SGTextureRectangleGeometry;
 class SGRectangleNode : public SGNode
@@ -27,6 +28,21 @@ private:
     Color m_color;
     SGTextureMaterial *m_texMaterial = nullptr;
     SGTextureRectangleGeometry *m_texGeometry=nullptr;
+};
+
+class SGYuvVideoNode : public SGNode
+{
+public:
+    SGYuvVideoNode(SGNode* parent = nullptr);
+    void setSize(int pxWid = 1920, int pxHei = 1080);
+    bool setYuv(const unsigned char* yuv, int len = -1);
+
+private:
+    Size m_pxSize;
+    int m_pxLen = 0;
+    char *m_yuv = nullptr;
+    SGYuvMaterial *m_texMaterial = nullptr;
+    SGTextureRectangleGeometry *m_texGeometry = nullptr;
 };
 
 #endif // SGRECTANGLENODE_H

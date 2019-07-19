@@ -1,6 +1,7 @@
 
 #include "view.h"
 #include "scene.h"
+#include "scenevideo.h"
 #include "scenefantacy.h"
 
 #include <QGuiApplication>
@@ -14,7 +15,8 @@ int main(int argc, char **argv)
     format.setSamples(16);
 
     //SceneFantacy scene;
-    Scene scene;
+    //Scene scene;
+    SceneVideo scene;
     
     View *window = new View();
     window->attach(&scene);

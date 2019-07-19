@@ -145,7 +145,7 @@ void SceneFantacy::testAlloc()
         sn->setHeight(sq.size);
 
         sn->setColor(Color::random());
-        //sn->setVisible(false);
+        sn->setVisible(false);
         sn->generation = sq.generation;
         this->addItem(sn);
 

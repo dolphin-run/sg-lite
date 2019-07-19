@@ -1,4 +1,44 @@
 #include "sgyuvmaterial.h"
+#include <algorithm>
+
+
+SYUVInfo::SYUVInfo(int pixWid, int pixHei)
+{
+    update(pixWid, pixHei);
+    setViewSize(pixWid, pixHei);
+}
+
+bool SYUVInfo::update(int pixWid, int pixHei)
+{
+    m_wid = pixWid;
+    m_hei = pixHei;
+    m_semiWid = m_wid >> 1;
+    m_semiHei = m_hei >> 1;
+
+    m_yWid = pixWid;
+    m_yHei = pixHei;
+    m_uWid = (pixWid + 1) / 2;
+    m_uHei = (pixHei + 1) / 2;
+
+    m_yLen = m_yWid*m_yHei;
+    m_uLen = m_uWid*m_uHei;
+    m_len = m_yLen + m_uLen * 2;
+
+    m_yuvRadio = m_semiHei / m_semiWid;
+
+    return true;
+}
+
+bool SYUVInfo::setViewSize(int pixWid, int pixHei)
+{
+    m_viewWid = pixWid;
+    m_viewHei = pixHei;
+
+    //adapt to render pixels
+    m_renderScale = std::min(float(m_viewWid) / m_wid, float(m_viewHei) / m_hei);
+    return true;
+}
+
 
 class SGYuvMaterialShader : public SGMaterialShader
 {
@@ -76,6 +116,8 @@ private:
 
 SGYuvMaterial::SGYuvMaterial()
 {
+    static SYUVInfo info;
+    m_yuvInfo = &info;
 }
 
 E_MaterialType SGYuvMaterial::type() const
@@ -88,9 +130,21 @@ SGMaterialShader * SGYuvMaterial::createShader() const
     return new SGYuvMaterialShader(this);
 }
 
+void SGYuvMaterial::setYuvInfo(SYUVInfo * info)
+{
+    m_yuvInfo = info;
+}
+
 void SGYuvMaterial::setYuv(const unsigned char * src)
 {
-    m_tex.add(Image(1920, 540, src, Image::ImageFormat::Format_RGB));
+    auto const *ptr = src;
+    m_tex.update(SGYuvTexture::Y_Component, Image(m_yuvInfo->m_yWid, m_yuvInfo->m_yHei, ptr, Image::Format_Alpha));
+    
+    ptr += m_yuvInfo->m_yLen;
+    m_tex.update(SGYuvTexture::U_Component, Image(m_yuvInfo->m_uWid, m_yuvInfo->m_uHei, ptr, Image::Format_Alpha));
+    
+    ptr += m_yuvInfo->m_uLen;
+    m_tex.update(SGYuvTexture::V_Component, Image(m_yuvInfo->m_uWid, m_yuvInfo->m_uHei, ptr, Image::Format_Alpha));
 }
 
 SGTexture * SGYuvMaterial::texture() const

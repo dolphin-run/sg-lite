@@ -1,4 +1,4 @@
-#include "scene.h"
+#include "scenevideo.h"
 
 //test
 #include "src/node/sgrectanglenode.h"
@@ -7,13 +7,13 @@
 #include <QTimerEvent>
 #include <mutex>
 
-int timer1 = 0;
-int timer2 = 0;
+static int timer1 = 0;
+static int timer2 = 0;
 
-const int yuvsize = 1920 * 540 * 3;
-unsigned char *pyuv;
+static const int yuvsize = 1920 * 540 * 3;
+static unsigned char *pyuv;
 std::mutex plock;
-Scene::Scene()
+SceneVideo::SceneVideo()
 {
     testAlloc();
     timer1 = startTimer(50);
@@ -27,18 +27,18 @@ Scene::Scene()
     m_device->start();
 }
 
-void Scene::recvVideoBlob(const PureVideoBlob * video, const SmartDataBlob * data)
+void SceneVideo::recvVideoBlob(const PureVideoBlob * video, const SmartDataBlob * data)
 {
     std::lock_guard<std::mutex> guard(plock);
     memcpy(pyuv, video->pixels, video->size);
     //bool ok = m_frames->produce(video->pixels, video->size, data->data, data->size);
 }
 
-void Scene::recvCommnBlob(const SmartDataBlob * data)
+void SceneVideo::recvCommnBlob(const SmartDataBlob * data)
 {
 }
 
-void Scene::timerEvent(QTimerEvent * event)
+void SceneVideo::timerEvent(QTimerEvent * event)
 {
     auto id = event->timerId();
     if (timer1 == id)
@@ -78,7 +78,7 @@ void Scene::timerEvent(QTimerEvent * event)
     }
 }
 
-void Scene::testAlloc()
+void SceneVideo::testAlloc()
 {
 #if 1
 
@@ -161,5 +161,12 @@ void Scene::testAlloc()
         m_videoNode->setY(700);
         m_videoNode->setWidth(600);
         m_videoNode->setHeight(400);
+
+        auto *videoNode1 = new SGYuvVideoNode();
+        this->addItem(videoNode1);
+        videoNode1->setX(720);
+        videoNode1->setY(700);
+        videoNode1->setWidth(600);
+        videoNode1->setHeight(400);
     }
 }

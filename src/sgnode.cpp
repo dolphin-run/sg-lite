@@ -162,6 +162,8 @@ void SGNode::setRotation(float rotation)
 void SGNode::setVisible(bool visible)
 {
     m_visible = visible;
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::VisibleDirty);
 }
 
 void SGNode::setGeometry(int x, int y, int wid, int hei, float rot)

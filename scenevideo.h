@@ -1,17 +1,17 @@
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef SCENEVIDEO_H
+#define SCENEVIDEO_H
 
 #include "src/sgscene.h"
 #include <QList>
 #include "singletondevicestream.h"
 
 class SGYuvVideoNode;
-class Scene : public QObject, public SGScene, public InterfaceMsgContainer
+class SceneVideo : public QObject, public SGScene, public InterfaceMsgContainer
 {
     Q_OBJECT
     friend class SGView;
 public:
-    Scene();
+    SceneVideo();
 
 protected:
     //
@@ -26,4 +26,4 @@ protected:
     SGYuvVideoNode *m_videoNode;
 };
 
-#endif // SCENE_H
+#endif // SCENEVIDEO_H

@@ -187,6 +187,10 @@ void SGRenderer::itemChanged(SGNode * item, SGNode::E_DirtyType changes)
         node->dirty |= SGNode::GeometryDirty;
         m_rebuild |= E_RebuildFlag::BuildRenderLists;
         break;
+    case SGNode::E_DirtyType::VisibleDirty:
+        node->dirty |= SGNode::VisibleDirty;
+        m_rebuild |= E_RebuildFlag::BuildBatches;
+        break;
     case SGNode::E_DirtyType::TreeDirty:
         m_rebuild |= E_RebuildFlag::BuildRenderLists;
         break;

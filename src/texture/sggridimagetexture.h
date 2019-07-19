@@ -33,7 +33,8 @@ public:
     virtual void build() override;
     virtual void bind() override;
     virtual Size size() const override;
-    virtual unsigned add(const Image &img) override;
+    virtual unsigned add(const Image &img) override; 
+    virtual bool update(unsigned key, const Image &img) override;
 
 protected:
 

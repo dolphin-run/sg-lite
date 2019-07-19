@@ -24,8 +24,9 @@ public:
     };
     enum E_DirtyType {
         GeometryDirty = 0x01,
-        OpacityDirty = 0x02,
-        TreeDirty = 0x04
+        VisibleDirty = 0x02,
+        OpacityDirty = 0x04,
+        TreeDirty = 0x08
     };
     //SGNode(SGNode* parent = nullptr);
     virtual ~SGNode();

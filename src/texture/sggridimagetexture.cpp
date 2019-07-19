@@ -118,3 +118,8 @@ unsigned SGGridImageTexture::add(const Image &img)
     }
     return key;
 }
+
+bool SGGridImageTexture::update(unsigned key, const Image & img)
+{
+    return false;
+}

@@ -17,6 +17,6 @@ INCLUDEPATH += $$PWD/src
 
 CONFIG -= flat
 
-HEADERS += scene.h view.h scenefantacy.h viewinteraction.h
+HEADERS += scene.h scenevideo.h view.h scenefantacy.h viewinteraction.h singletondevicestream.h
 
-SOURCES += main.cpp scene.cpp view.cpp scenefantacy.cpp viewinteraction.cpp
+SOURCES += main.cpp scene.cpp scenevideo.cpp view.cpp scenefantacy.cpp viewinteraction.cpp singletondevicestream.cpp

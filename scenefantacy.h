@@ -13,6 +13,7 @@ public:
 
 protected:
     virtual void timerEvent(QTimerEvent *event) override;
+    void testSpawn();
     void testAlloc();
     void testVisible(int gen);
     void testUpdate();

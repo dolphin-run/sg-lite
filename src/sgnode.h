@@ -35,34 +35,34 @@ public:
     void removeChild(SGNode* child);
     Rect boundingRect() const;
 
-    int x()const;
-    int y()const;
-    int z()const;
-    int width()const;
-    int height()const;
+    float x()const;
+    float y()const;
+    float z()const;
+    float width()const;
+    float height()const;
     float opactity()const;
     float rotation()const;
     bool visible()const;
-    void setX(int x);
-    void setY(int y);
+    void setX(float x);
+    void setY(float y);
     void setZ(int z);
-    void setWidth(int width);
-    void setHeight(int height);
+    void setWidth(float width);
+    void setHeight(float height);
     void setOpactity(float opacity);
     void setRotation(float rotation);
     void setVisible(bool visible = true);
 
     //advance interface
-    void setGeometry(int x, int y, int wid, int hei, float rot);
+    void setGeometry(float x, float y, float wid, float hei, float rot);
 
 protected:
     SGNode(E_NodeType type, SGNode* parent = nullptr);
     //properties
-    int m_x = 0;//left
-    int m_y = 0;//top
+    float m_x = 0;//left
+    float m_y = 0;//top
     int m_z = 0;//z-index
-    int m_width = 0;//in scene's pixel size
-    int m_height = 0;
+    float m_width = 0;//in scene's pixel size
+    float m_height = 0;
 
     float m_opacity = 1.f;
     float m_scale = 1.f;

@@ -7,10 +7,10 @@
 class ViewCamera
 {
 public:
-    void setSceneSize(int wid, int hei);
-    void setViewSize(int wid, int hei);
+    void setSceneSize(float wid, float hei);
+    void setViewSize(float wid, float hei);
     void moveCenter();
-    void move(int x, int y);
+    void move(float x, float y);
     void scale(float s);
 
     const glm::mat4 &transform() const;
@@ -38,7 +38,7 @@ class SGScene;
 class SGRenderer;
 
 /*
-** subclass should supply Render Context as needed.
+** subclass should supply OpenGL Render Context as needed.
 */
 class SGView
 {
@@ -61,8 +61,8 @@ public:
 
     Point mapToScene(const Point &vp) const;
 
-    virtual int width() const = 0;
-    virtual int height() const = 0;
+    virtual float width() const = 0;
+    virtual float height() const = 0;
     virtual float pixelRatio() const = 0;
 
 protected:

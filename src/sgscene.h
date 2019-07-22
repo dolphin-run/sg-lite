@@ -47,8 +47,8 @@ private:
     //use list, it can store parent and children from first to end.
     std::list<SGNode*> m_nodes;
 
-    int m_width = 1920;
-    int m_height = 1080;
+    float m_width = 1920;
+    float m_height = 1080;
 };
 
 #endif // SGSCENE_H

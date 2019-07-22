@@ -3,14 +3,14 @@
 #include "sgrenderer.h"
 
 //camera
-void ViewCamera::setSceneSize(int wid, int hei)
+void ViewCamera::setSceneSize(float wid, float hei)
 {
     m_swid = wid;
     m_shei = hei;
     update();
 }
 
-void ViewCamera::setViewSize(int wid, int hei)
+void ViewCamera::setViewSize(float wid, float hei)
 {
     m_vwid = wid;
     m_vhei = hei;
@@ -24,7 +24,7 @@ void ViewCamera::moveCenter()
     update();
 }
 
-void ViewCamera::move(int x, int y)
+void ViewCamera::move(float x, float y)
 {
     m_center.x += (x / m_scale);
     m_center.y += (y / m_scale);

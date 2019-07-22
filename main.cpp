@@ -14,9 +14,9 @@ int main(int argc, char **argv)
     QSurfaceFormat format;
     format.setSamples(16);
 
-    //SceneFantacy scene;
+    SceneFantacy scene;
     //Scene scene;
-    SceneVideo scene;
+    //SceneVideo scene;
     
     View *window = new View();
     window->attach(&scene);

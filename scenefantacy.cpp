@@ -6,6 +6,10 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <thread>
+#include <mutex>
+#include <functional>
+#include <condition_variable>
 
 struct Square
 {
@@ -23,7 +27,7 @@ struct SquareNode : SGRectangleNode
     int generation;
 };
 
-static const int g_find_depth = 12;
+static const int g_find_depth = 10;
 static Square g_root;
 static void initRoot()
 {
@@ -102,6 +106,12 @@ static void spawnTree(const Square &root, float degree, int depth, std::vector<S
 //scene implementation
 static int timer1 = 0;
 static int timer2 = 0;
+
+
+std::vector<Square> result;
+std::mutex mtx;
+std::condition_variable cv;
+
 SceneFantacy::SceneFantacy()
 {
     initRoot();
@@ -125,7 +135,11 @@ void SceneFantacy::timerEvent(QTimerEvent * event)
         {
             killTimer(timer2);
             if (!timer1)
+            {
                 timer1 = startTimer(20);
+                std::thread worker(std::thread(&SceneFantacy::testSpawn, this));
+                worker.detach();
+            }
         }
     }
 }
@@ -163,28 +177,42 @@ void SceneFantacy::testVisible(int gen)
     }
 }
 
-void SceneFantacy::testUpdate()
+void SceneFantacy::testSpawn()
 {
     static int dval = 150;
     static bool dir = true;
+    std::unique_lock<std::mutex> lk(mtx);
 
-    std::vector<Square> result;
-    spawnTree(g_root, 30 + dval/10.f, g_find_depth, result);
-
-    dir ? ++dval : --dval;
-    if (dval <= 0 || dval >= 300)
+    while (true)
     {
-        dir = !dir;
+        cv.wait(lk);
+        result.clear();
+        spawnTree(g_root, 30 + dval / 10.f, g_find_depth, result);
+
+        dir ? dval += 2 : dval -= 2;
+        if (dval <= 0 || dval >= 300)
+        {
+            dir = !dir;
+        }
+    }
+}
+
+void SceneFantacy::testUpdate()
+{
+    {
+        std::lock_guard<std::mutex> lk(mtx);
+
+        for (int i = 0; i < result.size(); i++)
+        {
+            const Square &sq = result.at(i);
+            auto sn = m_nodes.at(i);
+            sn->setGeometry(sq.center.x - sq.size / 2,
+                sq.center.y - sq.size / 2,
+                sq.size,
+                sq.size,
+                sq.rotation);
+        }
     }
 
-    for (int i = 0; i < result.size(); i++)
-    {
-        const Square &sq = result.at(i);
-        auto sn = m_nodes.at(i);
-        sn->setGeometry(sq.center.x - sq.size / 2,
-            sq.center.y - sq.size / 2,
-            sq.size,
-            sq.size, 
-            sq.rotation);
-    }
+    cv.notify_one();
 }

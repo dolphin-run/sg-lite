@@ -25,8 +25,8 @@ void Scene::timerEvent(QTimerEvent * event)
         {
             if (it->type() != SGNode::E_NodeType::TextNodeType)
             {
-                it->setWidth(100 + (it->width() + 1) % 100);
-                it->setHeight(100 + (it->width() + 1) % 100);
+                it->setWidth(100 + (int(it->width()) + 1) % 100);
+                it->setHeight(100 + (int(it->width()) + 1) % 100);
             }
         }
     }

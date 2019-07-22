@@ -67,27 +67,27 @@ Rect SGNode::boundingRect() const
     return rc;
 }
 
-int SGNode::x() const
+float SGNode::x() const
 {
     return m_x;
 }
 
-int SGNode::y() const
+float SGNode::y() const
 {
     return m_y;
 }
 
-int SGNode::z() const
+float SGNode::z() const
 {
     return m_z;
 }
 
-int SGNode::width() const
+float SGNode::width() const
 {
     return m_width;
 }
 
-int SGNode::height() const
+float SGNode::height() const
 {
     return m_height;
 }
@@ -107,7 +107,7 @@ bool SGNode::visible() const
     return m_visible;
 }
 
-void SGNode::setX(int x)
+void SGNode::setX(float x)
 {
     m_x = x;
     //m_dirty |= E_DirtyType::GeometryDirty;
@@ -115,7 +115,7 @@ void SGNode::setX(int x)
         m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
 }
 
-void SGNode::setY(int y)
+void SGNode::setY(float y)
 {
     m_y = y;
     if (m_scene)
@@ -135,14 +135,14 @@ void SGNode::setZ(int z)
     }
 }
 
-void SGNode::setWidth(int width)
+void SGNode::setWidth(float width)
 {
     m_width = width;
     if (m_scene)
         m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
 }
 
-void SGNode::setHeight(int height)
+void SGNode::setHeight(float height)
 {
     m_height = height;
     if (m_scene)
@@ -166,7 +166,7 @@ void SGNode::setVisible(bool visible)
         m_scene->itemChanged(this, SGNode::E_DirtyType::VisibleDirty);
 }
 
-void SGNode::setGeometry(int x, int y, int wid, int hei, float rot)
+void SGNode::setGeometry(float x, float y, float wid, float hei, float rot)
 {
     m_x = x;
     m_y = y;

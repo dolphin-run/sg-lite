@@ -22,11 +22,11 @@ struct Node {
     unsigned visible : 1;
 
     //absolute properties according to the scene.
-    int x;
-    int y;
+    float x;
+    float y;
     float z;
-    int width;
-    int height;
+    float width;
+    float height;
     float opacity;
     float rotation;
 

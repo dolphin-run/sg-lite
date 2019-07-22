@@ -15,8 +15,8 @@ enum E_MaterialType{
 class SGMaterialShader
 {
 public:
-    SGMaterialShader() {}
-    virtual ~SGMaterialShader() {}
+    SGMaterialShader();
+    virtual ~SGMaterialShader();
     virtual void updateState(const glm::mat4 &projection) = 0;
     virtual char const* const* attributeNames() const = 0;
     inline GLShaderProgram *program() { return &m_program; }
@@ -35,6 +35,7 @@ public:
     virtual ~SGMaterial() {}
     virtual E_MaterialType type() const = 0; 
     virtual SGMaterialShader *createShader() const = 0;
+    virtual bool share() const { return true; }
 };
 
 #endif // SGMATERIAL_H

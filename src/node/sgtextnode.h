@@ -12,6 +12,7 @@ public:
     SGTextNode(SGNode* parent = nullptr);
 
     void setText(const std::wstring &txt);
+    void setColor(const Color &color);
 
 protected:
     void addLineText(const std::wstring & s, size_t first, size_t last);

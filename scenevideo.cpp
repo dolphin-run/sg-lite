@@ -45,23 +45,15 @@ void SceneVideo::timerEvent(QTimerEvent * event)
     {
         std::lock_guard<std::mutex> guard(plock);
         m_videoNode->setYuv(pyuv);
-        //for (auto it : m_nodes)
-        //{
-        //    if (it->type() != SGNode::E_NodeType::TextNodeType)
-        //    {
-        //        it->setWidth(100 + (it->width() + 1) % 100);
-        //        it->setHeight(100 + (it->width() + 1) % 100);
-        //    }
-        //}
     }
     else if (timer2 == id)
     {
-        //static bool deviceRun = false;
-        //if (!deviceRun)
-        //{
-        //    deviceRun = true;
-        //    m_device->start();
-        //}
+        if (m_videoNode1)
+        {
+            std::lock_guard<std::mutex> guard(plock);
+            m_videoNode1->setYuv(pyuv);
+        }
+        
         static bool odd = true;
         odd = !odd;
         for (auto it : m_nodes)
@@ -162,11 +154,11 @@ void SceneVideo::testAlloc()
         m_videoNode->setWidth(600);
         m_videoNode->setHeight(400);
 
-        auto *videoNode1 = new SGYuvVideoNode();
-        this->addItem(videoNode1);
-        videoNode1->setX(720);
-        videoNode1->setY(700);
-        videoNode1->setWidth(600);
-        videoNode1->setHeight(400);
+        m_videoNode1 = new SGYuvVideoNode();
+        this->addItem(m_videoNode1);
+        m_videoNode1->setX(720);
+        m_videoNode1->setY(700);
+        m_videoNode1->setWidth(600);
+        m_videoNode1->setHeight(400);
     }
 }

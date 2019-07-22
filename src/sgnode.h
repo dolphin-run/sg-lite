@@ -23,10 +23,16 @@ public:
         UndefinedNodeType
     };
     enum E_DirtyType {
-        GeometryDirty = 0x01,
-        VisibleDirty = 0x02,
-        OpacityDirty = 0x04,
-        TreeDirty = 0x08
+        //GeometryDirty
+        PositionDirty = 0x01,
+        SizeDirty = 0x02,
+        TransformDirty = 0x04,//transformation, it will be inherited by its children.
+        //
+        OrderingDirty = 0x11,
+        OpacityDirty = 0x12,
+        VisibilityDirty = 0x14,
+        //
+        AllDirty = 0xff
     };
     //SGNode(SGNode* parent = nullptr);
     virtual ~SGNode();
@@ -37,7 +43,7 @@ public:
 
     float x()const;
     float y()const;
-    float z()const;
+    int z()const;
     float width()const;
     float height()const;
     float opactity()const;
@@ -53,7 +59,8 @@ public:
     void setVisible(bool visible = true);
 
     //advance interface
-    void setGeometry(float x, float y, float wid, float hei, float rot);
+    void setPos(float x, float y);
+    void setSize(float wid, float hei);
 
 protected:
     SGNode(E_NodeType type, SGNode* parent = nullptr);

@@ -23,7 +23,8 @@ protected:
     void testAlloc();
 
     QList<SGNode *> m_nodes; 
-    SGYuvVideoNode *m_videoNode;
+    SGYuvVideoNode *m_videoNode = nullptr;
+    SGYuvVideoNode *m_videoNode1 = nullptr;
 };
 
 #endif // SCENEVIDEO_H

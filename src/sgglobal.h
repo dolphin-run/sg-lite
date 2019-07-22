@@ -4,15 +4,15 @@
 //export and import
 #ifdef BUILDING_PLUGIN
     #ifdef _MSC_VER
-        #define INTER_LIB_API __declspec(dllexport)
+        #define SG_EXPORT __declspec(dllexport)
     #else
-        #define INTER_LIB_API __attribute__((visibility("default")))
+        #define SG_EXPORT __attribute__((visibility("default")))
     #endif
 #else
     #ifdef _MSC_VER
-        #define INTER_LIB_API __declspec(dllimport)
+        #define SG_EXPORT __declspec(dllimport)
     #else
-        #define INTER_LIB_API __attribute__((visibility("default")))
+        #define SG_EXPORT __attribute__((visibility("default")))
     #endif
 #endif
 

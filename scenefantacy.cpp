@@ -54,8 +54,8 @@ static std::pair<Square, Square> spawn(const Square &sq, float degree)
 {
     const glm::vec2 &p0 = sq.p[2];
     const glm::vec2 &p1 = sq.p[3];
-    const glm::vec2 &p2 = sq.p[0];
-    const glm::vec2 &p3 = sq.p[1];
+    //const glm::vec2 &p2 = sq.p[0];
+    //const glm::vec2 &p3 = sq.p[1];
 
     glm::vec2 n1t = glm::mix(p0, p1, glm::cos(degree));
     n1t -= p0;
@@ -206,11 +206,9 @@ void SceneFantacy::testUpdate()
         {
             const Square &sq = result.at(i);
             auto sn = m_nodes.at(i);
-            sn->setGeometry(sq.center.x - sq.size / 2,
-                sq.center.y - sq.size / 2,
-                sq.size,
-                sq.size,
-                sq.rotation);
+            sn->setPos(sq.center.x - sq.size / 2, sq.center.y - sq.size / 2);
+            sn->setSize(sq.size, sq.size);
+            sn->setRotation(sq.rotation);
         }
     }
 

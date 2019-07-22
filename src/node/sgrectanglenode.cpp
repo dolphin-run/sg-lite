@@ -58,5 +58,5 @@ bool SGYuvVideoNode::setYuv(const unsigned char * yuv, int len)
     if (len >= 0 && len < m_pxLen) return false;
 
     m_texMaterial->setYuv(yuv);
-
+    return true;
 }

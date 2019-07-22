@@ -77,7 +77,7 @@ float SGNode::y() const
     return m_y;
 }
 
-float SGNode::z() const
+int SGNode::z() const
 {
     return m_z;
 }
@@ -110,25 +110,25 @@ bool SGNode::visible() const
 void SGNode::setX(float x)
 {
     m_x = x;
-    //m_dirty |= E_DirtyType::GeometryDirty;
     if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
+        m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGNode::setY(float y)
 {
     m_y = y;
     if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
+        m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGNode::setZ(int z)
 {
     m_z = z;
     if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::TreeDirty);//to do...
+        m_scene->itemChanged(this, SGNode::E_DirtyType::OrderingDirty);
     if (m_parent)
     {
+        //a more better solution can be remove and insert again.
         m_parent->m_children.sort([](const SGNode *lop, const SGNode *rop) {
             return lop->m_z < rop->m_z;
         });
@@ -139,43 +139,53 @@ void SGNode::setWidth(float width)
 {
     m_width = width;
     if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
+        m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
 }
 
 void SGNode::setHeight(float height)
 {
     m_height = height;
     if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
+        m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
 }
 
 void SGNode::setOpactity(float opacity)
 {
     m_opacity = opacity;
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::OpacityDirty);
 }
 
 void SGNode::setRotation(float rotation)
 {
     m_rotation = rotation;
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::TransformDirty);
 }
 
 void SGNode::setVisible(bool visible)
 {
     m_visible = visible;
     if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::VisibleDirty);
+        m_scene->itemChanged(this, SGNode::E_DirtyType::VisibilityDirty);
 }
 
-void SGNode::setGeometry(float x, float y, float wid, float hei, float rot)
+void SGNode::setPos(float x, float y)
 {
     m_x = x;
     m_y = y;
-    m_width = wid;
-    m_height = hei;
-    m_rotation = rot;
     
     if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::GeometryDirty);
+        m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
+}
+
+void SGNode::setSize(float wid, float hei)
+{
+    m_width = wid;
+    m_height = hei;
+
+    if (m_scene)
+        m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
 }
 
 SGRootNode::SGRootNode() : SGNode(SGNode::E_NodeType::RootNodeType)

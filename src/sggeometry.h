@@ -7,9 +7,6 @@
 //store vertex data
 //define how data should be explained
 
-enum E_GeometryType {
-    ColorRectangleGeometryType
-};
 
 enum E_RenderType {
     E_RenderTriangles = 0x0004,

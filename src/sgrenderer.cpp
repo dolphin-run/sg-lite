@@ -6,21 +6,19 @@
 
 void Node::updateMatrix()
 {
+    matrix = glm::mat4();
+    matrix = glm::translate(matrix, glm::vec3(x + width / 2, y + height / 2, 0));
+    if (abs(rotation) > glm::epsilon<float>())
     {
-        matrix = glm::mat4();
-        matrix = glm::translate(matrix, glm::vec3(x + width / 2, y + height / 2, 0));
-        if (abs(rotation) > FLT_EPSILON)
-        {
-            matrix = glm::rotate(matrix, rotation, glm::vec3(0, 0, -1));
-        }
-        matrix = glm::scale(matrix, glm::vec3(width, height, 1));
+        matrix = glm::rotate(matrix, rotation, glm::vec3(0, 0, -1));
     }
+    matrix = glm::scale(matrix, glm::vec3(width, height, 1));
 }
 
 SGMaterialShader * SGShaderManager::find(SGMaterial *material)
 {
     E_MaterialType type = material->type();
-    if (m_shaders.count(type)) return m_shaders[type];
+    if (m_shaders.count(material)) return m_shaders.at(material);
 
     SGMaterialShader *shader = material->createShader();
 
@@ -31,7 +29,7 @@ SGMaterialShader * SGShaderManager::find(SGMaterial *material)
             p->bindAttributeLocation(attr[i], i);
     }
     
-    m_shaders.insert(std::make_pair(type, shader));
+    m_shaders.insert(std::make_pair(material, shader));
     return shader;
 }
 
@@ -54,7 +52,10 @@ bool SGRenderer::initialize()
 
 void SGRenderer::setRootNode(const SGRootNode *root)
 {
-    m_rootNode = root;
+    m_rootGNode = root;
+    m_rootNode.gnode = root;
+
+    assert(!m_mapNodes.count(root));
 }
 
 void SGRenderer::clear()
@@ -62,59 +63,98 @@ void SGRenderer::clear()
     m_mapNodes.clear();
 }
 
-void SGRenderer::buildRenderNodes()
+void SGRenderer::buildRenderNodes(const SGNode * gnode, Node *p)
 {
-    m_zRenderOrder = 1;
-    syncGnode(m_rootNode, nullptr);
-}
-
-void SGRenderer::syncGnode(const SGNode * node, Node *p)
-{
-    assert(m_mapNodes.count(node));
-    Node *c = m_mapNodes.at(node);
+    assert(m_mapNodes.count(gnode));
+    Node *c = m_mapNodes.at(gnode);
 
     c->z = m_zRenderOrder++ / 10000.f;
 
-    if (c->dirty & SGNode::E_DirtyType::GeometryDirty)
+    if (c->geometryChanged || (p&&p->geometryChanged))
     {
         if (p)
         {
-            c->opacity = p->opacity*node->m_opacity;
-            c->x = p->x + node->m_x;
-            c->y = p->y + node->m_y;
+            c->x = p->x + gnode->m_x;
+            c->y = p->y + gnode->m_y;
         }
         else
         {
-            c->opacity = node->m_opacity;
-            c->x = node->m_x;
-            c->y = node->m_y;
+            c->x = gnode->m_x;
+            c->y = gnode->m_y;
         }
-        c->width = node->m_width;
-        c->height = node->m_height;
-        c->rotation = node->m_rotation;
+        c->width = gnode->m_width;
+        c->height = gnode->m_height;
+        c->rotation = gnode->m_rotation;
         c->bounding = RectF(c->x, c->y, c->width, c->height);
 
         c->updateMatrix();
-        c->dirty = 0;
+        c->geometryChanged = 1;//set to notify children if parent geometry changed
     }
 
-    auto children = node->m_children;
-    for (auto child : children)
+    if (c->opacityChanged || (p&&p->opacityChanged))
     {
-        syncGnode(child, c);
+        if (p)
+        {
+            c->opacity = p->opacity*gnode->m_opacity;
+        }
+        else
+        {
+            c->opacity = gnode->m_opacity;
+        }
+
+        if (c->opacity < 0.01f)
+        {
+            c->visible = 0;
+            c->visibleChanged = 1;
+        }
+        c->alpha = c->opacity < 0.99f;
+        c->opacityChanged = 1;//set to notify children if parent opacity changed
     }
+
+    if (c->visibleChanged)
+    {
+        if (p&&p->visibleChanged)
+            c->visible = gnode->m_visible ? p->visible : false;
+        else
+            c->visible = gnode->m_visible;
+        c->visibleChanged = 1;//set to notify children if parent opacity changed
+    }
+
+    for (auto child : gnode->m_children)
+    {
+        buildRenderNodes(child, c);
+    }
+
+    c->geometryChanged = 0;
+    c->opacityChanged = 0;
+    c->visibleChanged = 0;
 }
 
+/*
+** 1)walk through SGNode-Tree from root, calculate the unique `order` of each SGNode.
+** 2)walk througn SGNode-Tree from root, calculate the `geometry`(transform matrix) of each SGNode.
+** 3)select opacity nodes and tranlucent nodes separately.
+** 4)build batches
+** 5)upload batches
+** 6)render batches
+*/
 void SGRenderer::render()
 {
-    if (m_rebuild&E_RebuildFlag::BuildRenderLists)
+    if (m_rebuild&E_RebuildFlag::BuildNodes)
     {
-        buildRenderNodes();
+        m_zRenderOrder = 1;
+        for (auto child : m_rootGNode->m_children)
+        {
+            buildRenderNodes(child, nullptr);
+        }
     }
 
-    m_opacityNodes.clear();
-    m_alphaNodes.clear(); 
-    selectRenderNodes(m_rootNode);
+    if (m_rebuild&E_RebuildFlag::SelectNodes)
+    {
+        m_opacityNodes.clear();
+        m_alphaNodes.clear();
+        selectRenderNodes();
+    }
 
     if (m_rebuild&E_RebuildFlag::BuildBatches)
     {
@@ -122,20 +162,11 @@ void SGRenderer::render()
         buildAlphaBatches();
     }
 
-    for (Batch *batch : m_opaqueBatches)
+    if (m_rebuild&E_RebuildFlag::UploadBatches)
     {
-        //to do...seperate build and upload
-        //if (!batch->dirty) continue;
-        //batch->dirty = false;
-        uploadBatches(batch);
+        uploadBatches();
     }
-    for (Batch *batch : m_alphaBatches)
-    {
-        //if (!batch->dirty) continue;
-        //batch->dirty = false;
-        uploadBatches(batch);
-    }
-
+    
     const float retinaScale = m_view->pixelRatio();
     glViewport(0, 0, m_view->width() * retinaScale, m_view->height() * retinaScale);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -147,79 +178,96 @@ void SGRenderer::render()
     m_rebuild = 0;
 }
 
-void SGRenderer::itemAdded(SGNode * node)
+void SGRenderer::itemAdded(SGNode * gnode)
 {
-    assert(!m_mapNodes.count(node));
+    assert(!m_mapNodes.count(gnode));
     {
-        auto pnode = node->m_parent;
+        //auto pnode = gnode->m_parent;
 
         //parent should have been added before
-        assert(!pnode || m_mapNodes.count(pnode));
+        //assert(!pnode || m_mapNodes.count(pnode));
 
-        Node *c = m_nodePool.alloc(); c->gnode = node;
-        m_mapNodes.insert(std::make_pair(node, c));
+        Node *c = m_nodePool.alloc(); c->gnode = gnode;
+        m_mapNodes.insert(std::make_pair(gnode, c));
 
-        c->dirty = SGNode::E_DirtyType::GeometryDirty;
+        c->geometryChanged = 1;
+        c->opacityChanged = 1; 
+        c->visibleChanged = 1;
         m_rebuild |= E_RebuildFlag::FullRebuild;
     }
 }
 
-void SGRenderer::itemDeleted(SGNode * node)
+void SGRenderer::itemDeleted(SGNode * gnode)
 {
-    assert(m_mapNodes.count(node));
+    assert(m_mapNodes.count(gnode));
     {
-        m_nodePool.free(m_mapNodes.at(node));
-        m_mapNodes.erase(node);
+        m_nodePool.free(m_mapNodes.at(gnode));
+        m_mapNodes.erase(gnode);
 
         //can be no-rebuild
-        //m_rebuild |= E_RebuildFlag::FullRebuild;
+        m_rebuild |= E_RebuildFlag::BuildBatches;
+        m_rebuild |= E_RebuildFlag::UploadBatches;
     }
 }
 
-void SGRenderer::itemChanged(SGNode * item, SGNode::E_DirtyType changes)
+void SGRenderer::itemChanged(SGNode * gnode, SGNode::E_DirtyType changes)
 {
-    //to do...avoid call multi-times
-    assert(m_mapNodes.count(item));
-    Node *node = m_mapNodes.at(item);
+    assert(m_mapNodes.count(gnode));
+    Node *node = m_mapNodes.at(gnode);
     switch (changes)
     {
-    case SGNode::E_DirtyType::GeometryDirty:
-        node->dirty |= SGNode::GeometryDirty;
-        m_rebuild |= E_RebuildFlag::BuildRenderLists;
-        break;
-    case SGNode::E_DirtyType::VisibleDirty:
-        node->dirty |= SGNode::VisibleDirty;
+    case SGNode::E_DirtyType::PositionDirty:
+    case SGNode::E_DirtyType::SizeDirty:
+    case SGNode::E_DirtyType::TransformDirty:
+        node->geometryChanged = 1;
+        m_rebuild |= E_RebuildFlag::BuildNodes;
         m_rebuild |= E_RebuildFlag::BuildBatches;
+        m_rebuild |= E_RebuildFlag::UploadBatches;
         break;
-    case SGNode::E_DirtyType::TreeDirty:
-        m_rebuild |= E_RebuildFlag::BuildRenderLists;
+    case SGNode::E_DirtyType::OrderingDirty:
+        m_rebuild |= E_RebuildFlag::BuildNodes;
+        m_rebuild |= E_RebuildFlag::UploadBatches;
         break;
     case SGNode::E_DirtyType::OpacityDirty:
-        m_rebuild != E_RebuildFlag::BuildRenderLists;
+        node->opacityChanged = 1;
+        m_rebuild |= E_RebuildFlag::FullRebuild;
+        break;
+    case SGNode::E_DirtyType::VisibilityDirty:
+        node->visibleChanged = 1;
+        m_rebuild |= E_RebuildFlag::FullRebuild;
+        break;
+    case SGNode::E_DirtyType::AllDirty:
+        node->geometryChanged = 1;
+        node->visibleChanged = 1;
+        node->opacityChanged = 1;
+        m_rebuild |= E_RebuildFlag::FullRebuild;
         break;
     default:
         break;
     }
 }
 
-void SGRenderer::selectRenderNodes(const SGNode *node)
+void SGRenderer::selectRenderNodes()
 {
-    if (!node || !node->visible()) return;
-    if (node->type() == SGNode::E_NodeType::ImageNodeType || node->type() == SGNode::E_NodeType::TextNodeType)
+    SGNode::E_NodeType nodeType;
+    Node *node;
+    for (auto item : m_mapNodes)
     {
-        m_mapNodes[node]->batch = 0;
-        m_alphaNodes.push_back(m_mapNodes[node]);
-    }
-    else if(node->type() == SGNode::E_NodeType::RectangleNodeType
-        || node->type() == SGNode::E_NodeType::CircularNodeType
-        || node->type() == SGNode::E_NodeType::YuvNodeType)
-    {
-        m_mapNodes[node]->batch = 0;
-        m_opacityNodes.push_back(m_mapNodes[node]);
-    }
-    for (auto itm : node->m_children)
-    {
-        selectRenderNodes(itm);
+        nodeType = item.first->type();
+        node = item.second;
+        if (!node->visible) continue;
+
+        if (nodeType == SGNode::E_NodeType::ImageNodeType ||
+            nodeType == SGNode::E_NodeType::TextNodeType ||
+            node->alpha)
+        {
+            m_alphaNodes.push_back(node);
+        }
+        else
+        {
+            m_opacityNodes.push_back(node);
+        }
+        node->batch = 0;
     }
 }
 
@@ -231,6 +279,11 @@ void SGRenderer::buildOpacityBatches()
     }
     m_opaqueBatches.clear();
 
+    for (auto node: m_opacityNodes)
+    {
+        node->batch = 0;
+    }
+    std::sort(m_opacityNodes.begin(), m_opacityNodes.end(), [](const Node *lop, const Node *rop) ->bool {return lop->z > rop->z; });
     for (int i = 0; i < m_opacityNodes.size(); i++)
     {
         Node *node = m_opacityNodes[i];
@@ -246,21 +299,25 @@ void SGRenderer::buildOpacityBatches()
         batch->degenerate = node->gnode->m_geometry->renderType() == E_RenderType::E_RenderTriangleStrip;
         int nodenum = 1;
         batch->vbo.verticeNum = node->gnode->m_geometry->verticeNum();
-        for (int j = i + 1; j < m_opacityNodes.size(); j++)
+        if (node->gnode->m_material->share())
         {
-            Node *nj = m_opacityNodes[j];
+            for (int j = i + 1; j < m_opacityNodes.size(); j++)
+            {
+                Node *nj = m_opacityNodes[j];
 
-            if (nj->batch ||
-                ntype != nj->gnode->type())
-                continue;
+                if (nj->batch ||
+                    ntype != nj->gnode->type() ||
+                    !nj->gnode->m_material->share())
+                    continue;
 
-            node->next = nj;
-            nj->prev = node;
-            nj->batch = 1;
-            batch->vbo.verticeNum += nj->gnode->m_geometry->verticeNum();
+                node->next = nj;
+                nj->prev = node;
+                nj->batch = 1;
+                batch->vbo.verticeNum += nj->gnode->m_geometry->verticeNum();
 
-            node = nj;
-            nodenum++;
+                node = nj;
+                nodenum++;
+            }
         }
         node->next = nullptr;
 
@@ -295,7 +352,11 @@ void SGRenderer::buildAlphaBatches()
     }
     m_alphaBatches.clear();
 
-    std::sort(m_alphaNodes.begin(), m_alphaNodes.end(), [](const Node *lop, const Node *rop) ->bool {return lop->z > rop->z; });
+    for (auto node : m_alphaNodes)
+    {
+        node->batch = 0;
+    }
+    std::sort(m_alphaNodes.begin(), m_alphaNodes.end(), [](const Node *lop, const Node *rop) ->bool {return lop->z < rop->z; });
     for (int i = 0; i < m_alphaNodes.size(); i++)
     {
         Node *node = m_alphaNodes[i];
@@ -314,31 +375,35 @@ void SGRenderer::buildAlphaBatches()
         batch->degenerate = node->gnode->m_geometry->renderType() == E_RenderType::E_RenderTriangleStrip;
         int nodenum = 1;
         batch->vbo.verticeNum = node->gnode->m_geometry->verticeNum();
-        for (int j = i + 1; j < m_alphaNodes.size(); j++)
+        if (node->gnode->m_material->share())
         {
-            Node *nj = m_alphaNodes[j];
-
-            if (nj->batch)
-                continue;
-
-            if (ntype == nj->gnode->type())
+            for (int j = i + 1; j < m_alphaNodes.size(); j++)
             {
-                if (overlapBounds.intersects(nj->bounding) && checkOverlap(i + 1, j - 1, nj->bounding))//not overlap
+                Node *nj = m_alphaNodes[j];
+
+                if (nj->batch)
+                    continue;
+
+                if (ntype == nj->gnode->type() && nj->gnode->m_material->share())
                 {
-                    break;
+                    if (overlapBounds.intersects(nj->bounding) &&
+                        checkOverlap(i + 1, j - 1, nj->bounding))//not overlap
+                    {
+                        break;
+                    }
+
+                    node->next = nj;
+                    nj->prev = node;
+                    nj->batch = 1;
+                    batch->vbo.verticeNum += nj->gnode->m_geometry->verticeNum();
+
+                    node = nj;
+                    nodenum++;
                 }
-
-                node->next = nj;
-                nj->prev = node;
-                nj->batch = 1;
-                batch->vbo.verticeNum += nj->gnode->m_geometry->verticeNum();
-
-                node = nj;
-                nodenum++;
-            }
-            else
-            {
-                overlapBounds |= nj->bounding;
+                else
+                {
+                    overlapBounds |= nj->bounding;
+                }
             }
         }
         node->next = nullptr;
@@ -374,7 +439,19 @@ void SGRenderer::unmap(Buffer *buffer)
     glBufferData(GL_ARRAY_BUFFER, buffer->size, buffer->data, GL_STREAM_DRAW);
 }
 
-void SGRenderer::uploadBatches(Batch *batch)
+void SGRenderer::uploadBatches()
+{
+    for (Batch *batch : m_opaqueBatches)
+    {
+        uploadOneBatch(batch);
+    }
+    for (Batch *batch : m_alphaBatches)
+    {
+        uploadOneBatch(batch);
+    }
+}
+
+void SGRenderer::uploadOneBatch(Batch *batch)
 {
     map(&batch->vbo);
 

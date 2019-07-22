@@ -18,8 +18,12 @@ struct Node {
     void updateMatrix();
 
     glm::mat4 matrix;
+    unsigned alpha : 1;
     unsigned batch : 1;
     unsigned visible : 1;
+    unsigned geometryChanged : 1;
+    unsigned opacityChanged : 1;
+    unsigned visibleChanged : 1;
 
     //absolute properties according to the scene.
     float x;
@@ -31,8 +35,6 @@ struct Node {
     float rotation;
 
     RectF bounding;
-
-    unsigned dirty;
 };
 
 struct Buffer {
@@ -81,14 +83,16 @@ class SGShaderManager
 public:
     SGMaterialShader* find(SGMaterial *material);
 private:
-    std::unordered_map<E_MaterialType, SGMaterialShader*> m_shaders;
+    std::unordered_map<SGMaterial*, SGMaterialShader*> m_shaders;
 };
 
 class SGRenderer
 {
     enum E_RebuildFlag {
-        BuildRenderLists = 0x0001,
-        BuildBatches = 0x0002,
+        BuildNodes = 0x0001,
+        SelectNodes = 0x0002,
+        BuildBatches = 0x0004,
+        UploadBatches = 0x0008,
         FullRebuild = 0xffff
     };
 public:
@@ -100,21 +104,21 @@ public:
     virtual void render();
 
     //
-    virtual void itemAdded(SGNode *node);
-    virtual void itemDeleted(SGNode *node);
-    virtual void itemChanged(SGNode *node, SGNode::E_DirtyType changes);
+    virtual void itemAdded(SGNode *gnode);
+    virtual void itemDeleted(SGNode *gnode);
+    virtual void itemChanged(SGNode *gnode, SGNode::E_DirtyType changes);
 
 protected:
-    void buildRenderNodes();
-    void syncGnode(const SGNode *node, Node *p);
-    void selectRenderNodes(const SGNode *node);
+    void buildRenderNodes(const SGNode *gnode, Node *p);
+    void selectRenderNodes();
     void buildOpacityBatches();
     void buildAlphaBatches();
 
     void map(Buffer *buffer);
     void unmap(Buffer *buffer);
 
-    void uploadBatches(Batch *batch);
+    void uploadBatches();
+    void uploadOneBatch(Batch *batch);
     void renderOpacityBatches();
     void renderAlphaBatches();
     void renderBatch(Batch *batch);
@@ -130,14 +134,15 @@ protected:
     std::vector<Node*> m_opacityNodes;
     std::vector<Node*> m_alphaNodes;
     std::unordered_map<const SGNode*, Node*> m_mapNodes;
-    const SGRootNode *m_rootNode;
+    Node m_rootNode;
+    const SGRootNode *m_rootGNode;
 
     SGShaderManager m_shrMgr;
 
     SGView *m_view = nullptr;
 
     int m_zRenderOrder;
-    unsigned m_rebuild;
+    unsigned m_rebuild = FullRebuild;
 };
 
 #endif // SGRENDERER_H

@@ -40,6 +40,7 @@ public:
     SGYuvMaterial();
     virtual E_MaterialType type() const override;
     virtual SGMaterialShader *createShader() const override;
+    virtual bool share() const { return false; }
 
     void setYuvInfo(SYUVInfo *info);
 

@@ -5,7 +5,7 @@ SGScene::SGScene()
 {
     //initialize root node.
     m_root.m_scene = this;
-    m_nodes.push_back(&m_root);
+    //m_nodes.push_back(&m_root);
 }
 
 void SGScene::sizeChanged()

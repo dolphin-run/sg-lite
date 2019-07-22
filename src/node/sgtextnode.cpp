@@ -80,3 +80,9 @@ void SGTextNode::setText(const std::wstring & txt)
     SGNode::m_width = boundingWidth;
     SGNode::m_height = boundingHeight;
 }
+
+void SGTextNode::setColor(const Color & color)
+{
+    //to do...
+    m_color = color;
+}

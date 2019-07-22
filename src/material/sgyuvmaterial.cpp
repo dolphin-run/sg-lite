@@ -17,8 +17,8 @@ bool SYUVInfo::update(int pixWid, int pixHei)
 
     m_yWid = pixWid;
     m_yHei = pixHei;
-    m_uWid = (pixWid + 1) / 2;
-    m_uHei = (pixHei + 1) / 2;
+    m_uWid = (pixWid + 1) >> 1;
+    m_uHei = (pixHei + 1) >> 1;
 
     m_yLen = m_yWid*m_yHei;
     m_uLen = m_uWid*m_uHei;

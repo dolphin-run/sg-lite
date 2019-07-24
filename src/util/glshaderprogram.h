@@ -6,7 +6,7 @@
 class GLShaderProgram
 {
 public:
-    void build(const char* vs, const char* fs);
+    void build(const char* vs, const char* fs, char const *const *attr);
     
     //use this shader
     void bind();

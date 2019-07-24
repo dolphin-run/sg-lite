@@ -3,6 +3,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
+#include <string>
 
 static std::unordered_map<std::string, unsigned> g_nameMapToKey;
 static SGGridImageTexture g_imgTex(2048, 2048, Image::Format_RGBA, 256, 256);

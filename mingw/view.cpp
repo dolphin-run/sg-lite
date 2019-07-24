@@ -1,6 +1,8 @@
 
 #include "view.h"
 #include <functional>
+#include <thread>
+#include <chrono>
 
 bool View::g_glfwInitialized = false;
 std::unordered_map<GLFWwindow*, View*> View::g_glfwView;
@@ -74,7 +76,7 @@ void View::exec()
             glfwSwapBuffers(it.first);
             glfwPollEvents();
         }
-        _sleep(40);
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
     }
 }
 
@@ -128,12 +130,12 @@ void View::destroy()
     }
 }
 
-int View::width() const
+float View::width() const
 {
     return m_width;
 }
 
-int View::height() const
+float View::height() const
 {
     return m_height;
 }

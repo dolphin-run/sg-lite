@@ -8,5 +8,5 @@ SGMaterialShader::~SGMaterialShader()
 
 void SGMaterialShader::compile()
 {
-    m_program.build(vertexShader(), fragmentShader());
+    m_program.build(vertexShader(), fragmentShader(), attributeNames());
 }

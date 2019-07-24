@@ -3,6 +3,7 @@
 
 #include "sgnode.h"
 #include "util/sgglyph.h"
+#include <string>
 
 class SGGlyphMaterial;
 class SGTextRectangleGeometry;

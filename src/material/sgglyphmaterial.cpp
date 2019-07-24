@@ -13,7 +13,13 @@ static void msyh_glyph_initialize()
     if (loaded) return;
     loaded = true;
 
+#ifdef WIN32
     const char* fontPath = "C:/Windows/Fonts/msyh.ttc";
+#endif
+
+#ifdef __APPLE__
+    const char *fontPath = "/System/Library/Fonts/PingFang.ttc";
+#endif
 
     g_msyhGlyph.load(fontPath, GLYPH_PIXEL_SIZE, GLYPH_PIXEL_SIZE);
 }

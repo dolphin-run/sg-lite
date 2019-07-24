@@ -22,12 +22,13 @@ SGMaterialShader * SGShaderManager::find(SGMaterial *material)
 
     SGMaterialShader *shader = material->createShader();
 
-    GLShaderProgram *p = shader->program();
-    char const *const *attr = shader->attributeNames();
-    for (int i = 0; attr[i]; ++i) {
-        if (*attr[i])
-            p->bindAttributeLocation(attr[i], i);
-    }
+    // Binding can be only worked before program linking.
+    // GLShaderProgram *p = shader->program();
+    // char const *const *attr = shader->attributeNames();
+    // for (int i = 0; attr[i]; ++i) {
+    //     if (*attr[i])
+    //         p->bindAttributeLocation(attr[i], i);
+    // }
     
     m_shaders.insert(std::make_pair(material, shader));
     return shader;

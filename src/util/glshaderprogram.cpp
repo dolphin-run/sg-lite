@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <cstdio>
 
-void GLShaderProgram::build(const char* vs, const char* fs)
+void GLShaderProgram::build(const char* vs, const char* fs, char const *const *attr)
 {
     unsigned vertex, fragment;
 
@@ -23,6 +23,13 @@ void GLShaderProgram::build(const char* vs, const char* fs)
     m_id = glCreateProgram();
     glAttachShader(m_id, vertex);
     glAttachShader(m_id, fragment);
+
+    //bind attributes
+    for (int i = 0; attr[i]; ++i) {
+        if (*attr[i])
+            bindAttributeLocation(attr[i], i);
+    }
+
     glLinkProgram(m_id);
     checkLinkError(m_id);
 

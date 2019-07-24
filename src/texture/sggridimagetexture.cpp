@@ -52,7 +52,7 @@ void SGGridImageTexture::bind()
 
         glTexImage2D(GL_TEXTURE_2D, 0, m_imgBuf.gl_fmt, m_texBuffer->pxWid, m_texBuffer->pxHei
             , 0, m_imgBuf.gl_fmt, GL_UNSIGNED_BYTE, m_texBuffer->data);
-        glGenerateMipmap(GL_TEXTURE_2D);
+        //glGenerateMipmap(GL_TEXTURE_2D);//to do... need to support
     }
     else
     {

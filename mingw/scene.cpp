@@ -61,6 +61,8 @@ void Scene::testAlloc()
 
         this->addItem(sn);
 
+        //return ;
+
         //add image
         SGImageNode *sn1 = new SGImageNode(sn);
         sn1->setX(25);
@@ -126,8 +128,8 @@ void Scene::testUpdate()
     {
         for (auto it : m_nodes)
         {
-            it->setWidth(100 + (it->width() + 1) % 100);
-            it->setHeight(100 + (it->width() + 1) % 100);
+            it->setWidth(100 + int(it->width() + 1) % 100);
+            it->setHeight(100 + int(it->width() + 1) % 100);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(40));
     }

@@ -168,8 +168,7 @@ void SGRenderer::render()
         uploadBatches();
     }
     
-    const float retinaScale = m_view->pixelRatio();
-    glViewport(0, 0, m_view->width() * retinaScale, m_view->height() * retinaScale);
+    glViewport(0, 0, m_view->widthPx(), m_view->heightPx());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //render

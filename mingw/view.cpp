@@ -13,6 +13,7 @@ void View::InitializeGlfw()
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+        glfwWindowHint(GLFW_SAMPLES, 4);
 
         g_glfwInitialized = true;
     }
@@ -25,8 +26,16 @@ void View::FreeGlfw()
 
 void View::windowSizeCallback(GLFWwindow* window, int width, int height)
 {
+    //if (g_glfwView.count(window))
+    //    g_glfwView.at(window)->resizeEvent(width, height);
+}
+void View::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
     if (g_glfwView.count(window))
-        g_glfwView.at(window)->resizeEvent(width, height);
+    {
+        auto view = g_glfwView.at(window);
+        view->resizeEvent(width, height);
+    }
 }
 
 void View::windowScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
@@ -82,9 +91,9 @@ void View::exec()
 
 void View::resizeEvent(int width, int height)
 {
-    m_width = width;
-    m_height = height;
-    m_camera.setViewSize(m_width, m_height);
+    m_widthPx = width;
+    m_heightPx = height;
+    m_camera.setViewSize(m_widthPx, m_heightPx);
 }
 
 View::View()
@@ -103,9 +112,9 @@ bool View::create(const char* title)
 
     //The window and its OpenGL context are created with a single call to glfwCreateWindow, 
     //which returns a handle to the created combined window and context object
-    GLFWwindow *window = NULL;
-    if (g_glfwView.size()) window = g_glfwView.begin()->first;
-    m_window = glfwCreateWindow(800, 600, title, NULL, window);
+    GLFWwindow *firstwindow = NULL;
+    if (g_glfwView.size()) firstwindow = g_glfwView.begin()->first;
+    m_window = glfwCreateWindow(800, 600, title, NULL, firstwindow);
     if (m_window == NULL)
     {
         printf("Failed to create GLFW window\n");
@@ -116,6 +125,12 @@ bool View::create(const char* title)
     glfwSetFramebufferSizeCallback(m_window, windowSizeCallback); 
     glfwSetKeyCallback(m_window, windowKeyCallback);
     glfwSetScrollCallback(m_window, windowScrollCallback);
+    glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
+
+    //force to update pixel-size of the window
+    int cwid,chei;
+    glfwGetFramebufferSize(m_window, &cwid, &chei);
+    resizeEvent(cwid,chei);
 
     g_glfwView.insert(std::make_pair(m_window, this));
 }
@@ -138,6 +153,16 @@ float View::width() const
 float View::height() const
 {
     return m_height;
+}
+
+float View::widthPx() const
+{
+    return m_widthPx;
+}
+
+float View::heightPx() const
+{
+    return m_heightPx;
 }
 
 float View::pixelRatio() const

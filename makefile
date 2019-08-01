@@ -49,7 +49,7 @@ macos : TARGET := sgtest
 macos : CFLAGS += -I/usr/include -I/usr/local/include -Imingw/3rdparty/include
 macos : LDFLAGS += -L/usr/bin -lfreetype -L/usr/local/bin -Lmingw/3rdparty/lib -lglfw3  -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 
-SRC += mingw/view.cpp mingw/scene.cpp mingw/main.cpp
+SRC += mingw/view.cpp mingw/scene.cpp mingw/scenefantacy.cpp mingw/main.cpp
 
 macos : $(SRC) sgtest
 

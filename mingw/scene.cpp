@@ -5,40 +5,12 @@
 #include "node/sgcircularnode.h"
 #include "node/sgtextnode.h"
 
-//timer
-#include <functional>
-#include <chrono>
-#include <future>
-#include <cstdio>
-
-class Later
-{
-public:
-    template <class callable, class... arguments>
-    Later(int after, bool async, callable&& f, arguments&&... args)
-    {
-        std::function<typename std::result_of<callable(arguments...)>::type()> task(std::bind(std::forward<callable>(f), std::forward<arguments>(args)...));
-
-        if (async)
-        {
-            std::thread([after, task]() {
-                std::this_thread::sleep_for(std::chrono::milliseconds(after));
-                task();
-            }).detach();
-        }
-        else
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(after));
-            task();
-        }
-    }
-
-};
+#include "later.h"
 
 Scene::Scene()
 {
     testAlloc();
-    Later calllater(1000, true, [this] {this->testUpdate(); });
+    Later calllater(1000, true, 1, [this] {this->testUpdate(); });
 
 }
 

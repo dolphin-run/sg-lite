@@ -110,6 +110,16 @@ float View::height() const
     return QWindow::height();
 }
 
+float View::widthPx() const
+{
+    return QWindow::width()*QWindow::devicePixelRatio();
+}
+
+float View::heightPx() const
+{
+    return QWindow::height()*QWindow::devicePixelRatio();
+}
+
 float View::pixelRatio() const
 {
     return QWindow::devicePixelRatio();

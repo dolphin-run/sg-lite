@@ -27,6 +27,7 @@ SOURCES += \
     $$PWD/3rdparty/glad/glad.c
 
 HEADERS += \
+    $$PWD/sgglobal.h \
     $$PWD/sgnode.h \
     $$PWD/sgstruct.h \
     $$PWD/sgrenderer.h \

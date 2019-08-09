@@ -12,6 +12,7 @@ public:
     void moveCenter();
     void move(float x, float y);
     void scale(float s);
+    void setFillMode(bool strench);
 
     const glm::mat4 &transform() const;
     const RectF &viewRect() const;
@@ -31,7 +32,7 @@ private:
     PointF m_center;
     float m_scale = 1.0;
     RectF m_viewPort;
-    //bool stretch = false;
+    bool m_stretch = false;//fill mode
 };
 
 class SGScene;
@@ -44,10 +45,12 @@ class SGView
 {
 public:
     explicit SGView();
-    ~SGView();
+    virtual ~SGView();
 
     void attach(SGScene *scene);
     void detach();
+
+    void setViewMode(bool strench);
 
     //notify renderer rebuild.
     virtual void sceneChanged();

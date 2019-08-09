@@ -38,6 +38,11 @@ void ViewCamera::scale(float s)
     update();
 }
 
+void ViewCamera::setFillMode(bool strench)
+{
+    m_stretch = strench;
+}
+
 const glm::mat4 &ViewCamera::transform() const
 {
     return m_transform;
@@ -59,12 +64,38 @@ Point ViewCamera::mapToScene(const Point & vp) const
 
 void ViewCamera::update()
 {
-    float wid = m_vwid / m_scale;
-    float hei = m_vhei / m_scale;
-    m_viewPort = RectF(0, 0, wid, hei);
-    PointF oldcenter = m_viewPort.center();
-    m_viewPort.move(m_center - oldcenter);
-    m_transform = glm::ortho(m_viewPort.tl.x, m_viewPort.br.x, m_viewPort.br.y, m_viewPort.tl.y, -1.f, 1.f);
+    if (m_shei < 1.f || m_swid < 1.f || m_vwid < 1.f || m_vhei < 1.f) return;
+    
+    if (!m_stretch)
+    {
+        float wid = m_vwid / m_scale;
+        float hei = m_vhei / m_scale;
+        m_viewPort = RectF(0, 0, wid, hei);
+        PointF oldcenter = m_viewPort.center();
+        m_viewPort.move(m_center - oldcenter);
+        m_transform = glm::ortho(m_viewPort.tl.x, m_viewPort.br.x, m_viewPort.br.y, m_viewPort.tl.y, -1.f, 1.f);
+        //m_transform = glm::ortho(m_viewPort.tl.x, m_viewPort.br.x, m_viewPort.tl.y, m_viewPort.br.y, -1.f, 1.f);
+    }
+    else 
+    {
+        float actwid = m_swid, acthei = m_shei;
+        float vradio = m_vhei / m_vwid;
+        float sradio = m_shei / m_swid;
+        float deltawid = 0.f, deltahei = 0.f;
+        if (vradio > sradio)
+        {
+            //view with more height
+            acthei = actwid*vradio;
+            deltahei = (m_shei - acthei) / 2.f;
+        }
+        else
+        {
+            actwid = acthei / vradio;
+            deltawid = (m_swid - actwid) / 2.f;
+        }
+        m_transform = glm::ortho(deltawid, actwid + deltawid, acthei + deltahei, deltahei, -1.f, 1.f);
+        //m_transform = glm::ortho(deltawid, actwid + deltawid, deltahei, acthei + deltahei, -1.f, 1.f);
+    }
 }
 
 //SGView
@@ -75,12 +106,12 @@ SGView::SGView()
 
 SGView::~SGView()
 {
-    if (m_scene) detach();
+    detach();
 }
 
 void SGView::attach(SGScene *scene)
 {
-    if (m_scene) detach();
+    detach();
 
     m_scene = scene;
     sceneChanged();
@@ -91,10 +122,19 @@ void SGView::attach(SGScene *scene)
 
 void SGView::detach()
 {
-    m_scene->m_views.remove(this);
-    m_scene = nullptr;
-    m_render->setRootNode(nullptr);
-    m_render->clear();
+    if (m_scene)
+    {
+        m_scene->delView(this);
+
+        m_scene = nullptr;
+        m_render->setRootNode(nullptr);
+        m_render->clear();
+    }
+}
+
+void SGView::setViewMode(bool strench)
+{
+    m_camera.setFillMode(strench);
 }
 
 void SGView::sceneChanged()

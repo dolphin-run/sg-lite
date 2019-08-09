@@ -8,6 +8,18 @@ SGScene::SGScene()
     //m_nodes.push_back(&m_root);
 }
 
+SGScene::~SGScene()
+{
+    //unbind all related view
+
+    //detach will remove view from m_views, for safety, make a copy.
+    auto views = m_views;
+    for (auto view : views)
+    {
+        view->detach();
+    }
+}
+
 void SGScene::sizeChanged()
 {
     for (auto view : m_views)
@@ -110,4 +122,9 @@ void SGScene::addView(SGView* view)
 
     for (auto node : m_nodes)
         view->itemAdded(node);
+}
+
+void SGScene::delView(SGView * view)
+{
+    m_views.remove(view);
 }

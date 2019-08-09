@@ -10,6 +10,7 @@ class SGScene
     friend class SGView;
 public:
     SGScene();
+    virtual ~SGScene();
 
     //to do...classify in the future.
     void sizeChanged();
@@ -37,6 +38,7 @@ protected:
 
     //notify view init
     void addView(SGView* view);
+    void delView(SGView* view);
 
 protected:
     std::list<SGView*> m_views;//view obeserver

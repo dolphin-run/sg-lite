@@ -34,7 +34,7 @@ class SGYuvVideoNode : public SGNode
 {
 public:
     SGYuvVideoNode(SGNode* parent = nullptr);
-    void setSize(int pxWid = 1920, int pxHei = 1080);
+    void setPixelSize(int pxWid = 1920, int pxHei = 1080);
     bool setYuv(const unsigned char* yuv, int len = -1);
 
 private:

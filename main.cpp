@@ -22,6 +22,7 @@ int main(int argc, char **argv)
     window->attach(&scene);
     window->setFormat(format);
     window->setMinimumSize(QSize(640, 480));
+    window->setViewMode(true);
     window->showMaximized();
 
     //View *window1 = new View();

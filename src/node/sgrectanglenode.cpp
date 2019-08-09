@@ -35,12 +35,12 @@ SGYuvVideoNode::SGYuvVideoNode(SGNode * parent):
     SGNode(E_NodeType::YuvNodeType, parent)
 {
     //set default size
-    setSize();
+    setPixelSize();
     m_material = m_texMaterial = new SGYuvMaterial;
     m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
 }
 
-void SGYuvVideoNode::setSize(int pxWid, int pxHei)
+void SGYuvVideoNode::setPixelSize(int pxWid, int pxHei)
 {
     assert(pxWid > 0 && pxHei > 0);
     if (m_yuv) free(m_yuv);

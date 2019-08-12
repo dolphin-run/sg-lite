@@ -5,6 +5,7 @@
 
 class SGTextureMaterial;
 class SGYuvMaterial;
+struct SYUVInfo;
 class SGColorRectangleGeometry;
 class SGTextureRectangleGeometry;
 class SGRectangleNode : public SGNode
@@ -35,12 +36,10 @@ class SGYuvVideoNode : public SGNode
 public:
     SGYuvVideoNode(SGNode* parent = nullptr);
     void setPixelSize(int pxWid = 1920, int pxHei = 1080);
-    bool setYuv(const unsigned char* yuv, int len = -1);
+    bool setYuv(const unsigned char* yuv, unsigned int len = -1);
 
 private:
-    Size m_pxSize;
-    int m_pxLen = 0;
-    char *m_yuv = nullptr;
+    SYUVInfo *m_yuvInf = nullptr;
     SGYuvMaterial *m_texMaterial = nullptr;
     SGTextureRectangleGeometry *m_texGeometry = nullptr;
 };

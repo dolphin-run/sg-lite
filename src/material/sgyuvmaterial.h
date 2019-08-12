@@ -11,7 +11,6 @@ struct SYUVInfo
 {
     SYUVInfo(int pixWid = VIDEO_PIXEL_WIDTH, int pixHei = VIDEO_PIXEL_HEIGHT);
     bool update(int pixWid, int pixHei);
-    bool setViewSize(int pixWid, int pixHei);
 
     unsigned m_wid;
     float m_semiWid;
@@ -27,10 +26,6 @@ struct SYUVInfo
     unsigned m_yLen;
     unsigned m_uLen;
     float m_yuvRadio;
-
-    int m_viewWid;
-    int m_viewHei;
-    float m_renderScale;
 };
 
 class SGTexture;
@@ -42,7 +37,7 @@ public:
     virtual SGMaterialShader *createShader() const override;
     virtual bool share() const { return false; }
 
-    void setYuvInfo(SYUVInfo *info);
+    void setYuvInfo(const SYUVInfo *info);
 
     void setYuv(const unsigned char *src);
     SGTexture *texture() const;
@@ -50,7 +45,7 @@ public:
 private:
     mutable SGYuvTexture m_tex;
 
-    SYUVInfo *m_yuvInfo = nullptr;
+    const SYUVInfo *m_yuvInfo = nullptr;
 };
 
 #endif // SGYUVMATERIAL_H

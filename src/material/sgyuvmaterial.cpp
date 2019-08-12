@@ -5,7 +5,6 @@
 SYUVInfo::SYUVInfo(int pixWid, int pixHei)
 {
     update(pixWid, pixHei);
-    setViewSize(pixWid, pixHei);
 }
 
 bool SYUVInfo::update(int pixWid, int pixHei)
@@ -26,16 +25,6 @@ bool SYUVInfo::update(int pixWid, int pixHei)
 
     m_yuvRadio = m_semiHei / m_semiWid;
 
-    return true;
-}
-
-bool SYUVInfo::setViewSize(int pixWid, int pixHei)
-{
-    m_viewWid = pixWid;
-    m_viewHei = pixHei;
-
-    //adapt to render pixels
-    m_renderScale = std::min(float(m_viewWid) / m_wid, float(m_viewHei) / m_hei);
     return true;
 }
 
@@ -130,7 +119,7 @@ SGMaterialShader * SGYuvMaterial::createShader() const
     return new SGYuvMaterialShader(this);
 }
 
-void SGYuvMaterial::setYuvInfo(SYUVInfo * info)
+void SGYuvMaterial::setYuvInfo(const SYUVInfo * info)
 {
     m_yuvInfo = info;
 }

@@ -73,8 +73,12 @@ void ViewCamera::update()
         m_viewPort = RectF(0, 0, wid, hei);
         PointF oldcenter = m_viewPort.center();
         m_viewPort.move(m_center - oldcenter);
+
+#ifdef USERVIEW_HAS_VERTICAL_MIRROR
+        m_transform = glm::ortho(m_viewPort.tl.x, m_viewPort.br.x, m_viewPort.tl.y, m_viewPort.br.y, -1.f, 1.f);
+#else
         m_transform = glm::ortho(m_viewPort.tl.x, m_viewPort.br.x, m_viewPort.br.y, m_viewPort.tl.y, -1.f, 1.f);
-        //m_transform = glm::ortho(m_viewPort.tl.x, m_viewPort.br.x, m_viewPort.tl.y, m_viewPort.br.y, -1.f, 1.f);
+#endif
     }
     else 
     {
@@ -93,8 +97,12 @@ void ViewCamera::update()
             actwid = acthei / vradio;
             deltawid = (m_swid - actwid) / 2.f;
         }
+
+#ifdef USERVIEW_HAS_VERTICAL_MIRROR
+        m_transform = glm::ortho(deltawid, actwid + deltawid, deltahei, acthei + deltahei, -1.f, 1.f);
+#else
         m_transform = glm::ortho(deltawid, actwid + deltawid, acthei + deltahei, deltahei, -1.f, 1.f);
-        //m_transform = glm::ortho(deltawid, actwid + deltawid, deltahei, acthei + deltahei, -1.f, 1.f);
+#endif
     }
 }
 

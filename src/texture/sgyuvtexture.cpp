@@ -58,7 +58,7 @@ bool SGYuvTexture::update(unsigned key, const Image & img)
     GLenum eTexture = GL_TEXTURE0 + key;
     GLuint texture = m_texture[key];
 
-    assert(ptr && eTexture && texture);
+    if(!ptr || !eTexture || !texture) return false;
 
     //sync to gl
     glActiveTexture(eTexture);

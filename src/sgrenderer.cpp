@@ -177,6 +177,9 @@ void SGRenderer::render()
     renderAlphaBatches();
 
     m_rebuild = 0;
+
+    //restore gl parameters for these who use sg-lite in their rendering context, for example, integrating with qt-scenegraph
+    glActiveTexture(GL_TEXTURE0);
 }
 
 void SGRenderer::itemAdded(SGNode * gnode)

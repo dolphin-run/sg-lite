@@ -109,11 +109,27 @@ unsigned SGGridImageTexture::add(const Image &img)
         }
         else
         {
+            //alignment check
+            bool realignment = m_imgBuf.pxComp != Image::ImageFormat::Format_RGBA;
+            int savealignment = 0;
+            if(realignment)
+            {
+                glGetIntegerv(GL_UNPACK_ALIGNMENT, &savealignment);
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            }
+
             //sync to gl
             glBindTexture(GL_TEXTURE_2D, m_id);
             glTexSubImage2D(GL_TEXTURE_2D, 0,
                 m_imgBuf.cellWid*col, m_imgBuf.cellHei*row,
                 img.width, img.height, m_imgBuf.gl_fmt, GL_UNSIGNED_BYTE, img.data.get());
+
+            //restore alignment
+            if (realignment)
+            {
+                glPixelStorei(GL_UNPACK_ALIGNMENT, savealignment);
+            }
+
         }
     }
     return key;

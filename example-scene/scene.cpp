@@ -1,51 +1,17 @@
 #include "scene.h"
 
 //test
-#include "src/node/sgrectanglenode.h"
-#include "src/node/sgcircularnode.h"
-#include "src/node/sgtextnode.h"
-#include <QTimerEvent>
+#include "node/sgrectanglenode.h"
+#include "node/sgcircularnode.h"
+#include "node/sgtextnode.h"
 
-int timer1 = 0;
-int timer2 = 0;
+#include "later.h"
 
 Scene::Scene()
 {
     testAlloc();
-    //timer1 = startTimer(20);
-    timer2 = startTimer(5000);
-}
+    Later calllater(1000, true, 1, [this] {this->testUpdate(); });
 
-void Scene::timerEvent(QTimerEvent * event)
-{
-    auto id = event->timerId();
-    if (timer1 == id)
-    {
-        for (auto it : m_nodes)
-        {
-            if (it->type() != SGNode::E_NodeType::TextNodeType)
-            {
-                it->setWidth(100 + (int(it->width()) + 1) % 100);
-                it->setHeight(100 + (int(it->width()) + 1) % 100);
-            }
-        }
-    }
-    else if (timer2 == id)
-    {
-        static bool odd = true;
-        odd = !odd;
-        for (auto it : m_nodes)
-        {
-            if (it->type() == SGNode::E_NodeType::ImageNodeType)
-            {
-                SGImageNode* imgNode = dynamic_cast<SGImageNode*>(it);
-                if(odd)
-                    imgNode->setImage("images/img1.png");
-                else
-                    imgNode->setImage("images/img2.png");
-            }
-        }
-    }
 }
 
 void Scene::testAlloc()
@@ -66,7 +32,7 @@ void Scene::testAlloc()
         sn->setColor(Color::random());
 
         this->addItem(sn);
-        m_nodes.append(sn);
+        m_nodes.push_back(sn);
 
         //add image
         SGImageNode *sn1 = new SGImageNode(sn);
@@ -74,9 +40,9 @@ void Scene::testAlloc()
         sn1->setWidth(100);
         sn1->setHeight(100);
 
-        sn1->setImage("images/img0.png");
+        sn1->setImage("assets/images/img0.png");
 
-        m_nodes.append(sn1);
+        m_nodes.push_back(sn1);
     }
 
     //add some ring
@@ -90,12 +56,11 @@ void Scene::testAlloc()
         sn->setZ(3);
         sn->setWidth(150);
         sn->setHeight(150);
-        sn->setInnerRadius(i / 10.f);
 
         sn->setColor(Color::random(), Color::random());
 
         this->addItem(sn);
-        m_nodes.append(sn);
+        m_nodes.push_back(sn);
         //break;
     }
 #endif // 0
@@ -106,7 +71,7 @@ void Scene::testAlloc()
         sn->setX(500);
         sn->setY(760);
         sn->setZ(3);
-        sn->setText(L"iQgdKjABCDEFGH司马懿一心29。ik,.\"'\nhello");
+        sn->setText(L"ABCDEFGHIj\n1234567890");
         //sn->setWidth(100);//auto width
 
         sn = new SGTextNode();
@@ -114,7 +79,7 @@ void Scene::testAlloc()
         sn->setX(500);
         sn->setY(700);
         sn->setZ(1);
-        sn->setText(L"idaeswhjfrewfew");
+        sn->setText(L"ABCDEFGHIj1234567890");
 
         SGImageNode *sn1 = new SGImageNode();
         this->addItem(sn1);
@@ -123,6 +88,20 @@ void Scene::testAlloc()
         sn1->setZ(2);
         sn1->setWidth(100);
         sn1->setHeight(100);
-        sn1->setImage("images/img0.png");
+        sn1->setImage("assets/images/img0.png");
+    }
+}
+
+void Scene::testUpdate()
+{
+    int ts = 1000;
+    while (ts--)
+    {
+        for (auto it : m_nodes)
+        {
+            it->setWidth(100 + int(it->width() + 1) % 100);
+            it->setHeight(100 + int(it->width() + 1) % 100);
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
     }
 }

@@ -2,7 +2,6 @@
 #define SGSCENE_H
 
 #include "sgnode.h"
-#include <unordered_set>
 
 class SGView;
 class SGScene

@@ -1,8 +1,6 @@
 #include "scenefantacy.h"
 
-#include "src/node/sgrectanglenode.h"
-#include <QTimerEvent>
-
+#include "node/sgrectanglenode.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -10,6 +8,8 @@
 #include <mutex>
 #include <functional>
 #include <condition_variable>
+
+#include "later.h"
 
 struct Square
 {
@@ -27,7 +27,7 @@ struct SquareNode : SGRectangleNode
     int generation;
 };
 
-static const int g_find_depth = 10;
+static const int g_find_depth = 8;
 static Square g_root;
 static void initRoot()
 {
@@ -116,29 +116,31 @@ SceneFantacy::SceneFantacy()
 {
     initRoot();
     testAlloc();
-    //timer1 = startTimer(20);
-    timer2 = startTimer(500);
+
+    Later calllater(20, true, -1, [this] {this->timerEvent(); });
 }
 
-void SceneFantacy::timerEvent(QTimerEvent * event)
+void SceneFantacy::timerEvent()
 {
     static int igen = 0;
-    auto id = event->timerId();
-    if (timer1 == id)
+    static bool workerStart = false;
     {
-        testUpdate();
-    }
-    else if (timer2 == id)
-    {
-        testVisible(igen++);
-        if (igen > g_find_depth)
+        if (igen <= g_find_depth)
         {
-            killTimer(timer2);
-            if (!timer1)
+            testVisible(igen++);
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+        else
+        {
+            if (workerStart)
             {
-                timer1 = startTimer(20);
+                testUpdate();
+            }
+            else
+            {
                 std::thread worker(std::thread(&SceneFantacy::testSpawn, this));
                 worker.detach();
+                workerStart = true;
             }
         }
     }

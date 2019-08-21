@@ -1,7 +1,6 @@
 
 #include "view.h"
 #include "scene.h"
-#include "scenevideo.h"
 #include "scenefantacy.h"
 
 #include <QGuiApplication>
@@ -14,15 +13,15 @@ int main(int argc, char **argv)
     QSurfaceFormat format;
     format.setSamples(16);
 
-    //SceneFantacy scene;
+    SceneFantacy scene;
     //Scene scene;
-    SceneVideo scene;
+    //SceneVideo scene;
     
     View *window = new View();
     window->attach(&scene);
     window->setFormat(format);
     window->setMinimumSize(QSize(640, 480));
-    window->setViewMode(true);
+    //window->setViewMode(true);
     window->showMaximized();
 
     //View *window1 = new View();

@@ -1,18 +1,17 @@
 #ifndef SCENEFANTACY_H
 #define SCENEFANTACY_H
 
-#include "src/sgscene.h"
-#include <QObject>
+#include "sgscene.h"
+#include <vector>
 
-class SceneFantacy : public QObject, public SGScene
+class SceneFantacy : public SGScene
 {
-    Q_OBJECT
     friend class SGView;
 public:
     SceneFantacy();
 
 protected:
-    virtual void timerEvent(QTimerEvent *event) override;
+    void timerEvent();
     void testSpawn();
     void testAlloc();
     void testVisible(int gen);

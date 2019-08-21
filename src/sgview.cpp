@@ -195,8 +195,9 @@ bool SGView::initializeRender()
     if (!m_scene) return false;
 
     m_camera.moveCenter();
+    m_renderInited = m_render->initialize();
 
-    return m_render->initialize();
+    return m_renderInited;
 }
 
 void SGView::renderFrame()

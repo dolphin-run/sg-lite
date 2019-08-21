@@ -15,6 +15,7 @@ SOURCES += \
     $$PWD/material/sgtexturematerial.cpp \
     $$PWD/material/sgglyphmaterial.cpp \
     $$PWD/material/sgyuvmaterial.cpp \
+    $$PWD/material/sgdynimagematerial.cpp \
     $$PWD/node/sgrectanglenode.cpp \
     $$PWD/node/sgcircularnode.cpp \
     $$PWD/node/sgtextnode.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
     $$PWD/sgtexture.cpp \
     $$PWD/texture/sggridimagetexture.cpp\
     $$PWD/texture/sgyuvtexture.cpp\
+    $$PWD/texture/sgdynimagetexture.cpp\
     $$PWD/3rdparty/glad/glad.c
 
 HEADERS += \
@@ -41,6 +43,7 @@ HEADERS += \
     $$PWD/material/sgtexturematerial.h \
     $$PWD/material/sgglyphmaterial.h \
     $$PWD/material/sgyuvmaterial.h \
+    $$PWD/material/sgdynimagematerial.h \
     $$PWD/node/sgrectanglenode.h \
     $$PWD/node/sgcircularnode.h \
     $$PWD/node/sgtextnode.h \
@@ -49,4 +52,5 @@ HEADERS += \
     $$PWD/util/glshaderprogram.h \
     $$PWD/sgtexture.h \
     $$PWD/texture/sggridimagetexture.h\
-    $$PWD/texture/sgyuvtexture.h
+    $$PWD/texture/sgyuvtexture.h \
+    $$PWD/texture/sgdynimagetexture.h

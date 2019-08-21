@@ -20,6 +20,7 @@ public:
         ImageNodeType,
         TextNodeType,
         YuvNodeType,
+        DynImageNodeType,
         UndefinedNodeType
     };
     enum E_DirtyType {

@@ -9,7 +9,8 @@ enum E_MaterialType{
     FlatColorMaterialType,
     TextureMaterialType,
     GlyphMaterialType,
-    YuvMaterialType
+    YuvMaterialType,
+    DynImageMaterialType
 };
 
 class SGMaterialShader

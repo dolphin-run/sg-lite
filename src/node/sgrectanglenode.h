@@ -5,6 +5,7 @@
 
 class SGTextureMaterial;
 class SGYuvMaterial;
+class SGDynImageMaterial;
 struct SYUVInfo;
 class SGColorRectangleGeometry;
 class SGTextureRectangleGeometry;
@@ -41,6 +42,18 @@ public:
 private:
     SYUVInfo *m_yuvInf = nullptr;
     SGYuvMaterial *m_texMaterial = nullptr;
+    SGTextureRectangleGeometry *m_texGeometry = nullptr;
+};
+
+class SGRgbVideoNode : public SGNode
+{
+public:
+    SGRgbVideoNode(SGNode* parent = nullptr);
+    void setPixelSize(int pxWid = 1920, int pxHei = 1080);
+    bool setRgb(const unsigned char* yuv, unsigned int len = -1);
+
+private:
+    SGDynImageMaterial *m_texMaterial = nullptr;
     SGTextureRectangleGeometry *m_texGeometry = nullptr;
 };
 

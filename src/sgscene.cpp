@@ -1,5 +1,6 @@
 #include "sgscene.h"
 #include "sgview.h"
+#include <algorithm>
 
 SGScene::SGScene()
 {

@@ -17,6 +17,7 @@ SRC := \
     src/material/sgtexturematerial.cpp \
     src/material/sgglyphmaterial.cpp \
     src/material/sgyuvmaterial.cpp \
+    src/material/sgdynimagematerial.cpp \
     src/node/sgrectanglenode.cpp \
     src/node/sgcircularnode.cpp \
     src/node/sgtextnode.cpp \
@@ -26,6 +27,7 @@ SRC := \
     src/sgtexture.cpp \
     src/texture/sggridimagetexture.cpp\
     src/texture/sgyuvtexture.cpp\
+    src/texture/sgdynimagetexture.cpp\
     src/3rdparty/glad/glad.c
 
 
@@ -43,19 +45,20 @@ undefined:
 
 
 mingw : TARGET := sgtest.exe
-mingw : CFLAGS += -I/usr/include -I/usr/local/include
+mingw : CFLAGS += -I/usr/include -I/usr/local/include -I.
 mingw : LDFLAGS += -L/usr/bin -lgdi32 -lglfw3 -lfreetype -lopengl32 -L/usr/local/bin
 macos : TARGET := sgtest
 macos : CFLAGS += -I/usr/include -I/usr/local/include -Imingw/3rdparty/include
 macos : LDFLAGS += -L/usr/bin -lfreetype -L/usr/local/bin -Lmingw/3rdparty/lib -lglfw3  -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 
 SRC += \
+    example-scene/scene.cpp \
+    example-scene/scenefantacy.cpp \
     example-window/glfw/view.cpp \
-    example-window/glfw/scene.cpp \
-    example-window/glfw/scenefantacy.cpp \
     example-window/glfw/main.cpp
 
 macos : $(SRC) sgtest
+mingw : $(SRC) sgtest
 
 sgtest :
 	g++ $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)

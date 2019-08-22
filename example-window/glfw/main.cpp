@@ -1,7 +1,7 @@
 
 #include "view.h"
-#include "scene.h"
-#include "scenefantacy.h"
+#include "example-scene/scene.h"
+#include "example-scene/scenefantacy.h"
 
 
 

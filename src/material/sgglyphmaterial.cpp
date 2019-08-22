@@ -13,7 +13,7 @@ static void msyh_glyph_initialize()
     if (loaded) return;
     loaded = true;
 
-#ifdef WIN32
+#ifdef _WIN32
     const char* fontPath = "C:/Windows/Fonts/msyh.ttc";
 #endif
 

@@ -1,0 +1,65 @@
+#ifndef SCENEQUICKITEMRENDERER_H
+#define SCENEQUICKITEMRENDERER_H
+
+#include <QQuickFramebufferObject>
+#include <QOpenGLFramebufferObject>
+
+#include "sgview.h"
+#include "scene.h"
+#include "scenefantacy.h"
+
+class SceneQuickItemRenderer : public QQuickFramebufferObject::Renderer, public SGView
+{
+public:
+    SceneQuickItemRenderer()
+    {
+        attach(&smartScene);
+        m_camera.setFillMode(true);
+    }
+
+    virtual float widthPx() const override { return m_width; }
+    virtual float heightPx() const override { return m_height; }
+
+    void updateScene(const char* psrc) {
+
+    }
+
+    void synchronize(QQuickFramebufferObject*item){
+        m_hqItem = dynamic_cast<QQuickItem*>(item);
+
+        auto width = m_hqItem->width();
+        auto height = m_hqItem->height();
+        if (width != m_width || height != m_height)
+        {
+            m_camera.setViewSize(width, height);
+        }
+        m_width = width;
+        m_height = height;
+    }
+
+    virtual void render() override {
+        //m_hqItem->window()->resetOpenGLState();
+        updateScene(nullptr);
+        SGView::renderFrame();
+        //update();
+    }
+
+    QOpenGLFramebufferObject *createFramebufferObject(const QSize &size) {
+        QOpenGLFramebufferObjectFormat format;
+        format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+        format.setSamples(4);
+        return new QOpenGLFramebufferObject(size, format);
+    }
+
+private:
+    //VideoCoreRenderer view;
+    QQuickItem* m_hqItem = nullptr;
+    int m_width = 1920;
+    int m_height = 1080;
+    QColor m_background;
+
+    //mutable Scene m_scene;
+    SceneFantacy smartScene;
+};
+
+#endif // SCENEQUICKITEMRENDERER_H

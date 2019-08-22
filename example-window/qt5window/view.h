@@ -14,11 +14,8 @@ public:
     ~View();
 
 
-    virtual float width() const override;
-    virtual float height() const override;
     virtual float widthPx() const override;
     virtual float heightPx() const override;
-    virtual float pixelRatio() const override;
 
     void CameraMove(float x, float y);
     void CameraScale(bool zoom);

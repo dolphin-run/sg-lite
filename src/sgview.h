@@ -64,11 +64,8 @@ public:
 
     Point mapToScene(const Point &vp) const;
 
-    virtual float width() const = 0;
-    virtual float height() const = 0;
     virtual float widthPx() const = 0;
     virtual float heightPx() const = 0;
-    virtual float pixelRatio() const = 0;
 
 protected:
     bool m_renderInited = false;

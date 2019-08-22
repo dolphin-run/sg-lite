@@ -12,11 +12,16 @@ CONFIG(debug, debug|release) {
 } else {
 }
 
-include(src/sgcore.pri)
-INCLUDEPATH += $$PWD/src
-
 CONFIG -= flat
+QT += widgets
 
-HEADERS += scene.h scenevideo.h view.h scenefantacy.h viewinteraction.h singletondevicestream.h
 
-SOURCES += main.cpp scene.cpp scenevideo.cpp view.cpp scenefantacy.cpp viewinteraction.cpp singletondevicestream.cpp
+include(src/sgcore.pri)
+INCLUDEPATH += src
+
+include(example-scene/example-scene.pri)
+INCLUDEPATH += example-scene
+
+HEADERS += example-window/qt5widget/view.h example-window/qt5widget/viewinteraction.h
+
+SOURCES += example-window/qt5widget/view.cpp example-window/qt5widget/viewinteraction.cpp example-window/qt5widget/main.cpp

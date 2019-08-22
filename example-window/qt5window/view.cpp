@@ -100,16 +100,6 @@ View::~View()
 {
 }
 
-float View::width() const
-{
-    return QWindow::width();
-}
-
-float View::height() const
-{
-    return QWindow::height();
-}
-
 float View::widthPx() const
 {
     return QWindow::width()*QWindow::devicePixelRatio();
@@ -118,11 +108,6 @@ float View::widthPx() const
 float View::heightPx() const
 {
     return QWindow::height()*QWindow::devicePixelRatio();
-}
-
-float View::pixelRatio() const
-{
-    return QWindow::devicePixelRatio();
 }
 
 void View::CameraMove(float x, float y)

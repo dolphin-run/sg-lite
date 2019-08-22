@@ -145,16 +145,6 @@ void View::destroy()
     }
 }
 
-float View::width() const
-{
-    return m_width;
-}
-
-float View::height() const
-{
-    return m_height;
-}
-
 float View::widthPx() const
 {
     return m_widthPx;
@@ -163,11 +153,6 @@ float View::widthPx() const
 float View::heightPx() const
 {
     return m_heightPx;
-}
-
-float View::pixelRatio() const
-{
-    return 1.f;
 }
 
 void View::CameraMove(int x, int y)

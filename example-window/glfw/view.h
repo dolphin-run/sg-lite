@@ -16,11 +16,8 @@ public:
     void destroy();
 
 
-    virtual float width() const override;
-    virtual float height() const override;
     virtual float widthPx() const override;
     virtual float heightPx() const override;
-    virtual float pixelRatio() const override;
 
     void CameraMove(int x, int y);
     void CameraScale(bool zoom);
@@ -40,8 +37,6 @@ protected:
 private:
     GLFWwindow* m_window;
 
-    int m_width = 800;
-    int m_height = 600;
     int m_widthPx = 800;
     int m_heightPx = 600;
 

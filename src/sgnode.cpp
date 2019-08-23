@@ -29,6 +29,11 @@ SGNode::SGNode(E_NodeType type, SGNode * parent):
     }
 }
 
+bool SGNode::syncState()
+{
+    return false;
+}
+
 SGNode::~SGNode()
 {
     if (m_geometry) delete m_geometry;

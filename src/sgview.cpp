@@ -206,5 +206,8 @@ void SGView::renderFrame()
     {
         m_renderInited = initializeRender();
     }
-    m_render->render();
+    else
+    {
+        m_render->render();
+    }
 }

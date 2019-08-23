@@ -7,13 +7,14 @@
 #include "sgview.h"
 #include "scene.h"
 #include "scenefantacy.h"
+#include "scenevideo.h"
 
 class SceneQuickItemRenderer : public QQuickFramebufferObject::Renderer, public SGView
 {
 public:
     SceneQuickItemRenderer()
     {
-        attach(&smartScene);
+        attach(&m_scene);
         m_camera.setFillMode(true);
     }
 
@@ -59,7 +60,8 @@ private:
     QColor m_background;
 
     //mutable Scene m_scene;
-    SceneFantacy smartScene;
+    //SceneFantacy m_scene;
+    SceneVideo m_scene;
 };
 
 #endif // SCENEQUICKITEMRENDERER_H

@@ -548,7 +548,8 @@ void SGRenderer::renderBatch(Batch * batch)
     assert(n);
 
     const SGNode *gn = n->gnode;
-
+    
+    gn->m_material->syncState();
     SGMaterialShader *shader = m_shrMgr.find(gn->m_material);
 
     shader->program()->bind();

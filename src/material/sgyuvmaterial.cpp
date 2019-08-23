@@ -107,6 +107,7 @@ SGYuvMaterial::SGYuvMaterial()
 {
     static SYUVInfo info;
     m_yuvInfo = &info;
+    m_yuvChanged = 0;
 }
 
 E_MaterialType SGYuvMaterial::type() const
@@ -121,17 +122,40 @@ SGMaterialShader * SGYuvMaterial::createShader() const
 
 void SGYuvMaterial::setYuvInfo(const SYUVInfo * info)
 {
+    std::lock_guard<std::mutex> guard(m_yuvLock);
+
     m_yuvInfo = info;
+
+    //realloc
+    if (m_yuvBufSize < info->m_len)
+    {
+        delete[]m_yuvBuf;
+        m_yuvBufSize = info->m_len;
+        m_yuvBuf = new unsigned char[m_yuvBufSize];
+    }
 }
 
 void SGYuvMaterial::setYuv(const unsigned char * src)
 {
-    auto const *ptr = src;
+    std::lock_guard<std::mutex> guard(m_yuvLock);
+
+    memcpy(m_yuvBuf, src, m_yuvInfo->m_len);
+    m_yuvChanged = 1;
+}
+
+void SGYuvMaterial::syncState()
+{
+    if (!m_yuvChanged) return;
+
+    std::lock_guard<std::mutex> guard(m_yuvLock);
+    m_yuvChanged = 0;
+
+    auto const *ptr = m_yuvBuf;
     m_tex.update(SGYuvTexture::Y_Component, Image(m_yuvInfo->m_yWid, m_yuvInfo->m_yHei, ptr, Image::Format_Alpha));
-    
+
     ptr += m_yuvInfo->m_yLen;
     m_tex.update(SGYuvTexture::U_Component, Image(m_yuvInfo->m_uWid, m_yuvInfo->m_uHei, ptr, Image::Format_Alpha));
-    
+
     ptr += m_yuvInfo->m_uLen;
     m_tex.update(SGYuvTexture::V_Component, Image(m_yuvInfo->m_uWid, m_yuvInfo->m_uHei, ptr, Image::Format_Alpha));
 }

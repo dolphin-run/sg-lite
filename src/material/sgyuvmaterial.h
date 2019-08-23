@@ -3,6 +3,7 @@
 
 #include "sgmaterial.h"
 #include "texture/sgyuvtexture.h"
+#include <mutex>
 
 
 const int VIDEO_PIXEL_WIDTH = 1920;
@@ -39,11 +40,18 @@ public:
 
     void setYuvInfo(const SYUVInfo *info);
 
+    //thread-safe to set yuv
     void setYuv(const unsigned char *src);
     SGTexture *texture() const;
 
+    virtual void syncState() override;
+
 private:
     mutable SGYuvTexture m_tex;
+    unsigned m_yuvChanged : 1;
+    unsigned char * m_yuvBuf = nullptr;
+    unsigned m_yuvBufSize = 0;
+    std::mutex m_yuvLock;
 
     const SYUVInfo *m_yuvInfo = nullptr;
 };

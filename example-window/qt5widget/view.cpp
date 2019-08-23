@@ -26,6 +26,7 @@ void View::initializeGL()
     else
     {
         QOpenGLContext::currentContext()->setShareContext(g_context);
+        QOpenGLContext::currentContext()->create();
     }
 }
 

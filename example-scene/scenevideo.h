@@ -1,28 +1,31 @@
 #ifndef SCENEVIDEO_H
 #define SCENEVIDEO_H
 
-#include "src/sgscene.h"
-#include <QList>
-#include "singletondevicestream.h"
+#include "sgscene.h"
+#include <thread>
+#include <atomic>
 
 class SGYuvVideoNode;
-class SceneVideo : public QObject, public SGScene, public InterfaceMsgContainer
+class SceneVideo : public SGScene
 {
-    Q_OBJECT
-    friend class SGView;
 public:
     SceneVideo();
 
-protected:
-    //
-    virtual void recvVideoBlob(const PureVideoBlob *video, const SmartDataBlob *data) override;
-    virtual void recvCommnBlob(const SmartDataBlob *data) override;
-    InterfaceDeviceStream *m_device;
+    void start();
+    void stop();
 
-    virtual void timerEvent(QTimerEvent *event) override;
+    void syncYuv();
+    void taskYuvStream();
+
+protected:
+    std::thread m_reader;
+    std::atomic_bool m_runningflag;
+    std::atomic_bool m_producingflag;
+
+protected:
     void testAlloc();
 
-    QList<SGNode *> m_nodes; 
+    std::list<SGNode *> m_nodes;
     SGYuvVideoNode *m_videoNode = nullptr;
     SGYuvVideoNode *m_videoNode1 = nullptr;
 };

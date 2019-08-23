@@ -4,161 +4,124 @@
 #include "src/node/sgrectanglenode.h"
 #include "src/node/sgcircularnode.h"
 #include "src/node/sgtextnode.h"
-#include <QTimerEvent>
-#include <mutex>
+#include <iostream>
+#include <assert.h>
 
-static int timer1 = 0;
-static int timer2 = 0;
+static int timer = 0;
 
 static const int yuvsize = 1920 * 540 * 3;
-static unsigned char *pyuv;
-std::mutex plock;
+static unsigned char *yuvbuf;
 SceneVideo::SceneVideo()
 {
+    m_runningflag.store(false);
+    m_producingflag.store(false);
+
+    yuvbuf = (unsigned char *)malloc(yuvsize);
+    memset(yuvbuf, 0, yuvsize);
+
     testAlloc();
-    timer1 = startTimer(50);
-    timer2 = startTimer(5000);
 
-    m_device = SingletonDeviceStream::instance()->spawn();
-    m_device->setReceiver(this);
-
-    pyuv = (unsigned char *)malloc(yuvsize);
-    memset(pyuv, 0, yuvsize);
-    m_device->start();
+    start();
 }
 
-void SceneVideo::recvVideoBlob(const PureVideoBlob * video, const SmartDataBlob * data)
+void SceneVideo::start()
 {
-    std::lock_guard<std::mutex> guard(plock);
-    memcpy(pyuv, video->pixels, video->size);
-    //bool ok = m_frames->produce(video->pixels, video->size, data->data, data->size);
-}
-
-void SceneVideo::recvCommnBlob(const SmartDataBlob * data)
-{
-}
-
-void SceneVideo::timerEvent(QTimerEvent * event)
-{
-    auto id = event->timerId();
-    if (timer1 == id)
+    if (!m_runningflag == true)
     {
-        std::lock_guard<std::mutex> guard(plock);
-        m_videoNode->setYuv(pyuv);
+        m_runningflag.store(true);
+        m_producingflag.store(true);
+        m_reader = std::thread([this] {
+            this->taskYuvStream();
+        });
+        m_reader.detach();
     }
-    else if (timer2 == id)
+}
+
+void SceneVideo::stop()
+{
+    if (m_runningflag == true)
+    {
+        m_producingflag.store(false);
+        //wait for finish...
+        std::this_thread::sleep_for(std::chrono::milliseconds(80));
+    }
+}
+
+void SceneVideo::taskYuvStream()
+{
+    FILE *file = fopen("assets/video/data.dat", "rb");
+    if (!file)
+    {
+        std::cout << "open file failed..." << std::endl;
+        return;
+    }
+
+    int dattype = 7;
+    int datalen = 0;
+    while (m_producingflag == true)
+    {
+        int cnt = fread(&dattype, 1, 4, file);
+        if (cnt != 4)
+        {
+            fseek(file, 0, SEEK_SET);
+            continue;
+        }
+
+        printf("[%d]\n", dattype);
+
+        //smart video
+        if (dattype == 0)
+        {
+            cnt = fread(&datalen, 1, 4, file);
+            assert(datalen == yuvsize);
+            cnt = fread(yuvbuf, 1, datalen, file);
+            syncYuv();
+        }
+
+        fread(&datalen, 1, 4, file);
+
+        if (datalen>0)
+        {
+            fseek(file, datalen, SEEK_CUR);
+            //cnt = fread(, 1, datalen, file);
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
+    }
+
+    fclose(file);
+    printf("thread finished...");
+    m_runningflag.store(false);
+}
+
+void SceneVideo::syncYuv()
+{
+    timer++;
+
+    m_videoNode->setYuv(yuvbuf);
+    
+    if (0 == timer%40)
     {
         if (m_videoNode1)
         {
-            std::lock_guard<std::mutex> guard(plock);
-            m_videoNode1->setYuv(pyuv);
-        }
-        
-        static bool odd = true;
-        odd = !odd;
-        for (auto it : m_nodes)
-        {
-            if (it->type() == SGNode::E_NodeType::ImageNodeType)
-            {
-                SGImageNode* imgNode = dynamic_cast<SGImageNode*>(it);
-                if(odd)
-                    imgNode->setImage("images/img1.png");
-                else
-                    imgNode->setImage("images/img2.png");
-            }
+            m_videoNode1->setYuv(yuvbuf);
         }
     }
 }
 
 void SceneVideo::testAlloc()
 {
-#if 1
+    m_videoNode = new SGYuvVideoNode();
+    this->addItem(m_videoNode);
+    m_videoNode->setX(0);
+    m_videoNode->setY(0);
+    m_videoNode->setWidth(960);
+    m_videoNode->setHeight(540);
 
-    for (int i = 0; i < 20; i++)
-    {
-        //add rectangle
-        int row = i / 10;
-        int col = i % 10;
-        SGRectangleNode *sn = new SGRectangleNode();
-        sn->setX(col * 200);
-        sn->setY(row * 200);
-        sn->setWidth(150);
-        sn->setHeight(100);
-
-        sn->setColor(Color::random());
-
-        this->addItem(sn);
-        m_nodes.append(sn);
-
-        //add image
-        SGImageNode *sn1 = new SGImageNode(sn);
-        sn1->setX(25);
-        sn1->setWidth(100);
-        sn1->setHeight(100);
-
-        sn1->setImage("images/img0.png");
-
-        m_nodes.append(sn1);
-    }
-
-    //add some ring
-    for (int i = 0; i < 10; i++)
-    {
-        int row = i / 10;
-        int col = i % 10;
-        SGCircularNode *sn = new SGCircularNode();
-        sn->setX(col * 200);
-        sn->setY(500 + row * 200);
-        sn->setZ(3);
-        sn->setWidth(150);
-        sn->setHeight(150);
-        sn->setInnerRadius(i / 10.f);
-
-        sn->setColor(Color::random(), Color::random());
-
-        this->addItem(sn);
-        m_nodes.append(sn);
-        //break;
-    }
-#endif // 0
-    
-    {
-        SGTextNode *sn = new SGTextNode();
-        this->addItem(sn);
-        sn->setX(800);
-        sn->setY(760);
-        sn->setZ(3);
-        sn->setText(L"iQgdKjABCDEFGH司马懿一心29。ik,.\"'\nhello");
-        //sn->setWidth(100);//auto width
-
-        sn = new SGTextNode();
-        this->addItem(sn);
-        sn->setX(700);
-        sn->setY(700);
-        sn->setZ(1);
-        sn->setText(L"idaeswhjfrewfew");
-
-        SGImageNode *sn1 = new SGImageNode();
-        this->addItem(sn1);
-        sn1->setX(760);
-        sn1->setY(700);
-        sn1->setZ(2);
-        sn1->setWidth(100);
-        sn1->setHeight(100);
-        sn1->setImage("images/img0.png");
-
-        m_videoNode = new SGYuvVideoNode();
-        this->addItem(m_videoNode);
-        m_videoNode->setX(100);
-        m_videoNode->setY(700);
-        m_videoNode->setWidth(600);
-        m_videoNode->setHeight(400);
-
-        m_videoNode1 = new SGYuvVideoNode();
-        this->addItem(m_videoNode1);
-        m_videoNode1->setX(720);
-        m_videoNode1->setY(700);
-        m_videoNode1->setWidth(600);
-        m_videoNode1->setHeight(400);
-    }
+    m_videoNode1 = new SGYuvVideoNode();
+    this->addItem(m_videoNode1);
+    m_videoNode1->setX(960);
+    m_videoNode1->setY(0);
+    m_videoNode1->setWidth(960);
+    m_videoNode1->setHeight(540);
 }

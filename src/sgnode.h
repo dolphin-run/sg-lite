@@ -65,6 +65,10 @@ public:
 
 protected:
     SGNode(E_NodeType type, SGNode* parent = nullptr);
+
+    //something changed to gl is not thread-safe, changes should been made here.
+    virtual bool syncState();
+
     //properties
     float m_x = 0;//left
     float m_y = 0;//top

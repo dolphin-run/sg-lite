@@ -37,6 +37,9 @@ public:
     virtual E_MaterialType type() const = 0; 
     virtual SGMaterialShader *createShader() const = 0;
     virtual bool share() const { return true; }
+
+    //will be called from rendering thread 
+    virtual void syncState() {}
 };
 
 #endif // SGMATERIAL_H

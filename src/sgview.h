@@ -4,39 +4,9 @@
 #include "sgstruct.h"
 #include "sgnode.h"
 
-class ViewCamera
-{
-public:
-    void setSceneSize(float wid, float hei);
-    void setViewSize(float wid, float hei);
-    void moveCenter();
-    void move(float x, float y);
-    void scale(float s);
-    void setFillMode(bool strench);
-
-    const glm::mat4 &transform() const;
-    const RectF &viewRect() const;
-
-    Point mapToScene(const Point &vp) const;
-
-protected:
-    void update();
-private:
-    glm::mat4 m_transform;
-    //
-    float m_swid = 100;
-    float m_shei = 100;
-    float m_vwid = 100;
-    float m_vhei = 100;
-
-    PointF m_center;
-    float m_scale = 1.0;
-    RectF m_viewPort;
-    bool m_stretch = false;//fill mode
-};
-
 class SGScene;
 class SGRenderer;
+class SGViewCamera;
 
 /*
 ** subclass should supply OpenGL Render Context as needed.
@@ -51,6 +21,7 @@ public:
     void detach();
 
     void setViewMode(bool strench);
+    void setViewCamera(SGViewCamera *camera);
 
     //notify renderer rebuild.
     virtual void sceneChanged();
@@ -58,6 +29,9 @@ public:
     virtual void itemAdded(SGNode *item);
     virtual void itemDeleted(SGNode *item);
     virtual void itemChanged(SGNode *item, SGNode::E_DirtyType changes);
+
+    //notify view size changed.
+    virtual void sizeChanged(int width, int height);
 
     const RectF &sceneRect() const;
     const glm::mat4 &sceneTransform() const;
@@ -73,9 +47,12 @@ protected:
     virtual void renderFrame();
 
 protected:
-    ViewCamera m_camera;
+    SGViewCamera *m_camera = nullptr;
     SGScene *m_scene = nullptr;
     SGRenderer *m_render = nullptr;
+
+    int m_width;
+    int m_height;
 };
 
 #endif // SGVIEW_H

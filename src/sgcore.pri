@@ -7,6 +7,7 @@ SOURCES += \
     $$PWD/sgrenderer.cpp \
     $$PWD/sgscene.cpp \
     $$PWD/sgview.cpp \
+    $$PWD/sgviewcamera.cpp \
     $$PWD/sgmaterial.cpp \
     $$PWD/sggeometry.cpp \
     $$PWD/geometry/sgrectanglegeometry.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     $$PWD/sgrenderer.h \
     $$PWD/sgscene.h \
     $$PWD/sgview.h \
+    $$PWD/sgviewcamera.h \
     $$PWD/sgmaterial.h \
     $$PWD/sggeometry.h \
     $$PWD/geometry/sgrectanglegeometry.h \

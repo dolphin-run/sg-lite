@@ -1,4 +1,5 @@
 #include "view.h"
+#include "sgviewcamera.h"
 #include <QOpenGLContext>
 
 static QOpenGLContext *g_context = nullptr;
@@ -8,6 +9,7 @@ View::View(QWidget *parent)
     : QOpenGLWidget(parent)
     , m_context(0)
 {
+    setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     m_pUserInteraction = new ViewInteraction(this);
     this->installEventFilter(m_pUserInteraction);
 }
@@ -32,7 +34,7 @@ void View::initializeGL()
 
 void View::resizeGL(int w, int h)
 {
-    m_camera.setViewSize(w, h);
+    sizeChanged(w, h);
 }
 
 void View::paintGL()
@@ -56,17 +58,17 @@ float View::heightPx() const
 
 void View::CameraMove(float x, float y)
 {
-    m_camera.move(x, y);
+    m_camera->move(x, y);
 }
 
 void View::CameraScale(bool zoom)
 {
     if (zoom)
     {
-        m_camera.scale(1.01f);
+        m_camera->scale(1.01f);
     }
     else
     {
-        m_camera.scale(1.f / 1.01f);
+        m_camera->scale(1.f / 1.01f);
     }
 }

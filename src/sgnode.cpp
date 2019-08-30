@@ -1,6 +1,9 @@
 #include "sgnode_p.h"
 #include "sgrootnode_p.h"
 #include "sgscene.h"
+#include "sggeometry.h"
+#include "sgmaterial.h"
+
 #include <algorithm>
 
 
@@ -14,7 +17,7 @@
 
 SGNode::SGNode(E_NodeType type, SGNode * parent)
 {
-    INIT_D(SGNode);
+    SG_INIT_PRIVATE(SGNode);
 
     d_ptr->m_type = type;
 
@@ -38,6 +41,16 @@ SGScene * SGNode::scene()
     return d_ptr->m_scene;
 }
 
+void SGNode::setGeometry(SGGeometry * geometry)
+{
+    d_ptr->m_geometry = geometry;
+}
+
+void SGNode::setMaterial(SGMaterial * material)
+{
+    d_ptr->m_material = material;
+}
+
 bool SGNode::syncState()
 {
     return false;
@@ -48,7 +61,7 @@ SGNode::~SGNode()
     if (d_ptr->m_geometry) delete d_ptr->m_geometry;
     if (d_ptr->m_material) delete d_ptr->m_material;
 
-    FREE_D();
+    SG_FREE_PRIVATE();
 }
 
 SGNode::E_NodeType SGNode::type() const

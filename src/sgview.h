@@ -4,15 +4,17 @@
 #include "sgstruct.h"
 #include "sgnode.h"
 
-class SGScene;
-class SGRenderer;
-class SGViewCamera;
 
 /*
 ** subclass should supply OpenGL Render Context as needed.
 */
-class SG_EXPORT SGView
+
+class SGScene;
+class SGViewCamera;
+class SGRenderer;
+class SG_DECL_EXPORT SGView
 {
+    SG_DISABLE_COPY(SGView);
 public:
     explicit SGView();
     virtual ~SGView();

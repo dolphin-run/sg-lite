@@ -17,9 +17,25 @@ CONFIG(debug, debug|release) {
 } else {
 }
 
-DEFINES += BUILDING_PLUGIN
+DEFINES += SG_BUILDING_PLUGIN
 
 TARGET = sgcore$${BUILD_SUFFIX}
-DESTDIR = $$PWD/../bin/$${PLATFORM}
+DESTDIR = $$PWD/../lib/$${PLATFORM}
 
 include(sgcore.pri)
+
+target.files += \
+    $$PWD/sgglobal.h \
+    $$PWD/sgstruct.h \
+    $$PWD/sgnode.h \
+    $$PWD/sgview.h \
+    $$PWD/sgscene.h
+target.path += $$PWD/../include
+INSTALLS += target
+
+targetnode.files += \
+    $$PWD/node/sgrectanglenode.h \
+    $$PWD/node/sgcircularnode.h \
+    $$PWD/node/sgtextnode.h
+targetnode.path += $$PWD/../include/node
+INSTALLS += targetnode

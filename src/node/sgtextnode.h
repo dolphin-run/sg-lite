@@ -2,27 +2,21 @@
 #define SGTEXTNODE_H
 
 #include "sgnode.h"
-#include "util/sgglyph.h"
 #include <string>
 
 class SGGlyphMaterial;
 class SGTextRectangleGeometry;
-class SG_EXPORT SGTextNode : public SGNode
+class SGTextNodePrivate;
+class SG_DECL_EXPORT SGTextNode : public SGNode
 {
+    SG_DISABLE_COPY(SGTextNode);
+    SG_DECLARE_PRIVATE(SGTextNode);
 public:
     SGTextNode(SGNode* parent = nullptr);
+    ~SGTextNode();
 
     void setText(const std::wstring &txt);
     void setColor(const Color &color);
-
-protected:
-    void addLineText(const std::wstring & s, size_t first, size_t last);
-
-private:
-    Color m_color; 
-    std::vector<LineRenderInfo> m_glyphLines;
-    SGGlyphMaterial *m_glyphMaterial = nullptr;
-    SGTextRectangleGeometry *m_textGeometry = nullptr;
 };
 
 #endif // SGTEXTNODE_H

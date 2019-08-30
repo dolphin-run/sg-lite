@@ -4,6 +4,7 @@
 #include "sgscene.h"
 #include <thread>
 #include <atomic>
+#include <list>
 
 class SGYuvVideoNode;
 class SceneVideo : public SGScene

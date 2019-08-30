@@ -6,7 +6,7 @@
 
 SGScene::SGScene()
 {
-    INIT_D(SGScene);
+    SG_INIT_PRIVATE(SGScene);
 
     //initialize root node.
     d_ptr->m_root.d_ptr->m_scene = this;
@@ -24,7 +24,7 @@ SGScene::~SGScene()
         view->detach();
     }
 
-    FREE_D();
+    SG_FREE_PRIVATE();
 }
 
 void SGScene::sizeChanged()

@@ -54,7 +54,7 @@ bool SGYuvTexture::update(unsigned key, const Image & img)
 {
     assert(0 <= key && key <= 2);
 
-    auto const *ptr = img.data.get();
+    auto const *ptr = img.data;
     GLenum eTexture = GL_TEXTURE0 + key;
     GLuint texture = m_texture[key];
 

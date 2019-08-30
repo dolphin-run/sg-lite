@@ -6,8 +6,9 @@
 SGCircularNode::SGCircularNode(SGNode * parent):
     SGNode(E_NodeType::CircularNodeType, parent)
 {
-    d_ptr->m_material = new SGFlatColorMaterial;
-    d_ptr->m_geometry = m_colorGeometry = new SGCircularGeometry;
+    m_colorGeometry = new SGCircularGeometry;
+    setGeometry(m_colorGeometry);
+    setMaterial(new SGFlatColorMaterial);
 }
 
 void SGCircularNode::setInnerRadius(float rate)

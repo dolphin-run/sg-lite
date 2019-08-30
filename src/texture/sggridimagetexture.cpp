@@ -99,7 +99,7 @@ unsigned SGGridImageTexture::add(const Image &img)
             int xstep = m_imgBuf.cellWid*m_imgBuf.pxComp*col;
 
             char *p = (char *)m_imgBuf.data + offset + xstep;
-            const unsigned char *psrc = img.data.get();
+            const unsigned char *psrc = img.data;
             for (int i = 0; i < img.height; i++)
             {
                 memcpy(p, psrc, img.width *m_imgBuf.pxComp);
@@ -122,7 +122,7 @@ unsigned SGGridImageTexture::add(const Image &img)
             glBindTexture(GL_TEXTURE_2D, m_id);
             glTexSubImage2D(GL_TEXTURE_2D, 0,
                 m_imgBuf.cellWid*col, m_imgBuf.cellHei*row,
-                img.width, img.height, m_imgBuf.gl_fmt, GL_UNSIGNED_BYTE, img.data.get());
+                img.width, img.height, m_imgBuf.gl_fmt, GL_UNSIGNED_BYTE, img.data);
 
             //restore alignment
             if (realignment)

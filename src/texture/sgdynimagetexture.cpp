@@ -48,7 +48,7 @@ unsigned SGDynImageTexture::add(const Image &img)
 bool SGDynImageTexture::update(unsigned key, const Image & img)
 {
     assert(key == 0);
-    auto const *ptr = img.data.get();
+    auto const *ptr = img.data;
 
     if(!ptr || !m_texture) return false;
 

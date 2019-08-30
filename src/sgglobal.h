@@ -2,43 +2,38 @@
 #define SGGLOBAL_H
 
 //export and import
-#ifdef BUILDING_PLUGIN
+#ifdef SG_BUILDING_PLUGIN
     #ifdef _MSC_VER
-        #define SG_EXPORT __declspec(dllexport)
+        #define SG_DECL_EXPORT __declspec(dllexport)
     #else
-        #define SG_EXPORT __attribute__((visibility("default")))
+        #define SG_DECL_EXPORT __attribute__((visibility("default")))
     #endif
 #else
     #ifdef _MSC_VER
-        #define SG_EXPORT __declspec(dllimport)
+        #define SG_DECL_EXPORT __declspec(dllimport)
     #else
-        #define SG_EXPORT __attribute__((visibility("default")))
+        #define SG_DECL_EXPORT __attribute__((visibility("default")))
     #endif
 #endif
 
+#define SG_DISABLE_COPY(Class) \
+    Class(const Class &) =delete;\
+    Class &operator=(const Class &) =delete;
+
 //use in Public class
-#define DECLARE_D(Class) friend class Class##Private; \
-Class##Private *d_ptr=nullptr; \
-Class##Private& d() { return *d_ptr; } \
-const Class##Private& d() const { return *d_ptr; }
+#define SG_DECLARE_PRIVATE(Class) friend class Class##Private; \
+Class##Private *d_ptr=nullptr;
 
 //use in Private Class
-#define DECLARE_P(Class) \
+#define SG_DECLARE_PUBLIC(Class) \
 friend class Class; \
-Class *p_ptr=nullptr; \
-inline void setPublic(Class *ptr) { p_ptr = ptr; } \
-Class& p() { return *p_ptr; } \
-const Class& p() const { return *p_ptr; }
+Class *q_ptr=nullptr; \
+inline void setPublic(Class *ptr) { q_ptr = ptr; }
 
 //initialize&free Private Object in Public Class
-#define INIT_D(Class) \
+#define SG_INIT_PRIVATE(Class) \
 d_ptr = new Class##Private(); d_ptr->setPublic(this);
-#define FREE_D() \
+#define SG_FREE_PRIVATE() \
 delete d_ptr; d_ptr = nullptr;
-
-//interface with P&D
-//#define DD(Class) Class##Private& dd = d();
-//#define DDC(Class) const Class##Private& dd = d();
-//#define PP(Class) Class& pp = p();
 
 #endif // SGGLOBAL_H

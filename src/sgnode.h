@@ -1,18 +1,20 @@
 #ifndef SGNODE_H
 #define SGNODE_H
-#include <list>
-#include <assert.h>
 
 #include "sgstruct.h"
 #include "sgglobal.h"
 
-
 class SGScene;
 class SGGeometry;
 class SGMaterial;
-struct Node;
-class SG_EXPORT SGNode
+class SGNodePrivate;
+class SG_DECL_EXPORT SGNode
 {
+    SG_DISABLE_COPY(SGNode);
+    SG_DECLARE_PRIVATE(SGNode);
+
+    friend class SGRenderer;
+    friend class SGScene;
 public:
     enum E_NodeType {
         RootNodeType, 
@@ -68,14 +70,12 @@ protected:
     SGNode(E_NodeType type, SGNode* parent = nullptr);
     SGScene *scene();
 
+    //ownership of `geometry` and `material` will be taken by this node.
+    void setGeometry(SGGeometry *geometry);
+    void setMaterial(SGMaterial *material);
+
     //something changed to gl is not thread-safe, changes should been made here.
     virtual bool syncState();
-
-    friend struct Node;
-    friend class SGRenderer;
-    friend class SGScene;
-
-    DECLARE_D(SGNode);
 };
 
 #endif // SGNODE_H

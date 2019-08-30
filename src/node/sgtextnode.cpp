@@ -1,5 +1,6 @@
 
 #include "sgtextnode.h"
+#include "sgtextnode_p.h"
 #include "geometry/sgrectanglegeometry.h"
 #include "material/sgglyphmaterial.h"
 #include <algorithm>
@@ -8,11 +9,21 @@
 SGTextNode::SGTextNode(SGNode * parent) :
     SGNode(E_NodeType::TextNodeType, parent)
 {
-    d_ptr->m_material = m_glyphMaterial = new SGGlyphMaterial;
-    d_ptr->m_geometry = m_textGeometry = new SGTextRectangleGeometry;
+    SG_INIT_PRIVATE(SGTextNode);
+
+    d_ptr->m_glyphMaterial = new SGGlyphMaterial;
+    d_ptr->m_textGeometry = new SGTextRectangleGeometry;
+
+    setGeometry(d_ptr->m_textGeometry);
+    setMaterial(d_ptr->m_glyphMaterial);
 }
 
-void SGTextNode::addLineText(const std::wstring & s, size_t first, size_t last)
+SGTextNode::~SGTextNode()
+{
+    SG_FREE_PRIVATE();
+}
+
+void SGTextNodePrivate::addLineText(const std::wstring & s, size_t first, size_t last)
 {
     assert(s.size());
     //assert(first < last);//alow empty line
@@ -31,10 +42,10 @@ void SGTextNode::addLineText(const std::wstring & s, size_t first, size_t last)
 }
 
 //to do... make multi-thread
-void SGTextNode::setText(const std::wstring & txt)
+Size SGTextNodePrivate::setText(const std::wstring & txt)
 {
     m_glyphLines.clear();
-    if (txt.empty()) return;
+    if (txt.empty()) return Size();
 
     size_t pos = -1;
     do
@@ -78,12 +89,17 @@ void SGTextNode::setText(const std::wstring & txt)
     }
 
     //to do...
-    d_ptr->m_width = boundingWidth;
-    d_ptr->m_height = boundingHeight;
+    return Size{ boundingWidth, boundingHeight };
+}
+
+void SGTextNode::setText(const std::wstring & txt)
+{
+    Size bounding = d_ptr->setText(txt);
+    setSize(bounding.width, bounding.height);
 }
 
 void SGTextNode::setColor(const Color & color)
 {
     //to do...
-    m_color = color;
+    d_ptr->m_color = color;
 }

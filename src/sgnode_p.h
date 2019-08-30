@@ -2,6 +2,7 @@
 #define SGNODE_P_H
 #include "sgnode.h"
 
+#include <list>
 
 class SGScene;
 class SGGeometry;
@@ -9,6 +10,7 @@ class SGMaterial;
 class SGNode;
 class SGNodePrivate
 {
+    SG_DECLARE_PUBLIC(SGNode);
 public:
     //properties
     float m_x = 0;//left
@@ -29,8 +31,6 @@ public:
 
     SGGeometry *m_geometry = nullptr;
     SGMaterial *m_material = nullptr;
-
-    DECLARE_P(SGNode);
 };
 
 #endif // SGNODE_P_H

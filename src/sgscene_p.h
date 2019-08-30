@@ -4,9 +4,12 @@
 #include "sgrootnode_p.h"
 #include "sgglobal.h"
 
+#include <list>
+
 class SGView;
 class SGScenePrivate
 {
+    SG_DECLARE_PUBLIC(SGScene);
 public:
     std::list<SGView*> m_views;//view obeserver
 
@@ -17,8 +20,6 @@ public:
 
     float m_width = 1920;
     float m_height = 1080;
-
-    DECLARE_P(SGScene);
 };
 
 #endif // SGSCENE_P_H

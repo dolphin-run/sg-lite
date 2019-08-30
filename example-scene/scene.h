@@ -2,6 +2,7 @@
 #define SCENE_H
 
 #include "sgscene.h"
+#include <list>
 
 class Scene : public SGScene
 {

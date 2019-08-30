@@ -16,8 +16,8 @@ int main(int argc, char **argv)
 
     QApplication app(argc, argv);
 
-    //SceneFantacy scene;
-    Scene scene;
+    SceneFantacy scene;
+    //Scene scene;
     //SceneVideo scene;
     
     View view;

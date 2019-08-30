@@ -9,8 +9,9 @@ class SGDynImageMaterial;
 struct SYUVInfo;
 class SGColorRectangleGeometry;
 class SGTextureRectangleGeometry;
-class SG_EXPORT SGRectangleNode : public SGNode
+class SG_DECL_EXPORT SGRectangleNode : public SGNode
 {
+    SG_DISABLE_COPY(SGRectangleNode);
 public:
     SGRectangleNode(SGNode* parent = nullptr);
     void setColor(Color c);
@@ -20,8 +21,9 @@ private:
     SGColorRectangleGeometry *m_colorGeometry=nullptr;
 };
 
-class SG_EXPORT SGImageNode : public SGNode
+class SG_DECL_EXPORT SGImageNode : public SGNode
 {
+    SG_DISABLE_COPY(SGImageNode);
 public:
     SGImageNode(SGNode* parent = nullptr);
     void setImage(const char* src);
@@ -32,8 +34,9 @@ private:
     SGTextureRectangleGeometry *m_texGeometry=nullptr;
 };
 
-class SG_EXPORT SGYuvVideoNode : public SGNode
+class SG_DECL_EXPORT SGYuvVideoNode : public SGNode
 {
+    SG_DISABLE_COPY(SGYuvVideoNode);
 public:
     SGYuvVideoNode(SGNode* parent = nullptr);
     void setPixelSize(int pxWid = 1920, int pxHei = 1080);
@@ -45,8 +48,9 @@ private:
     SGTextureRectangleGeometry *m_texGeometry = nullptr;
 };
 
-class SG_EXPORT SGRgbVideoNode : public SGNode
+class SG_DECL_EXPORT SGRgbVideoNode : public SGNode
 {
+    SG_DISABLE_COPY(SGRgbVideoNode);
 public:
     SGRgbVideoNode(SGNode* parent = nullptr);
     void setPixelSize(int pxWid = 1920, int pxHei = 1080);

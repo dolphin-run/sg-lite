@@ -4,8 +4,9 @@
 #include "sgnode.h"
 
 class SGCircularGeometry;
-class SG_EXPORT SGCircularNode : public SGNode
+class SG_DECL_EXPORT SGCircularNode : public SGNode
 {
+    SG_DISABLE_COPY(SGCircularNode);
 public:
     SGCircularNode(SGNode* parent = nullptr);
     void setInnerRadius(float rate);

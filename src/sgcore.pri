@@ -52,6 +52,7 @@ HEADERS += \
     $$PWD/node/sgrectanglenode.h \
     $$PWD/node/sgcircularnode.h \
     $$PWD/node/sgtextnode.h \
+    $$PWD/node/sgtextnode_p.h \
     $$PWD/util/sgglyph.h \
     $$PWD/util/glyphloader.h \
     $$PWD/util/glshaderprogram.h \

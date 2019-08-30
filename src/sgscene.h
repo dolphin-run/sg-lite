@@ -6,8 +6,11 @@
 
 class SGRootNode;
 class SGView;
-class SG_EXPORT SGScene
+class SGScenePrivate;
+class SG_DECL_EXPORT SGScene
 {
+    SG_DISABLE_COPY(SGScene);
+    SG_DECLARE_PRIVATE(SGScene);
     friend class SGView;
 public:
     SGScene();
@@ -44,8 +47,6 @@ protected:
     //notify view init
     void addView(SGView* view);
     void delView(SGView* view);
-
-    DECLARE_D(SGScene);
 };
 
 #endif // SGSCENE_H

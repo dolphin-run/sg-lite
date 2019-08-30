@@ -4,20 +4,10 @@
 #include <cfloat>
 #include <assert.h>
 #include <memory>
+#include "sgglobal.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-struct Point {
+struct SG_EXPORT Point {
     int x, y;
-
-    void map(const glm::mat4 &m) {
-        Point r;
-        r.x = x * m[0][0] + y * m[1][0] + m[3][0];
-        r.y = x * m[0][1] + y * m[1][1] + m[3][1];
-        x = r.x;
-        y = r.y;
-    }
 
     void set(int nx, int ny) {
         x = nx;
@@ -32,16 +22,8 @@ struct Point {
     }
 };
 
-struct PointF {
+struct SG_EXPORT PointF {
     float x, y;
-
-    void map(const glm::mat4 &m) {
-        PointF r;
-        r.x = x * m[0][0] + y * m[1][0] + m[3][0];
-        r.y = x * m[0][1] + y * m[1][1] + m[3][1];
-        x = r.x;
-        y = r.y;
-    }
 
     void set(float nx, float ny) {
         x = nx;
@@ -61,7 +43,7 @@ struct Size {
     int height;
 };
 
-struct Rect {
+struct SG_EXPORT Rect {
     Point tl, br; // Top-Left (min) and Bottom-Right (max)
 
     Rect() {
@@ -113,8 +95,6 @@ struct Rect {
             br.y = r.br.y;
     }
 
-    //void map(const glm::mat4 &m);
-
     void set(int left, int top, int right, int bottom) {
         tl.set(left, top);
         br.set(right, bottom);
@@ -127,7 +107,7 @@ struct Rect {
     }
 };
 
-struct RectF {
+struct SG_EXPORT RectF {
     PointF tl, br; // Top-Left (min) and Bottom-Right (max)
 
     RectF() {
@@ -199,7 +179,7 @@ struct RectF {
     }
 };
 
-struct Color {
+struct SG_EXPORT Color {
     uint8_t r;
     uint8_t g;
     uint8_t b;
@@ -221,7 +201,7 @@ struct Color {
     static Color random();
 };
 
-struct Image {
+struct SG_EXPORT Image {
     //       1           grey
     //       2           grey, alpha
     //       3           red, green, blue

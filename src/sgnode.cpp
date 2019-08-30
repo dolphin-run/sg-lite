@@ -1,4 +1,5 @@
-#include "sgnode.h"
+#include "sgnode_p.h"
+#include "sgrootnode_p.h"
 #include "sgscene.h"
 #include <algorithm>
 
@@ -11,15 +12,18 @@
 //    }
 //}
 
-SGNode::SGNode(E_NodeType type, SGNode * parent):
-    m_type(type)
+SGNode::SGNode(E_NodeType type, SGNode * parent)
 {
+    INIT_D(SGNode);
+
+    d_ptr->m_type = type;
+
     if (parent)
     {
-        if(parent->m_scene)
+        if(parent->scene())
         {
             //parent has in a scene.
-            parent->m_scene->addItem(this, parent);
+            parent->scene()->addItem(this, parent);
         }
         else
         {
@@ -29,6 +33,11 @@ SGNode::SGNode(E_NodeType type, SGNode * parent):
     }
 }
 
+SGScene * SGNode::scene()
+{
+    return d_ptr->m_scene;
+}
+
 bool SGNode::syncState()
 {
     return false;
@@ -36,161 +45,163 @@ bool SGNode::syncState()
 
 SGNode::~SGNode()
 {
-    if (m_geometry) delete m_geometry;
-    if (m_material) delete m_material;
+    if (d_ptr->m_geometry) delete d_ptr->m_geometry;
+    if (d_ptr->m_material) delete d_ptr->m_material;
+
+    FREE_D();
 }
 
 SGNode::E_NodeType SGNode::type() const
 {
-    return m_type;
+    return d_ptr->m_type;
 }
 
 void SGNode::addChild(SGNode* node)
 {
-    node->m_parent = this;
+    node->d_ptr->m_parent = this;
     //m_children.push_back(node);
     //sort when insert
-    auto it = std::upper_bound(m_children.begin(), m_children.end(), node, [](const SGNode *lop, const SGNode *rop) {
-        return lop->m_z < rop->m_z;
+    auto it = std::upper_bound(d_ptr->m_children.begin(), d_ptr->m_children.end(), node, [](const SGNode *lop, const SGNode *rop) {
+        return lop->d_ptr->m_z < rop->d_ptr->m_z;
     });
-    m_children.insert(it, node);
+    d_ptr->m_children.insert(it, node);
 }
 
 void SGNode::removeChild(SGNode * child)
 {
-    assert(child->m_parent);
-    assert(m_children.end() != std::find(m_children.begin(), m_children.end(), child));
+    assert(child->d_ptr->m_parent);
+    assert(d_ptr->m_children.end() != std::find(d_ptr->m_children.begin(), d_ptr->m_children.end(), child));
 
-    m_children.remove(child);
-    child->m_parent = nullptr;
+    d_ptr->m_children.remove(child);
+    child->d_ptr->m_parent = nullptr;
 }
 
 Rect SGNode::boundingRect() const
 {
     Rect rc;
-    rc.set(m_x, m_y + m_height, m_x + m_width, m_y);
+    rc.set(d_ptr->m_x, d_ptr->m_y + d_ptr->m_height, d_ptr->m_x + d_ptr->m_width, d_ptr->m_y);
     return rc;
 }
 
 float SGNode::x() const
 {
-    return m_x;
+    return d_ptr->m_x;
 }
 
 float SGNode::y() const
 {
-    return m_y;
+    return d_ptr->m_y;
 }
 
 int SGNode::z() const
 {
-    return m_z;
+    return d_ptr->m_z;
 }
 
 float SGNode::width() const
 {
-    return m_width;
+    return d_ptr->m_width;
 }
 
 float SGNode::height() const
 {
-    return m_height;
+    return d_ptr->m_height;
 }
 
 float SGNode::opactity() const
 {
-    return m_opacity;
+    return d_ptr->m_opacity;
 }
 
 float SGNode::rotation() const
 {
-    return m_rotation;
+    return d_ptr->m_rotation;
 }
 
 bool SGNode::visible() const
 {
-    return m_visible;
+    return d_ptr->m_visible;
 }
 
 void SGNode::setX(float x)
 {
-    m_x = x;
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
+    d_ptr->m_x = x;
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGNode::setY(float y)
 {
-    m_y = y;
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
+    d_ptr->m_y = y;
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGNode::setZ(int z)
 {
-    m_z = z;
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::OrderingDirty);
-    if (m_parent)
+    d_ptr->m_z = z;
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::OrderingDirty);
+    if (d_ptr->m_parent)
     {
         //a more better solution can be remove and insert again.
-        m_parent->m_children.sort([](const SGNode *lop, const SGNode *rop) {
-            return lop->m_z < rop->m_z;
+        d_ptr->m_parent->d_ptr->m_children.sort([](const SGNode *lop, const SGNode *rop) {
+            return lop->d_ptr->m_z < rop->d_ptr->m_z;
         });
     }
 }
 
 void SGNode::setWidth(float width)
 {
-    m_width = width;
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
+    d_ptr->m_width = width;
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
 }
 
 void SGNode::setHeight(float height)
 {
-    m_height = height;
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
+    d_ptr->m_height = height;
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
 }
 
 void SGNode::setOpactity(float opacity)
 {
-    m_opacity = opacity;
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::OpacityDirty);
+    d_ptr->m_opacity = opacity;
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::OpacityDirty);
 }
 
 void SGNode::setRotation(float rotation)
 {
-    m_rotation = rotation;
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::TransformDirty);
+    d_ptr->m_rotation = rotation;
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::TransformDirty);
 }
 
 void SGNode::setVisible(bool visible)
 {
-    m_visible = visible;
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::VisibilityDirty);
+    d_ptr->m_visible = visible;
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::VisibilityDirty);
 }
 
 void SGNode::setPos(float x, float y)
 {
-    m_x = x;
-    m_y = y;
+    d_ptr->m_x = x;
+    d_ptr->m_y = y;
     
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGNode::setSize(float wid, float hei)
 {
-    m_width = wid;
-    m_height = hei;
+    d_ptr->m_width = wid;
+    d_ptr->m_height = hei;
 
-    if (m_scene)
-        m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
 }
 
 SGRootNode::SGRootNode() : SGNode(SGNode::E_NodeType::RootNodeType)

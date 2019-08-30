@@ -7,7 +7,7 @@
 
 class SGGlyphMaterial;
 class SGTextRectangleGeometry;
-class SGTextNode : public SGNode
+class SG_EXPORT SGTextNode : public SGNode
 {
 public:
     SGTextNode(SGNode* parent = nullptr);

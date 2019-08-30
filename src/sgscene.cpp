@@ -1,11 +1,15 @@
 #include "sgscene.h"
+#include "sgscene_p.h"
+#include "sgnode_p.h"
 #include "sgview.h"
 #include <algorithm>
 
 SGScene::SGScene()
 {
+    INIT_D(SGScene);
+
     //initialize root node.
-    m_root.m_scene = this;
+    d_ptr->m_root.d_ptr->m_scene = this;
     //m_nodes.push_back(&m_root);
 }
 
@@ -14,16 +18,18 @@ SGScene::~SGScene()
     //unbind all related view
 
     //detach will remove view from m_views, for safety, make a copy.
-    auto views = m_views;
+    auto views = d_ptr->m_views;
     for (auto view : views)
     {
         view->detach();
     }
+
+    FREE_D();
 }
 
 void SGScene::sizeChanged()
 {
-    for (auto view : m_views)
+    for (auto view : d_ptr->m_views)
     {
         view->sceneChanged();
     }
@@ -31,7 +37,7 @@ void SGScene::sizeChanged()
 
 void SGScene::itemAdded(SGNode *item)
 {
-    for (auto view : m_views)
+    for (auto view : d_ptr->m_views)
     {
         view->itemAdded(item);
     }
@@ -39,7 +45,7 @@ void SGScene::itemAdded(SGNode *item)
 
 void SGScene::itemDeleted(SGNode *item)
 {
-    for (auto view : m_views)
+    for (auto view : d_ptr->m_views)
     {
         view->itemDeleted(item);
     }
@@ -47,7 +53,7 @@ void SGScene::itemDeleted(SGNode *item)
 
 void SGScene::itemChanged(SGNode *item, SGNode::E_DirtyType changes)
 {
-    for (auto view : m_views)
+    for (auto view : d_ptr->m_views)
     {
         view->itemChanged(item, changes);
     }
@@ -55,15 +61,15 @@ void SGScene::itemChanged(SGNode *item, SGNode::E_DirtyType changes)
 
 bool SGScene::addItem(SGNode * item, SGNode *attached)
 {
-    if (m_nodes.end() != std::find(m_nodes.begin(), m_nodes.end(), item)) return false;
+    if (d_ptr->m_nodes.end() != std::find(d_ptr->m_nodes.begin(), d_ptr->m_nodes.end(), item)) return false;
 
     if (!attached)
     {
-        m_root.addChild(item);
+        d_ptr->m_root.addChild(item);
     }
     else
     {
-        assert(attached->m_scene == this);
+        assert(attached->d_ptr->m_scene == this);
         attached->addChild(item);
     }
     add(item);
@@ -73,11 +79,11 @@ bool SGScene::addItem(SGNode * item, SGNode *attached)
 
 bool SGScene::removeItem(SGNode * item)
 {
-    if (m_nodes.end() != std::find(m_nodes.begin(), m_nodes.end(), item))
+    if (d_ptr->m_nodes.end() != std::find(d_ptr->m_nodes.begin(), d_ptr->m_nodes.end(), item))
     {
-        if (item->m_parent)
+        if (item->d_ptr->m_parent)
         {
-            item->m_parent->removeChild(item);
+            item->d_ptr->m_parent->removeChild(item);
         }
         remove(item);
 
@@ -89,43 +95,58 @@ bool SGScene::removeItem(SGNode * item)
 
 void SGScene::clear()
 {
-    for (auto itm : m_nodes)
+    for (auto itm : d_ptr->m_nodes)
         delete itm;
-    m_nodes.clear();
+    d_ptr->m_nodes.clear();
+}
+
+float SGScene::width() const
+{
+    return d_ptr->m_width;
+}
+
+float SGScene::height() const
+{
+    return d_ptr->m_height;
+}
+
+const SGRootNode * SGScene::rootNode() const
+{
+    return &d_ptr->m_root;
 }
 
 void SGScene::remove(SGNode * item)
 {
-    auto it = std::find(m_nodes.begin(), m_nodes.end(), item);
-    assert(m_nodes.end() != it);
+    auto it = std::find(d_ptr->m_nodes.begin(), d_ptr->m_nodes.end(), item);
+    assert(d_ptr->m_nodes.end() != it);
 
-    m_nodes.erase(it);
-    item->m_scene = nullptr;
+    d_ptr->m_nodes.erase(it);
+    item->d_ptr->m_scene = nullptr;
     itemDeleted(item);
-    for (auto child : item->m_children)
+    for (auto child : item->d_ptr->m_children)
         remove(child);
 }
 
 void SGScene::add(SGNode * item)
 {
-    assert(m_nodes.end() == std::find(m_nodes.begin(), m_nodes.end(), item));
+    assert(d_ptr->m_nodes.end() == std::find(d_ptr->m_nodes.begin(), d_ptr->m_nodes.end(), item));
 
-    m_nodes.push_back(item);
-    item->m_scene = this;
+    d_ptr->m_nodes.push_back(item);
+    item->d_ptr->m_scene = this;
     itemAdded(item);
-    for (auto child : item->m_children)
+    for (auto child : item->d_ptr->m_children)
         add(child);
 }
 
 void SGScene::addView(SGView* view)
 {
-    m_views.push_back(view);
+    d_ptr->m_views.push_back(view);
 
-    for (auto node : m_nodes)
+    for (auto node : d_ptr->m_nodes)
         view->itemAdded(node);
 }
 
 void SGScene::delView(SGView * view)
 {
-    m_views.remove(view);
+    d_ptr->m_views.remove(view);
 }

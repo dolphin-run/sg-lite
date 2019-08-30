@@ -1,2 +1,2 @@
-qmake -spec win32-msvc -tp vc makeglfw.pro
+qmake -spec win32-msvc -tp vc makeqtwidget.pro
 pause

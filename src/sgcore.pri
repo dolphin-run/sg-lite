@@ -32,9 +32,12 @@ SOURCES += \
 HEADERS += \
     $$PWD/sgglobal.h \
     $$PWD/sgnode.h \
+    $$PWD/sgnode_p.h \
+    $$PWD/sgrootnode_p.h \
     $$PWD/sgstruct.h \
     $$PWD/sgrenderer.h \
     $$PWD/sgscene.h \
+    $$PWD/sgscene_p.h \
     $$PWD/sgview.h \
     $$PWD/sgviewcamera.h \
     $$PWD/sgmaterial.h \

@@ -2,9 +2,11 @@
 #define SGSCENE_H
 
 #include "sgnode.h"
+#include "sgglobal.h"
 
+class SGRootNode;
 class SGView;
-class SGScene
+class SG_EXPORT SGScene
 {
     friend class SGView;
 public:
@@ -29,6 +31,10 @@ public:
     //remove all nodes from this scene and delete it.
     void clear();
 
+    float width() const;
+    float height() const;
+    const SGRootNode *rootNode() const;
+
 protected:
     //add or remove item and its all generations from this scene
     //item tree relation-ship keep the same
@@ -39,17 +45,7 @@ protected:
     void addView(SGView* view);
     void delView(SGView* view);
 
-protected:
-    std::list<SGView*> m_views;//view obeserver
-
-private:
-    SGRootNode m_root;
-
-    //use list, it can store parent and children from first to end.
-    std::list<SGNode*> m_nodes;
-
-    float m_width = 1920;
-    float m_height = 1080;
+    DECLARE_D(SGScene);
 };
 
 #endif // SGSCENE_H

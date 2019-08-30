@@ -37,7 +37,8 @@ d_ptr = new Class##Private(); d_ptr->setPublic(this);
 delete d_ptr; d_ptr = nullptr;
 
 //interface with P&D
-#define DD(Class) Class##Private& dd = d();
-#define PP(Class) Class& pp = p();
+//#define DD(Class) Class##Private& dd = d();
+//#define DDC(Class) const Class##Private& dd = d();
+//#define PP(Class) Class& pp = p();
 
 #endif // SGGLOBAL_H

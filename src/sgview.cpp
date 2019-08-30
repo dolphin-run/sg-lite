@@ -57,7 +57,7 @@ void SGView::sceneChanged()
 {
     if (!m_scene) return;
 
-    m_render->setRootNode(&m_scene->m_root);
+    m_render->setRootNode(m_scene->rootNode());
     sceneSizeChanged();
 }
 
@@ -65,7 +65,7 @@ void SGView::sceneSizeChanged()
 {
     if (!m_scene) return;
 
-    m_camera->setSceneSize(m_scene->m_width, m_scene->m_height);
+    m_camera->setSceneSize(m_scene->width(), m_scene->height());
 }
 
 void SGView::itemAdded(SGNode *item)
@@ -95,9 +95,9 @@ const RectF & SGView::sceneRect() const
     return m_camera->viewRect();
 }
 
-const glm::mat4 & SGView::sceneTransform() const
+const SGViewCamera * SGView::viewCamera() const
 {
-    return m_camera->transform();
+    return m_camera;
 }
 
 Point SGView::mapToScene(const Point & vp) const

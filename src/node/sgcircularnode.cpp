@@ -1,12 +1,13 @@
 #include "sgcircularnode.h"
 #include "geometry/sgcirculargeometry.h"
 #include "material/sgcolormaterial.h"
+#include "sgnode_p.h"
 
 SGCircularNode::SGCircularNode(SGNode * parent):
     SGNode(E_NodeType::CircularNodeType, parent)
 {
-    m_material = new SGFlatColorMaterial;
-    m_geometry = m_colorGeometry = new SGCircularGeometry;
+    d_ptr->m_material = new SGFlatColorMaterial;
+    d_ptr->m_geometry = m_colorGeometry = new SGCircularGeometry;
 }
 
 void SGCircularNode::setInnerRadius(float rate)

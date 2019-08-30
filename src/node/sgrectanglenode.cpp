@@ -5,12 +5,13 @@
 #include "material/sgtexturematerial.h"
 #include "material/sgyuvmaterial.h"
 #include "material/sgdynimagematerial.h"
+#include "sgnode_p.h"
 
 SGRectangleNode::SGRectangleNode(SGNode * parent):
     SGNode(E_NodeType::RectangleNodeType, parent)
 {
-    m_material = new SGFlatColorMaterial;
-    m_geometry = m_colorGeometry = new SGColorRectangleGeometry;
+    d_ptr->m_material = new SGFlatColorMaterial;
+    d_ptr->m_geometry = m_colorGeometry = new SGColorRectangleGeometry;
 }
 
 void SGRectangleNode::setColor(Color c)
@@ -21,8 +22,8 @@ void SGRectangleNode::setColor(Color c)
 SGImageNode::SGImageNode(SGNode * parent) :
     SGNode(E_NodeType::ImageNodeType, parent)
 {
-    m_material = m_texMaterial = new SGTextureMaterial;
-    m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
+    d_ptr->m_material = m_texMaterial = new SGTextureMaterial;
+    d_ptr->m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
 }
 
 void SGImageNode::setImage(const char* src)
@@ -36,8 +37,8 @@ SGYuvVideoNode::SGYuvVideoNode(SGNode * parent):
     SGNode(E_NodeType::YuvNodeType, parent),
     m_yuvInf(new SYUVInfo)
 {
-    m_material = m_texMaterial = new SGYuvMaterial;
-    m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
+    d_ptr->m_material = m_texMaterial = new SGYuvMaterial;
+    d_ptr->m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
 
     //set default size
     setPixelSize();
@@ -63,8 +64,8 @@ bool SGYuvVideoNode::setYuv(const unsigned char * yuv, unsigned int len)
 SGRgbVideoNode::SGRgbVideoNode(SGNode * parent):
     SGNode(E_NodeType::DynImageNodeType, parent)
 {
-    m_material = m_texMaterial = new SGDynImageMaterial;
-    m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
+    d_ptr->m_material = m_texMaterial = new SGDynImageMaterial;
+    d_ptr->m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
 
     //set default size
     setPixelSize();

@@ -1,12 +1,18 @@
 #ifndef SGRENDERER_H
 #define SGRENDERER_H
 
-#include "sgnode.h"
+#include "sgnode_p.h"
+#include "sgrootnode_p.h"
 #include <list>
 #include <vector>
 #include <unordered_map>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 class SGView;
+class SGMaterial;
+class SGMaterialShader;
 
 //just for rendering
 struct Node {

@@ -14,14 +14,16 @@ CONFIG(debug, debug|release) {
 
 CONFIG -= flat
 QT += widgets
+DESTDIR = $$PWD/bin/$${PLATFORM}
 
 
-include(src/sgcore.pri)
+#include(src/sgcore.pri)
 INCLUDEPATH += src
 
 include(example-scene/example-scene.pri)
 INCLUDEPATH += example-scene
 
+LIBS += -Lbin/$${PLATFORM} -lsgcore$${BUILD_SUFFIX}
 HEADERS += example-window/qt5widget/view.h example-window/qt5widget/viewinteraction.h
 
 SOURCES += example-window/qt5widget/view.cpp example-window/qt5widget/viewinteraction.cpp example-window/qt5widget/main.cpp

@@ -4,7 +4,7 @@
 #include "sgnode.h"
 
 class SGCircularGeometry;
-class SGCircularNode : public SGNode
+class SG_EXPORT SGCircularNode : public SGNode
 {
 public:
     SGCircularNode(SGNode* parent = nullptr);

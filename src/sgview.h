@@ -11,7 +11,7 @@ class SGViewCamera;
 /*
 ** subclass should supply OpenGL Render Context as needed.
 */
-class SGView
+class SG_EXPORT SGView
 {
 public:
     explicit SGView();
@@ -34,7 +34,7 @@ public:
     virtual void sizeChanged(int width, int height);
 
     const RectF &sceneRect() const;
-    const glm::mat4 &sceneTransform() const;
+    const SGViewCamera* viewCamera() const;
 
     Point mapToScene(const Point &vp) const;
 

@@ -4,13 +4,14 @@
 #include <assert.h>
 
 #include "sgstruct.h"
-#include "sggeometry.h"
-#include "sgmaterial.h"
+#include "sgglobal.h"
 
 
 class SGScene;
+class SGGeometry;
+class SGMaterial;
 struct Node;
-class SGNode
+class SG_EXPORT SGNode
 {
 public:
     enum E_NodeType {
@@ -65,39 +66,16 @@ public:
 
 protected:
     SGNode(E_NodeType type, SGNode* parent = nullptr);
+    SGScene *scene();
 
     //something changed to gl is not thread-safe, changes should been made here.
     virtual bool syncState();
 
-    //properties
-    float m_x = 0;//left
-    float m_y = 0;//top
-    int m_z = 0;//z-index
-    float m_width = 0;//in scene's pixel size
-    float m_height = 0;
-
-    float m_opacity = 1.f;
-    float m_scale = 1.f;
-    float m_rotation = 0.f;
-    bool m_visible = true;
-
-    SGNode* m_parent = nullptr;
-    SGScene *m_scene = nullptr;//should only be modified in the SGScene
-    E_NodeType m_type = RootNodeType;
-    std::list<SGNode*> m_children;
-
-    SGGeometry *m_geometry = nullptr;
-    SGMaterial *m_material = nullptr;
-
     friend struct Node;
     friend class SGRenderer;
     friend class SGScene;
-};
 
-class SGRootNode : public SGNode
-{
-public:
-    SGRootNode();
+    DECLARE_D(SGNode);
 };
 
 #endif // SGNODE_H

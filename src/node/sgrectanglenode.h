@@ -9,7 +9,7 @@ class SGDynImageMaterial;
 struct SYUVInfo;
 class SGColorRectangleGeometry;
 class SGTextureRectangleGeometry;
-class SGRectangleNode : public SGNode
+class SG_EXPORT SGRectangleNode : public SGNode
 {
 public:
     SGRectangleNode(SGNode* parent = nullptr);
@@ -20,7 +20,7 @@ private:
     SGColorRectangleGeometry *m_colorGeometry=nullptr;
 };
 
-class SGImageNode : public SGNode
+class SG_EXPORT SGImageNode : public SGNode
 {
 public:
     SGImageNode(SGNode* parent = nullptr);
@@ -32,7 +32,7 @@ private:
     SGTextureRectangleGeometry *m_texGeometry=nullptr;
 };
 
-class SGYuvVideoNode : public SGNode
+class SG_EXPORT SGYuvVideoNode : public SGNode
 {
 public:
     SGYuvVideoNode(SGNode* parent = nullptr);
@@ -45,7 +45,7 @@ private:
     SGTextureRectangleGeometry *m_texGeometry = nullptr;
 };
 
-class SGRgbVideoNode : public SGNode
+class SG_EXPORT SGRgbVideoNode : public SGNode
 {
 public:
     SGRgbVideoNode(SGNode* parent = nullptr);

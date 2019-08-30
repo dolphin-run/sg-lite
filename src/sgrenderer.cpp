@@ -1,8 +1,21 @@
 #include "sgrenderer.h"
 #include "sgview.h"
+#include "sgviewcamera.h"
 #include <algorithm>
+#include "sggeometry.h"
+#include "sgmaterial.h"
 
 #include <glad/glad.h>
+
+
+
+static inline void sg_mapPointF(PointF &pt, const glm::mat4 &m) {
+    PointF r;
+    r.x = pt.x * m[0][0] + pt.y * m[1][0] + m[3][0];
+    r.y = pt.x * m[0][1] + pt.y * m[1][1] + m[3][1];
+    pt.x = r.x;
+    pt.y = r.y;
+}
 
 void Node::updateMatrix()
 {
@@ -75,17 +88,17 @@ void SGRenderer::buildRenderNodes(const SGNode * gnode, Node *p)
     {
         if (p)
         {
-            c->x = p->x + gnode->m_x;
-            c->y = p->y + gnode->m_y;
+            c->x = p->x + gnode->d_ptr->m_x;
+            c->y = p->y + gnode->d_ptr->m_y;
         }
         else
         {
-            c->x = gnode->m_x;
-            c->y = gnode->m_y;
+            c->x = gnode->d_ptr->m_x;
+            c->y = gnode->d_ptr->m_y;
         }
-        c->width = gnode->m_width;
-        c->height = gnode->m_height;
-        c->rotation = gnode->m_rotation;
+        c->width = gnode->d_ptr->m_width;
+        c->height = gnode->d_ptr->m_height;
+        c->rotation = gnode->d_ptr->m_rotation;
         c->bounding = RectF(c->x, c->y, c->width, c->height);
 
         c->updateMatrix();
@@ -96,11 +109,11 @@ void SGRenderer::buildRenderNodes(const SGNode * gnode, Node *p)
     {
         if (p)
         {
-            c->opacity = p->opacity*gnode->m_opacity;
+            c->opacity = p->opacity*gnode->d_ptr->m_opacity;
         }
         else
         {
-            c->opacity = gnode->m_opacity;
+            c->opacity = gnode->d_ptr->m_opacity;
         }
 
         if (c->opacity < 0.01f)
@@ -115,13 +128,13 @@ void SGRenderer::buildRenderNodes(const SGNode * gnode, Node *p)
     if (c->visibleChanged)
     {
         if (p&&p->visibleChanged)
-            c->visible = gnode->m_visible ? p->visible : false;
+            c->visible = gnode->d_ptr->m_visible ? p->visible : false;
         else
-            c->visible = gnode->m_visible;
+            c->visible = gnode->d_ptr->m_visible;
         c->visibleChanged = 1;//set to notify children if parent opacity changed
     }
 
-    for (auto child : gnode->m_children)
+    for (auto child : gnode->d_ptr->m_children)
     {
         buildRenderNodes(child, c);
     }
@@ -144,7 +157,7 @@ void SGRenderer::render()
     if (m_rebuild&E_RebuildFlag::BuildNodes)
     {
         m_zRenderOrder = 1;
-        for (auto child : m_rootGNode->m_children)
+        for (auto child : m_rootGNode->d_ptr->m_children)
         {
             buildRenderNodes(child, nullptr);
         }
@@ -300,10 +313,10 @@ void SGRenderer::buildOpacityBatches()
         node->batch = 1;
 
         SGNode::E_NodeType ntype = node->gnode->type();
-        batch->degenerate = node->gnode->m_geometry->renderType() == E_RenderType::E_RenderTriangleStrip;
+        batch->degenerate = node->gnode->d_ptr->m_geometry->renderType() == E_RenderType::E_RenderTriangleStrip;
         int nodenum = 1;
-        batch->vbo.verticeNum = node->gnode->m_geometry->verticeNum();
-        if (node->gnode->m_material->share())
+        batch->vbo.verticeNum = node->gnode->d_ptr->m_geometry->verticeNum();
+        if (node->gnode->d_ptr->m_material->share())
         {
             for (int j = i + 1; j < m_opacityNodes.size(); j++)
             {
@@ -311,13 +324,13 @@ void SGRenderer::buildOpacityBatches()
 
                 if (nj->batch ||
                     ntype != nj->gnode->type() ||
-                    !nj->gnode->m_material->share())
+                    !nj->gnode->d_ptr->m_material->share())
                     continue;
 
                 node->next = nj;
                 nj->prev = node;
                 nj->batch = 1;
-                batch->vbo.verticeNum += nj->gnode->m_geometry->verticeNum();
+                batch->vbo.verticeNum += nj->gnode->d_ptr->m_geometry->verticeNum();
 
                 node = nj;
                 nodenum++;
@@ -329,7 +342,7 @@ void SGRenderer::buildOpacityBatches()
         {
             batch->vbo.verticeNum += (nodenum - 1) * 2;
         }
-        batch->vbo.size = batch->vbo.verticeNum * node->gnode->m_geometry->verticeSize();
+        batch->vbo.size = batch->vbo.verticeNum * node->gnode->d_ptr->m_geometry->verticeSize();
         
         batch->dirty = true;
         m_opaqueBatches.push_back(batch);
@@ -376,10 +389,10 @@ void SGRenderer::buildAlphaBatches()
         overlapBounds.set(FLT_MAX, FLT_MAX, FLT_MIN, FLT_MIN);
 
         SGNode::E_NodeType ntype = node->gnode->type();
-        batch->degenerate = node->gnode->m_geometry->renderType() == E_RenderType::E_RenderTriangleStrip;
+        batch->degenerate = node->gnode->d_ptr->m_geometry->renderType() == E_RenderType::E_RenderTriangleStrip;
         int nodenum = 1;
-        batch->vbo.verticeNum = node->gnode->m_geometry->verticeNum();
-        if (node->gnode->m_material->share())
+        batch->vbo.verticeNum = node->gnode->d_ptr->m_geometry->verticeNum();
+        if (node->gnode->d_ptr->m_material->share())
         {
             for (int j = i + 1; j < m_alphaNodes.size(); j++)
             {
@@ -388,7 +401,7 @@ void SGRenderer::buildAlphaBatches()
                 if (nj->batch)
                     continue;
 
-                if (ntype == nj->gnode->type() && nj->gnode->m_material->share())
+                if (ntype == nj->gnode->type() && nj->gnode->d_ptr->m_material->share())
                 {
                     if (overlapBounds.intersects(nj->bounding) &&
                         checkOverlap(i + 1, j - 1, nj->bounding))//not overlap
@@ -399,7 +412,7 @@ void SGRenderer::buildAlphaBatches()
                     node->next = nj;
                     nj->prev = node;
                     nj->batch = 1;
-                    batch->vbo.verticeNum += nj->gnode->m_geometry->verticeNum();
+                    batch->vbo.verticeNum += nj->gnode->d_ptr->m_geometry->verticeNum();
 
                     node = nj;
                     nodenum++;
@@ -416,7 +429,7 @@ void SGRenderer::buildAlphaBatches()
         {
             batch->vbo.verticeNum += (nodenum - 1) * 2;
         }
-        batch->vbo.size = batch->vbo.verticeNum * node->gnode->m_geometry->verticeSize();
+        batch->vbo.size = batch->vbo.verticeNum * node->gnode->d_ptr->m_geometry->verticeSize();
 
         batch->dirty = true;
         m_alphaBatches.push_back(batch);
@@ -464,7 +477,7 @@ void SGRenderer::uploadOneBatch(Batch *batch)
     char* pd = (char*)batch->vbo.data;
     while (node)
     {
-        SGGeometry *gg = node->gnode->m_geometry;
+        SGGeometry *gg = node->gnode->d_ptr->m_geometry;
 
         char* pdmain = pd;
         if (node->prev && batch->degenerate)
@@ -478,7 +491,8 @@ void SGRenderer::uploadOneBatch(Batch *batch)
         for (int i = 0; i < gg->verticeNum(); i++)
         {
             PointF *pt = (PointF *)(pvr + i);
-            pt->map(node->matrix);
+            //pt->map(node->matrix);
+            sg_mapPointF(*pt, node->matrix);
             (pvr + i)->z = node->z;
         }
 
@@ -549,21 +563,21 @@ void SGRenderer::renderBatch(Batch * batch)
 
     const SGNode *gn = n->gnode;
     
-    gn->m_material->syncState();
-    SGMaterialShader *shader = m_shrMgr.find(gn->m_material);
+    gn->d_ptr->m_material->syncState();
+    SGMaterialShader *shader = m_shrMgr.find(gn->d_ptr->m_material);
 
     shader->program()->bind();
 
-    shader->updateState(m_view->sceneTransform());
+    shader->updateState(m_view->viewCamera()->transform());
 
     glBindBuffer(GL_ARRAY_BUFFER, batch->vbo.id);
 
-    auto attrs = gn->m_geometry->attributes();
+    auto attrs = gn->d_ptr->m_geometry->attributes();
     for (int i = 0; i < attrs->vparanum; i++)
     {
         glVertexAttribPointer(i, attrs->vas[i].size, GL_FLOAT, GL_FALSE, attrs->vsize, (void*)(attrs->vas[i].offset));
         glEnableVertexAttribArray(i);
     }
 
-    glDrawArrays(gn->m_geometry->renderType(), 0, batch->vbo.verticeNum);
+    glDrawArrays(gn->d_ptr->m_geometry->renderType(), 0, batch->vbo.verticeNum);
 }

@@ -3,12 +3,13 @@
 #include "geometry/sgrectanglegeometry.h"
 #include "material/sgglyphmaterial.h"
 #include <algorithm>
+#include "sgnode_p.h"
 
 SGTextNode::SGTextNode(SGNode * parent) :
     SGNode(E_NodeType::TextNodeType, parent)
 {
-    m_material = m_glyphMaterial = new SGGlyphMaterial;
-    m_geometry = m_textGeometry = new SGTextRectangleGeometry;
+    d_ptr->m_material = m_glyphMaterial = new SGGlyphMaterial;
+    d_ptr->m_geometry = m_textGeometry = new SGTextRectangleGeometry;
 }
 
 void SGTextNode::addLineText(const std::wstring & s, size_t first, size_t last)
@@ -77,8 +78,8 @@ void SGTextNode::setText(const std::wstring & txt)
     }
 
     //to do...
-    SGNode::m_width = boundingWidth;
-    SGNode::m_height = boundingHeight;
+    d_ptr->m_width = boundingWidth;
+    d_ptr->m_height = boundingHeight;
 }
 
 void SGTextNode::setColor(const Color & color)

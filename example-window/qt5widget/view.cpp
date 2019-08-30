@@ -1,5 +1,5 @@
 #include "view.h"
-#include "sgviewcamera.h"
+//#include "sgviewcamera.h"
 #include <QOpenGLContext>
 
 static QOpenGLContext *g_context = nullptr;
@@ -58,17 +58,17 @@ float View::heightPx() const
 
 void View::CameraMove(float x, float y)
 {
-    m_camera->move(x, y);
+    //m_camera->move(x, y);
 }
 
 void View::CameraScale(bool zoom)
 {
     if (zoom)
     {
-        m_camera->scale(1.01f);
+        //m_camera->scale(1.01f);
     }
     else
     {
-        m_camera->scale(1.f / 1.01f);
+        //m_camera->scale(1.f / 1.01f);
     }
 }

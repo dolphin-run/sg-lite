@@ -17,8 +17,8 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 
     //SceneFantacy scene;
-    //Scene scene;
-    SceneVideo scene;
+    Scene scene;
+    //SceneVideo scene;
     
     View view;
     view.attach(&scene);

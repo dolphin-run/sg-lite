@@ -3,6 +3,9 @@
 
 #include "sgstruct.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 class SGViewCamera
 {
     friend class SGView;
@@ -12,13 +15,13 @@ public:
     void scale(float s);
     void setFillMode(bool strench);
 
+    const glm::mat4 &transform() const;
+
 protected:
     void setSceneSize(float wid, float hei);
     void setViewSize(float wid, float hei);
     const RectF &viewRect() const;
     void update();
-
-    const glm::mat4 &transform() const;
 private:
     glm::mat4 m_transform;
     //

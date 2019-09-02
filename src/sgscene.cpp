@@ -10,13 +10,10 @@ SGScene::SGScene()
 
     //initialize root node.
     d_ptr->m_root.d_ptr->m_scene = this;
-    //m_nodes.push_back(&m_root);
 }
 
 SGScene::~SGScene()
 {
-    //unbind all related view
-
     //detach will remove view from m_views, for safety, make a copy.
     auto views = d_ptr->m_views;
     for (auto view : views)

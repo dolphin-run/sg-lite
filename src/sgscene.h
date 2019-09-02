@@ -12,15 +12,10 @@ class SG_DECL_EXPORT SGScene
     SG_DISABLE_COPY(SGScene);
     SG_DECLARE_PRIVATE(SGScene);
     friend class SGView;
+    friend class SGNode;
 public:
     SGScene();
     virtual ~SGScene();
-
-    //to do...classify in the future.
-    void sizeChanged();
-    void itemAdded(SGNode *item);
-    void itemDeleted(SGNode *item);
-    void itemChanged(SGNode *item, SGNode::E_DirtyType changes);
 
     //add `item` as a child of `attached` or as a root node when not attached. this scene will take the ownership of `item`.
     //if item has a parent, it will be just ignored.
@@ -37,6 +32,13 @@ public:
     float width() const;
     float height() const;
     const SGRootNode *rootNode() const;
+
+protected:
+    //signals when scene changed.
+    void sizeChanged();
+    void itemAdded(SGNode *item);
+    void itemDeleted(SGNode *item);
+    void itemChanged(SGNode *item, SGNode::E_DirtyType changes);
 
 protected:
     //add or remove item and its all generations from this scene

@@ -15,7 +15,6 @@ public:
     SceneQuickItemRenderer()
     {
         attach(&m_scene);
-        m_camera.setFillMode(true);
     }
 
     virtual float widthPx() const override { return m_width; }
@@ -32,7 +31,7 @@ public:
         auto height = m_hqItem->height();
         if (width != m_width || height != m_height)
         {
-            m_camera.setViewSize(width, height);
+            sizeChanged(width, height);
         }
         m_width = width;
         m_height = height;

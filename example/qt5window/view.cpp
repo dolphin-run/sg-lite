@@ -1,7 +1,7 @@
 #include "view.h"
 #include <QOpenGLContext>
 #include <QMouseEvent>
-#include "src/node/sgrectanglenode.h"
+#include "node/sgrectanglenode.h"
 #include "sgscene.h"
 
 static QOpenGLContext *g_context = nullptr;

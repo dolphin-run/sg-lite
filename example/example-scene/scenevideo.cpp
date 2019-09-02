@@ -1,9 +1,9 @@
 #include "scenevideo.h"
 
 //test
-#include "src/node/sgrectanglenode.h"
-#include "src/node/sgcircularnode.h"
-#include "src/node/sgtextnode.h"
+#include "node/sgrectanglenode.h"
+#include "node/sgcircularnode.h"
+#include "node/sgtextnode.h"
 #include <iostream>
 #include <assert.h>
 

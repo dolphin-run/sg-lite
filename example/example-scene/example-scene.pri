@@ -1,4 +1,5 @@
 
+INCLUDEPATH += $$PWD
 SOURCES += \
     $$PWD/scene.cpp \
     $$PWD/scenefantacy.cpp \

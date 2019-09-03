@@ -8,7 +8,6 @@ contains(QT_ARCH, i386) {
 
 CONFIG(debug, debug|release) {
     BUILD_SUFFIX = d
-    CONFIG += console
 } else {
 }
 
@@ -16,12 +15,12 @@ CONFIG -= flat
 QT += widgets axserver
 
 
-include(src/sgcore.pri)
-INCLUDEPATH += src
+DESTDIR = $$PWD/../bin/$${PLATFORM}
 
-include(example-scene/example-scene.pri)
-INCLUDEPATH += example-scene
 
-HEADERS += example-window/qt5widget/view.h example-window/qt5ax/widgetwrap.h
+INCLUDEPATH += ../../include
+include(../example-scene/example-scene.pri)
+LIBS += -L../../lib/$${PLATFORM} -lsgcore$${BUILD_SUFFIX}
 
-SOURCES += example-window/qt5widget/view.cpp example-window/qt5ax/widgetwrap.cpp example-window/qt5ax/main.cpp
+HEADERS += view.h widgetwrap.h
+SOURCES += view.cpp widgetwrap.cpp main.cpp

@@ -3,14 +3,38 @@
 #include <QAxAggregated>
 #include <QUuid>
 #include <objsafe.h>
-#include "example-scene/scene.h"
-#include "example-scene/scenefantacy.h"
-#include "example-scene/scenevideo.h"
 
+#include "sgscene.h"
+#include <thread>
+#include <atomic>
+#include <list>
 
-///GLBoxWrap
-///
-//! [1]
+#include "view.h"
+#include "node/sgrectanglenode.h"
+#include "sgviewcamera.h"
+#include "scenefantacy.h"
+
+class Scene : public SGScene
+{
+public:
+    Scene()
+    {
+        m_videoNode = new SGYuvVideoNode;
+    }
+    ~Scene()
+    {
+        if (m_videoNode)
+            delete m_videoNode;
+    }
+    void setYuv(const unsigned char *src)
+    {
+        m_videoNode->setYuv(src);
+    }
+
+protected:
+    SGYuvVideoNode *m_videoNode = nullptr;
+};
+
 class ObjectSafetyImpl : public QAxAggregated,
     public IObjectSafety
 {
@@ -46,19 +70,23 @@ public:
         return S_OK;
     }
 };
-//! [4] //! [5]
+
 WidgetWrap::WidgetWrap(QWidget *parent)
     : QWidget(parent)
 {
     QHBoxLayout *layout = new QHBoxLayout(this);
-    m_videowidget = new View(this);
-    //Scene *scene = new Scene;
-    //SceneFantacy *scene = new SceneFantacy;
-    SceneVideo *scene = new SceneVideo;
-    m_videowidget->attach(scene);
-    m_videowidget->setViewMode(true);
 
-    layout->addWidget(m_videowidget);
+    m_view = new View(this);
+    m_scene = new SceneFantacy;
+    m_view->attach(m_scene);
+    m_view->viewCamera()->setFillMode(true);
+
+    layout->addWidget(m_view);
+}
+
+WidgetWrap::~WidgetWrap()
+{
+    delete m_scene;
 }
 
 

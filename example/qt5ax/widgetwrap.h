@@ -1,10 +1,11 @@
 ﻿#ifndef WIDGETWRAP_H
 #define WIDGETWRAP_H
 
-#include "../qt5widget/view.h"
 #include <QWidget>
 #include <QAxBindable>
 
+class View;
+class SGScene;
 class WidgetWrap : public QWidget,
               public QAxBindable
 {
@@ -16,6 +17,7 @@ class WidgetWrap : public QWidget,
 
 public:
     explicit WidgetWrap(QWidget *parent = nullptr);
+    ~WidgetWrap();
     QAxAggregated *createAggregate();
 
 public slots:
@@ -26,7 +28,8 @@ public slots:
     void setIp(const QString &ip);
 
 private:
-    View *m_videowidget;
+    View *m_view;
+    SGScene *m_scene;
 };
 
 #endif // WIDGETWRAP_H

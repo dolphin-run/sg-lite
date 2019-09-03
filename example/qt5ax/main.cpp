@@ -3,7 +3,7 @@
 #include <QVBoxLayout>
 #include <QAxFactory>
 
-#include "example-window/qt5ax/widgetwrap.h"
+#include "widgetwrap.h"
 
 QAXFACTORY_BEGIN(
     "{2c3c183a-eeda-41a4-896e-3d9c12c3577d}", // type library ID

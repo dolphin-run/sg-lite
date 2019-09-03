@@ -17,9 +17,6 @@ public:
         attach(&m_scene);
     }
 
-    virtual float widthPx() const override { return m_width; }
-    virtual float heightPx() const override { return m_height; }
-
     void updateScene(const char* psrc) {
 
     }
@@ -31,7 +28,7 @@ public:
         auto height = m_hqItem->height();
         if (width != m_width || height != m_height)
         {
-            sizeChanged(width, height);
+            setSize(width, height);
         }
         m_width = width;
         m_height = height;

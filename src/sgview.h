@@ -23,27 +23,32 @@ public:
     void attach(SGScene *scene);
     void detach();
 
-    void setViewMode(bool strench);
-    void setViewCamera(SGViewCamera *camera);
+    //`camera` will be owned by this view, it will be delete auto.
+    SGViewCamera* setViewCamera(SGViewCamera *camera);
+    SGViewCamera *viewCamera();
 
-    const RectF &sceneRect() const;
-    const SGViewCamera* viewCamera() const;
+    const RectF &viewRect() const;
 
     Point mapToScene(const Point &vp) const;
 
-    virtual float widthPx() const = 0;
-    virtual float heightPx() const = 0;
+    int widthPx() const;
+    int heightPx() const;
 
 protected:
     //call from Scene, notify renderer to rebuild.
-    virtual void sceneChanged();
-    virtual void sceneSizeChanged();
     virtual void itemAdded(SGNode *item);
     virtual void itemDeleted(SGNode *item);
     virtual void itemChanged(SGNode *item, SGNode::E_DirtyType changes);
 
-    //implement from Viewer(desktop-window depends), call when the view size changed.
-    virtual void sizeChanged(int width, int height);
+    //Viewer(desktop-window depends) call when the view size changed.
+    virtual void setSize(int width, int height);
+    virtual void setSizePx(int wpx, int hpx);
+
+private:
+    void sceneChanged();
+    void sizeChanged();
+    void sizePxChanged();
+    void cameraChanged();
 
 protected:
     bool m_renderInited = false;
@@ -57,6 +62,8 @@ protected:
 
     int m_width;
     int m_height;
+    int m_widthPx;
+    int m_heightPx;
 };
 
 #endif // SGVIEW_H

@@ -7,7 +7,7 @@
 SGView::SGView()
 {
     m_render = new SGRenderer(this);
-    m_camera = new SGViewCamera;
+    m_camera = new SGViewCamera;//default camera
 }
 
 SGView::~SGView()
@@ -39,33 +39,19 @@ void SGView::detach()
     }
 }
 
-void SGView::setViewMode(bool strench)
+SGViewCamera* SGView::setViewCamera(SGViewCamera * camera)
 {
-    m_camera->setFillMode(strench);
-}
+    SGViewCamera * old = m_camera;
 
-void SGView::setViewCamera(SGViewCamera * camera)
-{
     m_camera = camera;
+    cameraChanged();
 
-    //update camera changed...
-    sceneSizeChanged();
-    sizeChanged(m_width, m_height);
+    return old;
 }
 
-void SGView::sceneChanged()
+SGViewCamera * SGView::viewCamera()
 {
-    if (!m_scene) return;
-
-    m_render->setRootNode(m_scene->rootNode());
-    sceneSizeChanged();
-}
-
-void SGView::sceneSizeChanged()
-{
-    if (!m_scene) return;
-
-    m_camera->setSceneSize(m_scene->width(), m_scene->height());
+    return m_camera;
 }
 
 void SGView::itemAdded(SGNode *item)
@@ -83,30 +69,72 @@ void SGView::itemChanged(SGNode *item, SGNode::E_DirtyType changes)
     m_render->itemChanged(item, changes);
 }
 
-void SGView::sizeChanged(int width, int height)
+void SGView::setSize(int width, int height)
 {
     m_width = width;
     m_height = height;
-    m_camera->setViewSize(width, height);
+
+    sizeChanged();
 }
 
-const RectF & SGView::sceneRect() const
+void SGView::setSizePx(int wpx, int hpx)
+{
+    m_widthPx = wpx;
+    m_heightPx = hpx;
+
+    sizePxChanged();
+}
+
+void SGView::sceneChanged()
+{
+    if (!m_scene) return;
+
+    m_render->setRootNode(m_scene->rootNode());
+
+    if (m_camera)
+    {
+        m_camera->setSceneSize(m_scene->width(), m_scene->height());
+    }
+}
+
+void SGView::sizeChanged()
+{
+    if (m_camera)
+    {
+        m_camera->setViewSize(m_width, m_height);
+    }
+}
+
+void SGView::sizePxChanged()
+{
+}
+
+void SGView::cameraChanged()
+{
+    if (!m_scene) return;
+
+    m_camera->setViewSize(m_width, m_height);
+    m_camera->setSceneSize(m_scene->width(), m_scene->height());
+}
+
+const RectF & SGView::viewRect() const
 {
     return m_camera->viewRect();
 }
 
-const SGViewCamera * SGView::viewCamera() const
-{
-    return m_camera;
-}
-
 Point SGView::mapToScene(const Point & vp) const
 {
-    Point pt;
-    pt.x = m_camera->m_viewPort.tl.x + vp.x / m_camera->m_scale;
-    pt.y = m_camera->m_viewPort.tl.y + vp.y / m_camera->m_scale;
+    return m_camera->mapToScene(vp);
+}
 
-    return pt;
+int SGView::widthPx() const
+{
+    return m_widthPx;
+}
+
+int SGView::heightPx() const
+{
+    return m_heightPx;
 }
 
 bool SGView::initializeRender()

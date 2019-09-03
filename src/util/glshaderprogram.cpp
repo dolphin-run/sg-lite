@@ -129,6 +129,10 @@ void GLShaderProgram::setMat4(unsigned pos, const glm::mat4 & mat) const
 {
     glUniformMatrix4fv(pos, 1, GL_FALSE, &mat[0][0]);
 }
+void GLShaderProgram::setMat4(unsigned pos, const float *mat4arr) const
+{
+    glUniformMatrix4fv(pos, 1, GL_FALSE, mat4arr);
+}
 
 void GLShaderProgram::bindAttributeLocation(const char * name, int location)
 {

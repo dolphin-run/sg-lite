@@ -35,9 +35,9 @@ public:
     SGYuvMaterialShader(const SGYuvMaterial *parent) : m_parent(parent) { build(); }
     ~SGYuvMaterialShader() {}
 
-    virtual void updateState(const glm::mat4 &projection) override
+    virtual void updateState(const float *mat4) override
     {
-        m_program.setMat4(m_matrixUniform, projection);
+        m_program.setMat4(m_matrixUniform, mat4);
 
         m_program.setInt(m_texYUniform, 0);
         m_program.setInt(m_texUUniform, 1);

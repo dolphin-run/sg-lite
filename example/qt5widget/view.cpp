@@ -1,5 +1,5 @@
 #include "view.h"
-//#include "sgviewcamera.h"
+#include "sgviewcamera.h"
 #include <QOpenGLContext>
 
 static QOpenGLContext *g_context = nullptr;
@@ -12,6 +12,9 @@ View::View(QWidget *parent)
     setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     m_pUserInteraction = new ViewInteraction(this);
     this->installEventFilter(m_pUserInteraction);
+
+    connect(m_pUserInteraction, SIGNAL(signalScale(bool)), this, SLOT(slotCameraScale(bool)));
+    connect(m_pUserInteraction, SIGNAL(signalMove(int, int)), this, SLOT(slotCameraMove(int, int)));
 }
 
 
@@ -34,7 +37,9 @@ void View::initializeGL()
 
 void View::resizeGL(int w, int h)
 {
-    sizeChanged(w, h);
+    int radio = devicePixelRatio();
+    SGView::setSize(w, h);
+    SGView::setSizePx(w*radio, h*radio);
 }
 
 void View::paintGL()
@@ -46,29 +51,19 @@ void View::paintGL()
     update();
 }
 
-float View::widthPx() const
+void View::slotCameraMove(int x, int y)
 {
-    return width()*QWidget::devicePixelRatio();
+    this->viewCamera()->move(x, y);
 }
 
-float View::heightPx() const
-{
-    return height()*QWidget::devicePixelRatio();
-}
-
-void View::CameraMove(float x, float y)
-{
-    //m_camera->move(x, y);
-}
-
-void View::CameraScale(bool zoom)
+void View::slotCameraScale(bool zoom)
 {
     if (zoom)
     {
-        //m_camera->scale(1.01f);
+        this->viewCamera()->scale(1.01f);
     }
     else
     {
-        //m_camera->scale(1.f / 1.01f);
+        this->viewCamera()->scale(1.f / 1.01f);
     }
 }

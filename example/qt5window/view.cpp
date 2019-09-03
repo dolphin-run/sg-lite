@@ -1,4 +1,5 @@
 #include "view.h"
+#include "sgviewcamera.h"
 #include <QOpenGLContext>
 #include <QMouseEvent>
 #include "node/sgrectanglenode.h"
@@ -27,7 +28,8 @@ bool View::event(QEvent *event)
 
 void View::resizeEvent(QResizeEvent * event)
 {
-    m_camera.setViewSize(this->width(), this->height());
+    SGView::setSize(this->width(), this->height());
+    SGView::setSizePx(this->width()*QWindow::devicePixelRatio(), this->height()*QWindow::devicePixelRatio());
 }
 
 void View::exposeEvent(QExposeEvent *event)
@@ -93,6 +95,9 @@ View::View(QWindow *parent)
 
     m_pUserInteraction = new ViewInteraction(this);
     this->installEventFilter(m_pUserInteraction);
+
+    connect(m_pUserInteraction, SIGNAL(signalScale(bool)), this, SLOT(slotCameraScale(bool)));
+    connect(m_pUserInteraction, SIGNAL(signalMove(int, int)), this, SLOT(slotCameraMove(int, int)));
 }
 
 
@@ -100,29 +105,19 @@ View::~View()
 {
 }
 
-float View::widthPx() const
+void View::slotCameraMove(int x, int y)
 {
-    return QWindow::width()*QWindow::devicePixelRatio();
+    this->viewCamera()->move(x, y);
 }
 
-float View::heightPx() const
-{
-    return QWindow::height()*QWindow::devicePixelRatio();
-}
-
-void View::CameraMove(float x, float y)
-{
-    m_camera.move(x, y);
-}
-
-void View::CameraScale(bool zoom)
+void View::slotCameraScale(bool zoom)
 {
     if (zoom)
     {
-        m_camera.scale(1.01f);
+        this->viewCamera()->scale(1.01f);
     }
     else
     {
-        m_camera.scale(1.f / 1.01f);
+        this->viewCamera()->scale(1.f / 1.01f);
     }
 }

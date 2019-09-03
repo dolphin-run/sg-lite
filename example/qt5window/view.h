@@ -3,7 +3,7 @@
 
 #include <QWindow>
 #include "sgview.h"
-#include "viewinteraction.h"
+#include "../qt5widget/viewinteraction.h"
 
 
 class View : public QWindow, public SGView
@@ -13,22 +13,16 @@ public:
     explicit View(QWindow *parent = 0);
     ~View();
 
-
-    virtual float widthPx() const override;
-    virtual float heightPx() const override;
-
-    void CameraMove(float x, float y);
-    void CameraScale(bool zoom);
-
 public slots:
+    void slotCameraMove(int x, int y);
+    void slotCameraScale(bool zoom);
     void renderLater();
 
 protected:
     void render();
-    virtual void mousePressEvent(QMouseEvent *ev) override;
-
 
 protected:
+    virtual void mousePressEvent(QMouseEvent * ev);
     virtual bool event(QEvent *event) override;
     virtual void resizeEvent(QResizeEvent *event) override;
     virtual void exposeEvent(QExposeEvent *event) override;

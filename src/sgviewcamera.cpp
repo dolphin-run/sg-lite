@@ -1,57 +1,87 @@
 #include "sgviewcamera.h"
+#include "sgviewcamera_p.h"
+
+
+SGViewCamera::SGViewCamera()
+{
+    SG_INIT_PRIVATE(SGViewCamera);
+}
+
+SGViewCamera::~SGViewCamera()
+{
+    SG_FREE_PRIVATE();
+}
 
 //camera
 void SGViewCamera::setSceneSize(float wid, float hei)
 {
-    m_swid = wid;
-    m_shei = hei;
+    d_ptr->m_swid = wid;
+    d_ptr->m_shei = hei;
     update();
 }
 
 void SGViewCamera::setViewSize(float wid, float hei)
 {
-    m_vwid = wid;
-    m_vhei = hei;
+    d_ptr->m_vwid = wid;
+    d_ptr->m_vhei = hei;
     update();
 }
 
 void SGViewCamera::moveCenter()
 {
-    m_center.x = m_swid / 2;
-    m_center.y = m_shei / 2;
+    d_ptr->m_center.x = d_ptr->m_swid / 2;
+    d_ptr->m_center.y = d_ptr->m_shei / 2;
     update();
 }
 
 void SGViewCamera::move(float x, float y)
 {
-    m_center.x += (x / m_scale);
-    m_center.y += (y / m_scale);
+    d_ptr->m_center.x += (x / d_ptr->m_scale);
+    d_ptr->m_center.y += (y / d_ptr->m_scale);
     update();
 }
 
 void SGViewCamera::scale(float s)
 {
-    m_scale *= s;
+    d_ptr->m_scale *= s;
 
     update();
 }
 
 void SGViewCamera::setFillMode(bool strench)
 {
-    m_stretch = strench;
+    d_ptr->m_stretch = strench;
 }
 
-const glm::mat4 &SGViewCamera::transform() const
+void SGViewCamera::reset()
 {
-    return m_transform;
+}
+
+const float* SGViewCamera::transform() const
+{
+    return &d_ptr->m_transform[0][0];
 }
 
 const RectF &SGViewCamera::viewRect() const
 {
-    return m_viewPort;
+    return d_ptr->m_viewPort;
+}
+
+Point SGViewCamera::mapToScene(const Point & vp) const
+{
+    Point pt;
+    pt.x = d_ptr->m_viewPort.tl.x + vp.x / d_ptr->m_scale;
+    pt.y = d_ptr->m_viewPort.tl.y + vp.y / d_ptr->m_scale;
+
+    return pt;
 }
 
 void SGViewCamera::update()
+{
+    d_ptr->updateMatrix();
+}
+
+void SGViewCameraPrivate::updateMatrix()
 {
     if (m_shei < 1.f || m_swid < 1.f || m_vwid < 1.f || m_vhei < 1.f) return;
     

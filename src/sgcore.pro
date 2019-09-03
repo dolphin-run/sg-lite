@@ -29,6 +29,7 @@ target.files += \
     $$PWD/sgstruct.h \
     $$PWD/sgnode.h \
     $$PWD/sgview.h \
+    $$PWD/sgviewcamera.h \
     $$PWD/sgscene.h
 target.path += $$PWD/../include
 INSTALLS += target

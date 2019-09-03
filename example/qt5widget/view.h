@@ -17,11 +17,9 @@ public:
     virtual void resizeGL(int w, int h) override;
     virtual void paintGL() override;
 
-    virtual float widthPx() const override;
-    virtual float heightPx() const override;
-
-    void CameraMove(float x, float y);
-    void CameraScale(bool zoom);
+public slots:
+    void slotCameraMove(int x, int y);
+    void slotCameraScale(bool zoom);
 
 private:
     QOpenGLContext *m_context;

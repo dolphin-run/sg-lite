@@ -1,5 +1,6 @@
 
 #include "view.h"
+#include "sgviewcamera.h"
 #include "scene.h"
 #include "scenefantacy.h"
 #include "scenevideo.h"
@@ -22,7 +23,7 @@ int main(int argc, char **argv)
     
     View view;
     view.attach(&scene);
-    view.setViewMode(true);
+    view.viewCamera()->setFillMode(true);
 
     View slaveView;
     slaveView.attach(&scene);

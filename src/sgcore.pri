@@ -40,6 +40,7 @@ HEADERS += \
     $$PWD/sgscene_p.h \
     $$PWD/sgview.h \
     $$PWD/sgviewcamera.h \
+    $$PWD/sgviewcamera_p.h \
     $$PWD/sgmaterial.h \
     $$PWD/sggeometry.h \
     $$PWD/geometry/sgrectanglegeometry.h \

@@ -38,6 +38,7 @@ public:
 
     void setMat4(const char *name, const glm::mat4 &mat) const;
     void setMat4(unsigned pos, const glm::mat4 &mat) const;
+    void setMat4(unsigned pos, const float *mat4arr) const;
 
     void bindAttributeLocation(const char *name, int location);
 

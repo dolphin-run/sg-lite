@@ -30,9 +30,9 @@ public:
     SGGlyphMaterialShader(const SGGlyphMaterial *parent) : m_parent(parent) { build(); }
     ~SGGlyphMaterialShader() {}
 
-    virtual void updateState(const glm::mat4 &projection) override
+    virtual void updateState(const float *mat4) override
     {
-        m_program.setMat4(m_matrixUniform, projection);
+        m_program.setMat4(m_matrixUniform, mat4);
 
         m_parent->texture()->bind();
     }

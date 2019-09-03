@@ -18,7 +18,7 @@ class SGMaterialShader
 public:
     SGMaterialShader();
     virtual ~SGMaterialShader();
-    virtual void updateState(const glm::mat4 &projection) = 0;
+    virtual void updateState(const float *mat4) = 0;
     virtual char const* const* attributeNames() const = 0;
     inline GLShaderProgram *program() { return &m_program; }
 protected:

@@ -60,6 +60,7 @@ private:
 
 SGDynImageMaterial::SGDynImageMaterial()
 {
+    setSize(1920, 1080);
 }
 
 E_MaterialType SGDynImageMaterial::type() const
@@ -72,13 +73,42 @@ SGMaterialShader * SGDynImageMaterial::createShader() const
     return new SGDynImageMaterialShader(this);
 }
 
+void SGDynImageMaterial::setSize(int wid, int hei)
+{
+    std::lock_guard<std::mutex> guard(m_yuvLock);
+
+    m_width = wid;
+    m_height = hei;
+    int newsize = m_width*m_height * 3;
+
+    //realloc
+    if (m_yuvBufSize < newsize)
+    {
+        delete[]m_yuvBuf;
+        m_yuvBufSize = newsize;
+        m_yuvBuf = new unsigned char[m_yuvBufSize];
+    }
+}
+
 void SGDynImageMaterial::setRgb(const unsigned char * src)
 {
-    auto const *ptr = src;
-    m_tex.update(0, Image(1920, 1080, ptr, Image::Format_RGB));
+    std::lock_guard<std::mutex> guard(m_yuvLock);
+
+    memcpy(m_yuvBuf, src, m_yuvBufSize);
+    m_yuvChanged = 1;
 }
 
 SGTexture * SGDynImageMaterial::texture() const
 {
     return &m_tex;
+}
+
+void SGDynImageMaterial::syncState()
+{
+    if (!m_yuvChanged) return;
+
+    std::lock_guard<std::mutex> guard(m_yuvLock);
+    m_yuvChanged = 0;
+
+    m_tex.update(0, Image(m_width, m_height, m_yuvBuf, Image::Format_RGB));
 }

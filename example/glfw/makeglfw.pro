@@ -18,17 +18,19 @@ CONFIG(debug, debug|release) {
 }
 
 
-INCLUDEPATH += example-window/glfw/3rdparty/include
-LIBS += -Lexample-window/glfw/3rdparty/lib$${ARCH_SUFFIX} -lglfw3
+DESTDIR = $$PWD/../bin/$${PLATFORM}
 
 
-include(src/sgcore.pri)
-INCLUDEPATH += src
+INCLUDEPATH += ../../include
+include(../example-scene/example-scene.pri)
+LIBS += -L../../lib/$${PLATFORM} -lsgcore$${BUILD_SUFFIX}
 
-include(example-scene/example-scene.pri)
-INCLUDEPATH += example-scene
 
-HEADERS += example-window/glfw/view.h
 
-SOURCES += example-window/glfw/view.cpp example-window/glfw/main.cpp
+INCLUDEPATH += 3rdparty/include
+LIBS += -L3rdparty/lib$${ARCH_SUFFIX} -lglfw3
+
+HEADERS += view.h
+
+SOURCES += view.cpp main.cpp
 

@@ -81,7 +81,7 @@ SGRgbVideoNode::SGRgbVideoNode(SGNode * parent):
 void SGRgbVideoNode::setPixelSize(int pxWid, int pxHei)
 {
     assert(pxWid > 0 && pxHei > 0);
-
+    m_texMaterial->setSize(pxWid, pxHei);
 }
 
 bool SGRgbVideoNode::setRgb(const unsigned char * yuv, unsigned int len)

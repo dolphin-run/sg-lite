@@ -9,7 +9,10 @@
 
 static int timer = 0;
 
-static const int yuvsize = 1920 * 540 * 3;
+#define VIDEO_WIDTH 352
+#define VIDEO_HEIGHT 288
+
+static const int yuvsize = VIDEO_WIDTH*VIDEO_HEIGHT * 3 / 2;
 static unsigned char *yuvbuf;
 SceneVideo::SceneVideo()
 {
@@ -22,6 +25,11 @@ SceneVideo::SceneVideo()
     testAlloc();
 
     start();
+}
+
+SceneVideo::~SceneVideo()
+{
+    stop();
 }
 
 void SceneVideo::start()
@@ -49,42 +57,23 @@ void SceneVideo::stop()
 
 void SceneVideo::taskYuvStream()
 {
-    FILE *file = fopen("assets/video/data.dat", "rb");
+    FILE *file = fopen("assets/video/flower_cif.yuv" , "rb");
     if (!file)
     {
         std::cout << "open file failed..." << std::endl;
         return;
     }
 
-    int dattype = 7;
-    int datalen = 0;
     while (m_producingflag == true)
     {
-        int cnt = fread(&dattype, 1, 4, file);
-        if (cnt != 4)
+        int cnt = fread(yuvbuf, 1, yuvsize, file);
+        if (cnt != yuvsize)
         {
             fseek(file, 0, SEEK_SET);
             continue;
         }
 
-        printf("[%d]\n", dattype);
-
-        //smart video
-        if (dattype == 0)
-        {
-            cnt = fread(&datalen, 1, 4, file);
-            assert(datalen == yuvsize);
-            cnt = fread(yuvbuf, 1, datalen, file);
-            syncYuv();
-        }
-
-        fread(&datalen, 1, 4, file);
-
-        if (datalen>0)
-        {
-            fseek(file, datalen, SEEK_CUR);
-            //cnt = fread(, 1, datalen, file);
-        }
+        syncYuv();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(40));
     }
@@ -112,14 +101,19 @@ void SceneVideo::syncYuv()
 void SceneVideo::testAlloc()
 {
     m_videoNode = new SGYuvVideoNode();
+    m_videoNode->setPixelSize(VIDEO_WIDTH, VIDEO_HEIGHT);
     this->addItem(m_videoNode);
+
     m_videoNode->setX(0);
     m_videoNode->setY(0);
     m_videoNode->setWidth(960);
     m_videoNode->setHeight(540);
 
+    //shadow node
     m_videoNode1 = new SGYuvVideoNode();
+    m_videoNode1->setPixelSize(VIDEO_WIDTH, VIDEO_HEIGHT);
     this->addItem(m_videoNode1);
+
     m_videoNode1->setX(960);
     m_videoNode1->setY(0);
     m_videoNode1->setWidth(960);

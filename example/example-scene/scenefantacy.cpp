@@ -9,8 +9,6 @@
 #include <functional>
 #include <condition_variable>
 
-#include "later.h"
-
 struct Square
 {
     glm::vec2 p[4];
@@ -104,10 +102,6 @@ static void spawnTree(const Square &root, float degree, int depth, std::vector<S
 }
 
 //scene implementation
-static int timer1 = 0;
-static int timer2 = 0;
-
-
 std::vector<Square> result;
 std::mutex mtx;
 std::condition_variable cv;
@@ -117,7 +111,13 @@ SceneFantacy::SceneFantacy()
     initRoot();
     testAlloc();
 
-    Later calllater(20, true, -1, [this] {this->timerEvent(); });
+    m_timer =  new Later(20, true, -1, [this] {this->timerEvent(); });
+}
+
+SceneFantacy::~SceneFantacy()
+{
+    m_timer->stop();
+    delete m_timer;
 }
 
 void SceneFantacy::timerEvent()

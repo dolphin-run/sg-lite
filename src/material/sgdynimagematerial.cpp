@@ -79,13 +79,13 @@ void SGDynImageMaterial::setSize(int wid, int hei)
 
     m_width = wid;
     m_height = hei;
-    int newsize = m_width*m_height * 3;
+    int oldsize = m_yuvBufSize;
+    m_yuvBufSize = m_width*m_height * 3;
 
     //realloc
-    if (m_yuvBufSize < newsize)
+    if (oldsize < m_yuvBufSize)
     {
         delete[]m_yuvBuf;
-        m_yuvBufSize = newsize;
         m_yuvBuf = new unsigned char[m_yuvBufSize];
     }
 }

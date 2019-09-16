@@ -11,6 +11,7 @@ class SceneVideo : public SGScene
 {
 public:
     SceneVideo();
+    ~SceneVideo();
 
     void start();
     void stop();

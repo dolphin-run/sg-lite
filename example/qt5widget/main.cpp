@@ -19,20 +19,21 @@ int main(int argc, char **argv)
 
     SceneFantacy scene;
     //Scene scene;
-    //SceneVideo scene;
+    SceneVideo scene1;
     
-    View view;
-    view.attach(&scene);
-    view.viewCamera()->setFillMode(true);
+    View *view = new View;
+    view->attach(&scene);
+    view->viewCamera()->setFillMode(true);
 
-    View slaveView;
-    slaveView.attach(&scene);
+    View *slaveView = new View;
+    slaveView->attach(&scene1);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(view);
+    layout->addWidget(slaveView);
 
     QWidget mainwindow;
-    QVBoxLayout layout;
-    layout.addWidget(&view);
-    layout.addWidget(&slaveView);
-    mainwindow.setLayout(&layout);
+    mainwindow.setLayout(layout);
     mainwindow.setMinimumSize(640, 480);
     mainwindow.show();
 

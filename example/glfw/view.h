@@ -15,13 +15,6 @@ public:
     bool create(const char* title);
     void destroy();
 
-
-    virtual float widthPx() const override;
-    virtual float heightPx() const override;
-
-    void CameraMove(int x, int y);
-    void CameraScale(bool zoom);
-
     static void exec();
     static void windowSizeCallback(GLFWwindow* window, int width, int height); 
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
@@ -30,9 +23,6 @@ public:
 
     static void InitializeGlfw();
     static void FreeGlfw();
-
-protected:
-    void resizeEvent(int width, int height);
 
 private:
     GLFWwindow* m_window;

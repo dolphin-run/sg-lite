@@ -2,6 +2,7 @@
 #include "view.h"
 #include "scene.h"
 #include "scenefantacy.h"
+#include "scenevideo.h"
 
 
 
@@ -13,7 +14,8 @@ int main(int argc, char **argv)
     {
         //Force Scene&View destroyed before View::FreeGlfw();
         //Scene scene;
-        SceneFantacy scene;
+        //SceneFantacy scene;
+        SceneVideo scene;
 
         View view;
         view.attach(&scene);

@@ -3,6 +3,7 @@
 #include <functional>
 #include <thread>
 #include <chrono>
+#include "sgviewcamera.h"
 
 bool View::g_glfwInitialized = false;
 std::unordered_map<GLFWwindow*, View*> View::g_glfwView;
@@ -34,14 +35,14 @@ void View::framebufferSizeCallback(GLFWwindow* window, int width, int height)
     if (g_glfwView.count(window))
     {
         auto view = g_glfwView.at(window);
-        view->resizeEvent(width, height);
+        view->setSizePx(width, height);
     }
 }
 
 void View::windowScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
     if (g_glfwView.count(window))
-        g_glfwView.at(window)->CameraScale(yoffset>0);
+        g_glfwView.at(window)->viewCamera()->scale(yoffset > 0 ? 1.01f : 1.f / 1.01f);
 }
 
 void View::windowKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -66,7 +67,7 @@ void View::windowKeyCallback(GLFWwindow* window, int key, int scancode, int acti
         }
 
     if (g_glfwView.count(window))
-        g_glfwView.at(window)->CameraMove(xmove, ymove);
+        g_glfwView.at(window)->viewCamera()->move(xmove, ymove);
 }
 
 void View::exec()
@@ -89,16 +90,9 @@ void View::exec()
     }
 }
 
-void View::resizeEvent(int width, int height)
-{
-    m_widthPx = width;
-    m_heightPx = height;
-    m_camera.setViewSize(m_widthPx, m_heightPx);
-}
-
 View::View()
 {
-    m_camera.setViewSize(800, 600);
+    SGView::setSize(800, 600);
 }
 
 
@@ -130,7 +124,7 @@ bool View::create(const char* title)
     //force to update pixel-size of the window
     int cwid,chei;
     glfwGetFramebufferSize(m_window, &cwid, &chei);
-    resizeEvent(cwid,chei);
+    SGView::setSizePx(cwid,chei);
 
     g_glfwView.insert(std::make_pair(m_window, this));
 }
@@ -142,32 +136,5 @@ void View::destroy()
         g_glfwView.erase(m_window);
         glfwDestroyWindow(m_window);
         m_window = nullptr;
-    }
-}
-
-float View::widthPx() const
-{
-    return m_widthPx;
-}
-
-float View::heightPx() const
-{
-    return m_heightPx;
-}
-
-void View::CameraMove(int x, int y)
-{
-    m_camera.move(x, y);
-}
-
-void View::CameraScale(bool zoom)
-{
-    if (zoom)
-    {
-        m_camera.scale(1.01f);
-    }
-    else
-    {
-        m_camera.scale(1.f / 1.01f);
     }
 }

@@ -4,6 +4,7 @@
 #include "sgstruct.h"
 #include "sgglobal.h"
 
+class SGViewCameraPrivate;
 class SG_DECL_EXPORT SGViewCamera
 {
     SG_DECLARE_PRIVATE(SGViewCamera);

@@ -1,7 +1,7 @@
 .PHONY : mingw sgcore macos linux undefined
 
-CFLAGS := -shared -std=c++11 -Wall -DSG_BUILDING_PLUGIN -I3rdparty/include
-LDFLAGS := 
+CFLAGS := -shared -std=c++11 -Wl,--out-implib,libsgcore.a -DSG_BUILDING_PLUGIN -I3rdparty/include
+LDFLAGS :=
 
 SRC := \
     sgnode.cpp \

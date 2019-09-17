@@ -23,10 +23,69 @@ SGTextNode::~SGTextNode()
     SG_FREE_PRIVATE();
 }
 
+void SGTextNode::setAlignment(HAlignment ha, VAlignment va)
+{
+    d_ptr->m_halignment = ha;
+    d_ptr->m_valignment = va;
+
+    d_ptr->reAlign();
+}
+
+void SGTextNode::setHAlignment(HAlignment ha)
+{
+    d_ptr->m_halignment = ha;
+
+    d_ptr->reAlign();
+}
+
+void SGTextNode::setVAlignment(VAlignment va)
+{
+    d_ptr->m_valignment = va;
+
+    d_ptr->reAlign();
+}
+
+void SGTextNode::setText(const std::wstring & txt)
+{
+    Size bounding = d_ptr->setText(txt);
+    setSize(bounding.width, bounding.height);
+
+    d_ptr->reAlign();
+}
+
+void SGTextNode::setColor(const Color & color)
+{
+    //to do...
+    d_ptr->m_color = color;
+
+    markDirty(SGNode::E_DirtyType::SizeDirty);
+}
+
+bool SGTextNode::compare(const SGNode *node) const
+{
+    const SGTextNode *tnode = dynamic_cast<const SGTextNode*>(node);
+    return d_ptr->m_color == tnode->d_ptr->m_color;
+}
+
+SGNodeState SGTextNode::nodeState() const
+{
+    SGNodeState stat;
+    stat.color = d_ptr->m_color;
+    return stat;
+}
+
+//PRIVATE IMPLEMENTATION
+SGTextNodePrivate::SGTextNodePrivate() :
+    m_color(0, 0, 0)
+{
+    m_valignment = VAlignment::AlignVCenter;
+    m_halignment = HAlignment::AlignHCenter;
+}
+
 void SGTextNodePrivate::addLineText(const std::wstring & s, size_t first, size_t last)
 {
     assert(s.size());
-    //assert(first < last);//alow empty line
+    //assert(first < last);//allow an empty line
 
     LineRenderInfo lineinf;
     int cx = 0;
@@ -55,51 +114,73 @@ Size SGTextNodePrivate::setText(const std::wstring & txt)
         addLineText(txt, start, pos);
     } while (pos != std::wstring::npos);
 
-    int boundingWidth = 0;
-    int boundingHeight = m_glyphLines.size()*GLYPH_PIXEL_SIZE;
+    m_boundingWidth = 0;
+    m_boundingHeight = m_glyphLines.size()*GLYPH_PIXEL_SIZE;
     int chnum = 0;
     //rewrite geometry position and texture.
     for (auto line : m_glyphLines)
     {
         chnum += line.lineInf.size();
-        boundingWidth = std::max(boundingWidth, line.width);
+        m_boundingWidth = std::max(m_boundingWidth, line.width);
     }
 
     m_textGeometry->resize(chnum);
 
+    //to do...
+    return Size{ m_boundingWidth, m_boundingHeight };
+}
+
+void SGTextNodePrivate::reAlign()
+{
     int chidx = 0;
     int posY = 0;
+    switch (m_valignment)
+    {
+    case VAlignment::AlignTop:
+        posY = 0;
+        break;
+    case VAlignment::AlignVCenter:
+        posY = (q_ptr->height() - m_boundingHeight) / 2;
+        break;
+    case VAlignment::AlignBottom:
+        posY = q_ptr->height() - m_boundingHeight;
+        break;
+    }
+
     for (int i = 0; i < m_glyphLines.size(); i++)
     {
+        auto &lineinf = m_glyphLines.at(i);
+
         int posX = 0;
-        for (int j = 0; j < m_glyphLines.at(i).lineInf.size(); j++)
+        switch (m_halignment)
         {
-            auto inf = m_glyphLines.at(i).lineInf.at(j);
+        case HAlignment::AlignLeft:
+            posX = 0;
+            break;
+        case HAlignment::AlignHCenter:
+            posX = (q_ptr->width() - lineinf.width) / 2;
+            break;
+        case HAlignment::AlignRight:
+            posX = q_ptr->width() - lineinf.width;
+            break;
+        }
+
+        for (int j = 0; j < lineinf.lineInf.size(); j++)
+        {
+            auto inf = lineinf.lineInf.at(j);
             m_textGeometry->setTexCoord(chidx, inf->tex);
 
             m_textGeometry->setCoord(chidx,
-                float(posX + inf->leftBearing) / boundingWidth - 0.5f,
-                float(posY + inf->topBearing) / boundingHeight - 0.5f,
-                float(posX + inf->leftBearing + inf->width) / boundingWidth - 0.5f,
-                float(posY + inf->topBearing + inf->height) / boundingHeight - 0.5f);
+                float(posX + inf->leftBearing) / m_boundingWidth - 0.5f,
+                float(posY + inf->topBearing) / m_boundingHeight - 0.5f,
+                float(posX + inf->leftBearing + inf->width) / m_boundingWidth - 0.5f,
+                float(posY + inf->topBearing + inf->height) / m_boundingHeight - 0.5f);
             posX += inf->advance;
             chidx++;
         }
+
         posY += GLYPH_PIXEL_SIZE;
     }
 
-    //to do...
-    return Size{ boundingWidth, boundingHeight };
-}
-
-void SGTextNode::setText(const std::wstring & txt)
-{
-    Size bounding = d_ptr->setText(txt);
-    setSize(bounding.width, bounding.height);
-}
-
-void SGTextNode::setColor(const Color & color)
-{
-    //to do...
-    d_ptr->m_color = color;
+    q_ptr->markDirty(SGNode::E_DirtyType::SizeDirty);
 }

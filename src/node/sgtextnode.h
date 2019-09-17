@@ -15,8 +15,15 @@ public:
     SGTextNode(SGNode* parent = nullptr);
     ~SGTextNode();
 
+    void setAlignment(HAlignment ha, VAlignment va);
+    void setHAlignment(HAlignment ha);
+    void setVAlignment(VAlignment va);
     void setText(const std::wstring &txt);
     void setColor(const Color &color);
+
+protected:
+    virtual bool compare(const SGNode *node) const;
+    virtual SGNodeState nodeState() const override;
 };
 
 #endif // SGTEXTNODE_H

@@ -168,6 +168,11 @@ Color::Color(uint32_t x) {
 Color::Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) 
 {}
 
+bool Color::operator==(const Color & c)
+{
+    return r == c.r && g == c.g && b == c.b && a == c.a;
+}
+
 Color Color::random()
 {
     unsigned char r = rand() % 256;

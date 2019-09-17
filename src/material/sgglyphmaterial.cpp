@@ -30,9 +30,10 @@ public:
     SGGlyphMaterialShader(const SGGlyphMaterial *parent) : m_parent(parent) { build(); }
     ~SGGlyphMaterialShader() {}
 
-    virtual void updateState(const float *mat4) override
+    virtual void updateState(const float *mat4, const SGNodeState *stat) override
     {
         m_program.setMat4(m_matrixUniform, mat4);
+        m_program.setVec4(m_colorUniform, glm::vec4(stat->color.r / 255.f, stat->color.g / 255.f, stat->color.b / 255.f, 1.f));
 
         m_parent->texture()->bind();
     }
@@ -52,11 +53,12 @@ public:
     virtual const char* fragmentShader() const override
     {
         return  "varying vec4 tex;\n"
+            "uniform vec4 color;\n"
             "uniform sampler2D uSampler;\n"
             "void main() {\n"
             "   float dist = texture2D(uSampler, vec2(tex.x, tex.y)).r; \n"
             "   float alpha = smoothstep(0.7, 0.8, dist); \n"
-            "   gl_FragColor = vec4(1.0, 0.0, 0.0, alpha); \n"
+            "   gl_FragColor = vec4(color.r, color.g, color.b, alpha); \n"
             "}\n";
     }
 
@@ -70,11 +72,13 @@ public:
     {
         compile();
         m_matrixUniform = m_program.uniformLocation("matrix");
+        m_colorUniform = m_program.uniformLocation("color");
 
         return true;
     }
 private:
     unsigned m_matrixUniform;
+    unsigned m_colorUniform;
     const SGGlyphMaterial *m_parent;
 };
 

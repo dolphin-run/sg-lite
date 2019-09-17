@@ -14,12 +14,17 @@ CONFIG(debug, debug|release) {
 CONFIG -= flat
 QT += widgets
 
-DESTDIR = $$PWD/../bin/$${PLATFORM}
+DESTDIR = $$PWD/../../lib/$${PLATFORM}
 
 
-INCLUDEPATH += ../../include
+INCLUDEPATH += ../../src
 include(../example-scene/example-scene.pri)
 LIBS += -L../../lib/$${PLATFORM} -lsgcore$${BUILD_SUFFIX}
 
-HEADERS += view.h viewinteraction.h
-SOURCES += view.cpp viewinteraction.cpp main.cpp
+HEADERS += view.h viewinteraction.h \
+    mainview.h
+SOURCES += view.cpp viewinteraction.cpp main.cpp \
+    mainview.cpp
+
+FORMS += \
+    mainview.ui

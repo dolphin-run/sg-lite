@@ -35,7 +35,7 @@ public:
     SGYuvMaterialShader(const SGYuvMaterial *parent) : m_parent(parent) { build(); }
     ~SGYuvMaterialShader() {}
 
-    virtual void updateState(const float *mat4) override
+    virtual void updateState(const float *mat4, const SGNodeState *stat) override
     {
         m_program.setMat4(m_matrixUniform, mat4);
 

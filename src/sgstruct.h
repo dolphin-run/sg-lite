@@ -69,9 +69,13 @@ struct SG_DECL_EXPORT Color {
     Color();
     Color(uint32_t x);
     Color(uint8_t r, uint8_t g, uint8_t b);
+    bool operator==(const Color &c);
 
     static Color random();
 };
+
+enum HAlignment { AlignLeft, AlignHCenter, AlignRight };
+enum VAlignment { AlignTop, AlignVCenter, AlignBottom };
 
 struct SG_DECL_EXPORT Image {
     //       1           grey
@@ -94,6 +98,11 @@ struct SG_DECL_EXPORT Image {
     uint32_t component = 0;
     const uint8_t *data = nullptr;
     ImageFormat format;
+};
+
+struct SGNodeState
+{
+    Color color;
 };
 
 #endif // SGSTRUCT_H

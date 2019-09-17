@@ -324,6 +324,7 @@ void SGRenderer::buildOpacityBatches()
 
                 if (nj->batch ||
                     ntype != nj->gnode->type() ||
+                    !node->gnode->compare(nj->gnode) ||
                     !nj->gnode->d_ptr->m_material->share())
                     continue;
 
@@ -401,7 +402,7 @@ void SGRenderer::buildAlphaBatches()
                 if (nj->batch)
                     continue;
 
-                if (ntype == nj->gnode->type() && nj->gnode->d_ptr->m_material->share())
+                if (ntype == nj->gnode->type() && node->gnode->compare(nj->gnode) && nj->gnode->d_ptr->m_material->share())
                 {
                     if (overlapBounds.intersects(nj->bounding) &&
                         checkOverlap(i + 1, j - 1, nj->bounding))//not overlap
@@ -568,7 +569,8 @@ void SGRenderer::renderBatch(Batch * batch)
 
     shader->program()->bind();
 
-    shader->updateState(m_view->viewCamera()->transform());
+    SGNodeState stat = gn->nodeState();
+    shader->updateState(m_view->viewCamera()->transform(), &stat);
 
     glBindBuffer(GL_ARRAY_BUFFER, batch->vbo.id);
 

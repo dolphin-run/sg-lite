@@ -41,6 +41,12 @@ SGScene * SGNode::scene()
     return d_ptr->m_scene;
 }
 
+void SGNode::markDirty(E_DirtyType dirty)
+{
+    if (d_ptr->m_scene)
+        d_ptr->m_scene->itemChanged(this, dirty);
+}
+
 void SGNode::setGeometry(SGGeometry * geometry)
 {
     d_ptr->m_geometry = geometry;
@@ -54,6 +60,11 @@ void SGNode::setMaterial(SGMaterial * material)
 bool SGNode::syncState()
 {
     return false;
+}
+
+bool SGNode::compare(const SGNode *node) const
+{
+    return true;
 }
 
 SGNode::~SGNode()

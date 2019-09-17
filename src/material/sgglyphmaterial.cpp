@@ -14,14 +14,25 @@ static void msyh_glyph_initialize()
     loaded = true;
 
 #ifdef _WIN32
-    const char* fontPath = "C:/Windows/Fonts/msyh.ttc";
+    const char* fontPathList[] = {
+        "C:/Windows/Fonts/msyh.ttc",
+        "C:/Windows/Fonts/msyh.ttf",
+        "C:/Windows/Fonts/simsun.ttc"
+    };
 #endif
 
 #ifdef __APPLE__
-    const char *fontPath = "/System/Library/Fonts/PingFang.ttc";
+    const char* fontPathList[] = {
+        "/System/Library/Fonts/PingFang.ttc"
+    }
 #endif
-
-    g_msyhGlyph.load(fontPath, GLYPH_PIXEL_SIZE, GLYPH_PIXEL_SIZE);
+    bool loadStat = false;
+    for (auto fontPath : fontPathList)
+    {
+        loadStat = g_msyhGlyph.load(fontPath, GLYPH_PIXEL_SIZE, GLYPH_PIXEL_SIZE);
+        if (loadStat) break;
+    }
+    assert(loadStat);
 }
 
 class SGGlyphMaterialShader : public SGMaterialShader

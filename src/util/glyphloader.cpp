@@ -5,6 +5,9 @@ GlyphInfo GlyphLoader::m_invaildCharInfo;
 
 GlyphLoader::GlyphLoader() :m_bLoaded(false)
 {
+    FT_Error err = FT_Init_FreeType(&m_ftLibrary);
+
+    assert(!err);
 }
 
 GlyphLoader::~GlyphLoader()
@@ -13,18 +16,16 @@ GlyphLoader::~GlyphLoader()
     if (m_bLoaded)
     {
         FT_Done_Face(m_ftFace);
-        FT_Done_FreeType(m_ftLibrary);
     }
+
+    FT_Done_FreeType(m_ftLibrary);
 }
 
-void GlyphLoader::load(const char *font_file, int w, int h)
+bool GlyphLoader::load(const char *font_file, int w, int h)
 {
-    FT_Error err = FT_Init_FreeType(&m_ftLibrary);
-    if (err) return;
-
     //load font
-    err = FT_New_Face(m_ftLibrary, font_file, 0, &m_ftFace);
-    if (err) return;
+    FT_Error err = FT_New_Face(m_ftLibrary, font_file, 0, &m_ftFace);
+    if (err) return false;
 
     //
     FT_Select_Charmap(m_ftFace, FT_ENCODING_UNICODE);
@@ -32,6 +33,7 @@ void GlyphLoader::load(const char *font_file, int w, int h)
     FT_Set_Pixel_Sizes(m_ftFace, w, h);
 
     m_bLoaded = true;
+    return true;
 }
 
 void GlyphLoader::unload()

@@ -17,7 +17,7 @@ public:
     GlyphLoader();
     ~GlyphLoader();
 
-    void load(const char* font_file, int w, int h);
+    bool load(const char* font_file, int w, int h);
     void unload();
 
     GlyphInfo loadChar(wchar_t ch);

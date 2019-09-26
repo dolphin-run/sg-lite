@@ -1,5 +1,5 @@
 #include "sgyuvtexture.h"
-#include "glad/glad.h"
+#include "sgglwrapper.h"
 
 
 //

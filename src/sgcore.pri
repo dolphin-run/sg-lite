@@ -1,7 +1,8 @@
 INCLUDEPATH += $$PWD/3rdparty/include
-LIBS += -L$$PWD/3rdparty/lib$${ARCH_SUFFIX} -lfreetype$${BUILD_SUFFIX}
+LIBS += -L$$PWD/3rdparty/lib$${ARCH_SUFFIX} -lfreetype$${BUILD_SUFFIX} -lopengl32
 
 SOURCES += \
+    $$PWD/sgglwrapper.cpp \
     $$PWD/sgnode.cpp \
     $$PWD/sgstruct.cpp \
     $$PWD/sgrenderer.cpp \
@@ -27,10 +28,11 @@ SOURCES += \
     $$PWD/texture/sggridimagetexture.cpp\
     $$PWD/texture/sgyuvtexture.cpp\
     $$PWD/texture/sgdynimagetexture.cpp\
-    $$PWD/3rdparty/glad/glad.c
+    #$$PWD/3rdparty/glad/glad.c
 
 HEADERS += \
     $$PWD/sgglobal.h \
+    $$PWD/sgglwrapper.h \
     $$PWD/sgnode.h \
     $$PWD/sgnode_p.h \
     $$PWD/sgrootnode_p.h \

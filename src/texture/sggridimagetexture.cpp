@@ -1,5 +1,5 @@
 #include "sggridimagetexture.h"
-#include "glad/glad.h"
+#include "sgglwrapper.h"
 
 
 //

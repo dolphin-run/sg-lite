@@ -5,7 +5,7 @@
 #include "sggeometry.h"
 #include "sgmaterial.h"
 
-#include <glad/glad.h>
+#include "sgglwrapper.h"
 
 
 
@@ -55,13 +55,7 @@ SGRenderer::SGRenderer(SGView *view) :
 
 bool SGRenderer::initialize()
 {
-    //initialize GL;
-    int ret = gladLoadGL();
-    if (!ret)
-    {
-        printf("Failed to initialize GLAD\n");
-    }
-    return ret;
+    return sgGLInit();
 }
 
 void SGRenderer::setRootNode(const SGRootNode *root)

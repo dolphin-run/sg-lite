@@ -1,5 +1,5 @@
 ﻿#include "glshaderprogram.h"
-#include <glad/glad.h>
+#include "sgglwrapper.h"
 #include <cstdio>
 
 void GLShaderProgram::build(const char* vs, const char* fs, char const *const *attr)

@@ -26,7 +26,7 @@ undefined:
 
 mingw : TARGET := sgglfw.exe
 mingw : CFLAGS += -I/usr/include -I/usr/local/include -I.
-mingw : LDFLAGS += -L/usr/bin -lglfw3 -lfreetype -lopengl32 -L/usr/local/bin
+mingw : LDFLAGS += -L/usr/bin -lglfw3 -L/usr/local/bin
 macos : TARGET := sgglfw
 macos : CFLAGS += -I/usr/include -I/usr/local/include -Imingw/3rdparty/include
 macos : LDFLAGS += -L/usr/bin -lfreetype -L/usr/local/bin -Lmingw/3rdparty/lib -lglfw3  -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo

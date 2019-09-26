@@ -4,6 +4,7 @@ CFLAGS := -shared -std=c++11 -Wl,--out-implib,libsgcore.a -DSG_BUILDING_PLUGIN -
 LDFLAGS :=
 
 SRC := \
+    sgglwrapper.cpp \
     sgnode.cpp \
     sgstruct.cpp \
     sgrenderer.cpp \
@@ -28,8 +29,7 @@ SRC := \
     sgtexture.cpp \
     texture/sggridimagetexture.cpp\
     texture/sgyuvtexture.cpp\
-    texture/sgdynimagetexture.cpp\
-    3rdparty/glad/glad.c
+    texture/sgdynimagetexture.cpp
 
 
 UNAME=$(shell uname)
@@ -47,7 +47,7 @@ undefined:
 
 mingw : TARGET := sgcore.dll
 mingw : CFLAGS += -I/usr/include -I/usr/local/include -I.
-mingw : LDFLAGS += -L/usr/bin -lglfw3 -lfreetype -lopengl32 -L/usr/local/bin
+mingw : LDFLAGS += -L/usr/bin -lglfw3 -lfreetype -lglew32 -lopengl32 -L/usr/local/bin
 macos : TARGET := sgcore.dylib
 macos : CFLAGS += -I/usr/include -I/usr/local/include -Imingw/3rdparty/include
 macos : LDFLAGS += -L/usr/bin -lfreetype -L/usr/local/bin -Lmingw/3rdparty/lib -lglfw3  -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
@@ -61,4 +61,28 @@ sgcore :
 
 .PHONY: clean
 clean:
-	-rm -f $(TARGET)
+	-rm -f sgcore.dll
+
+.PHONY: install
+install:
+	-mkdir -p ../include
+	-mkdir -p ../include/node
+	-mkdir -p ../lib
+
+	-cp -f \
+    sgglobal.h \
+    sgstruct.h \
+    sgnode.h \
+    sgview.h \
+    sgviewcamera.h \
+    sgscene.h \
+    ../include
+
+	-cp -f \
+    node/sgrectanglenode.h \
+    node/sgcircularnode.h \
+    node/sgtextnode.h \
+    ../include/node
+    
+	-cp -f \
+    sgcore.dll ../lib

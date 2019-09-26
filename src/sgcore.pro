@@ -17,7 +17,7 @@ CONFIG(debug, debug|release) {
 } else {
 }
 
-DEFINES += SG_BUILDING_PLUGIN
+DEFINES += SG_BUILDING_PLUGIN SG_GL_GLAD
 
 TARGET = sgcore$${BUILD_SUFFIX}
 DESTDIR = $$PWD/../lib/$${PLATFORM}

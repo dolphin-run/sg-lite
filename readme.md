@@ -9,6 +9,8 @@ OpenGL ES2.0 currently used backend but maybe others in the futrue.
 The library has test with some Window System, such as Qt5
 Also test with GLFW without Qt.
 
+<iframe height=507 width=632 src="./doc/images/demo.gif">
+
 ## Disclaimer
 Qt
 OpenGL

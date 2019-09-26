@@ -41,7 +41,7 @@ private slots:
 private:
     Ui::MainView *ui;
 
-    Scene m_scene;
+    SceneFantacy m_scene;
     SGTextNode *m_textNode;
 };
 

@@ -8,11 +8,11 @@
 #include "sgnode_p.h"
 
 SGRectangleNode::SGRectangleNode(SGNode * parent):
-    SGNode(E_NodeType::RectangleNodeType, parent)
+    SGNode(E_NodeType::RectangleNodeType, new SGNodePrivate, parent)
 {
-    m_colorGeometry = new SGColorRectangleGeometry;
-    setGeometry(m_colorGeometry);
-    setMaterial(new SGFlatColorMaterial);
+    SG_D(SGNode);
+    d->m_geometry = m_colorGeometry = new SGColorRectangleGeometry;
+    d->m_material = new SGFlatColorMaterial;
 }
 
 void SGRectangleNode::setColor(Color c)
@@ -21,12 +21,11 @@ void SGRectangleNode::setColor(Color c)
 }
 
 SGImageNode::SGImageNode(SGNode * parent) :
-    SGNode(E_NodeType::ImageNodeType, parent)
+    SGNode(E_NodeType::ImageNodeType, new SGNodePrivate, parent)
 {
-    m_texMaterial = new SGTextureMaterial;
-    m_texGeometry = new SGTextureRectangleGeometry;
-    setGeometry(m_texGeometry);
-    setMaterial(m_texMaterial);
+    SG_D(SGNode);
+    d->m_material = m_texMaterial = new SGTextureMaterial;
+    d->m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
 }
 
 void SGImageNode::setImage(const char* src)
@@ -37,13 +36,12 @@ void SGImageNode::setImage(const char* src)
 }
 
 SGYuvVideoNode::SGYuvVideoNode(SGNode * parent):
-    SGNode(E_NodeType::YuvNodeType, parent),
+    SGNode(E_NodeType::YuvNodeType, new SGNodePrivate, parent),
     m_yuvInf(new SYUVInfo)
 {
-    m_texMaterial = new SGYuvMaterial;
-    m_texGeometry = new SGTextureRectangleGeometry;
-    setGeometry(m_texGeometry);
-    setMaterial(m_texMaterial);
+    SG_D(SGNode);
+    d->m_material = m_texMaterial = new SGYuvMaterial;
+    d->m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
 
     //set default size
     setPixelSize();
@@ -67,12 +65,11 @@ bool SGYuvVideoNode::setYuv(const unsigned char * yuv, unsigned int len)
 }
 
 SGRgbVideoNode::SGRgbVideoNode(SGNode * parent):
-    SGNode(E_NodeType::DynImageNodeType, parent)
+    SGNode(E_NodeType::DynImageNodeType, new SGNodePrivate, parent)
 {
-    m_texMaterial = new SGDynImageMaterial;
-    m_texGeometry = new SGTextureRectangleGeometry;
-    setGeometry(m_texGeometry);
-    setMaterial(m_texMaterial);
+    SG_D(SGNode);
+    d->m_material = m_texMaterial = new SGDynImageMaterial;
+    d->m_geometry = m_texGeometry = new SGTextureRectangleGeometry;
 
     //set default size
     setPixelSize();

@@ -29,6 +29,7 @@ public:
     //remove all nodes from this scene and delete it.
     void clear();
 
+    void setSize(int wid, int hei);
     float width() const;
     float height() const;
     const SGRootNode *rootNode() const;
@@ -49,6 +50,8 @@ protected:
     //notify view init
     void addView(SGView* view);
     void delView(SGView* view);
+
+    SGScenePrivate *d_ptr;
 };
 
 #endif // SGSCENE_H

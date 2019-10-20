@@ -14,10 +14,14 @@
 //        parent->addChild(this);
 //    }
 //}
+//SGNode::SGNode(E_NodeType type, SGNode * parent)
+//{
+//    SGNode(type, new SGNodePrivate, parent);
+//}
 
-SGNode::SGNode(E_NodeType type, SGNode * parent)
+SGNode::SGNode(E_NodeType type, SGNodePrivate* p, SGNode * parent)
 {
-    SG_INIT_PRIVATE(SGNode);
+    SG_INIT_PRIVATE(p);
 
     d_ptr->m_type = type;
 
@@ -45,16 +49,6 @@ void SGNode::markDirty(E_DirtyType dirty)
 {
     if (d_ptr->m_scene)
         d_ptr->m_scene->itemChanged(this, dirty);
-}
-
-void SGNode::setGeometry(SGGeometry * geometry)
-{
-    d_ptr->m_geometry = geometry;
-}
-
-void SGNode::setMaterial(SGMaterial * material)
-{
-    d_ptr->m_material = material;
 }
 
 bool SGNode::syncState()
@@ -132,6 +126,16 @@ float SGNode::height() const
     return d_ptr->m_height;
 }
 
+float SGNode::implicitWidth() const
+{
+    return d_ptr->m_implicitWidth;
+}
+
+float SGNode::implicitHeight() const
+{
+    return d_ptr->m_implicitHeight;
+}
+
 float SGNode::opactity() const
 {
     return d_ptr->m_opacity;
@@ -150,22 +154,21 @@ bool SGNode::visible() const
 void SGNode::setX(float x)
 {
     d_ptr->m_x = x;
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
+    d_ptr->m_implicitX = x;
+    markDirty(SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGNode::setY(float y)
 {
     d_ptr->m_y = y;
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
+    d_ptr->m_implicitY = y;
+    markDirty(SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGNode::setZ(int z)
 {
     d_ptr->m_z = z;
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::OrderingDirty);
+    markDirty(SGNode::E_DirtyType::OrderingDirty);
     if (d_ptr->m_parent)
     {
         //a more better solution can be remove and insert again.
@@ -178,64 +181,64 @@ void SGNode::setZ(int z)
 void SGNode::setWidth(float width)
 {
     d_ptr->m_width = width;
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
+    d_ptr->m_implicitWidth = width;
+    markDirty(SGNode::E_DirtyType::SizeDirty);
 }
 
 void SGNode::setHeight(float height)
 {
     d_ptr->m_height = height;
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
+    d_ptr->m_implicitHeight = height;
+    markDirty(SGNode::E_DirtyType::SizeDirty);
 }
 
 void SGNode::setOpactity(float opacity)
 {
     d_ptr->m_opacity = opacity;
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::OpacityDirty);
+    markDirty(SGNode::E_DirtyType::OpacityDirty);
 }
 
 void SGNode::setRotation(float rotation)
 {
     d_ptr->m_rotation = rotation;
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::TransformDirty);
+    markDirty(SGNode::E_DirtyType::TransformDirty);
 }
 
 void SGNode::setScale(float scale)
 {
     d_ptr->m_scale = scale;
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::TransformDirty);
+    markDirty(SGNode::E_DirtyType::TransformDirty);
 }
 
 void SGNode::setVisible(bool visible)
 {
     d_ptr->m_visible = visible;
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::VisibilityDirty);
+    markDirty(SGNode::E_DirtyType::VisibilityDirty);
 }
 
 void SGNode::setPos(float x, float y)
 {
     d_ptr->m_x = x;
     d_ptr->m_y = y;
-    
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::PositionDirty);
+    d_ptr->m_implicitX = x;
+    d_ptr->m_implicitY = y;
+
+    markDirty(SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGNode::setSize(float wid, float hei)
 {
     d_ptr->m_width = wid;
+    d_ptr->m_implicitWidth = wid;
     d_ptr->m_height = hei;
+    d_ptr->m_implicitHeight = hei;
 
-    if (d_ptr->m_scene)
-        d_ptr->m_scene->itemChanged(this, SGNode::E_DirtyType::SizeDirty);
+    markDirty(SGNode::E_DirtyType::SizeDirty);
 }
 
-SGRootNode::SGRootNode() : SGNode(SGNode::E_NodeType::RootNodeType)
+SGNodePrivate::~SGNodePrivate() {}
+
+SGRootNode::SGRootNode() : SGNode(SGNode::E_NodeType::RootNodeType, new SGNodePrivate)
 {
 
 }

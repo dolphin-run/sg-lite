@@ -75,6 +75,27 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="btn_text_incsize">
+       <property name="text">
+        <string>IncSize</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_text_decsize">
+       <property name="text">
+        <string>DecSize</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_animation">
+       <property name="text">
+        <string>Animation</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>

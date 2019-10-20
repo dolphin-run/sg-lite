@@ -50,6 +50,8 @@ public:
     int z()const;
     float width()const;
     float height()const;
+    float implicitWidth()const;
+    float implicitHeight()const;
     float opactity()const;
     float rotation()const;
     bool visible()const;
@@ -68,14 +70,12 @@ public:
     void setSize(float wid, float hei);
 
 protected:
-    SGNode(E_NodeType type, SGNode* parent = nullptr);
+    //SGNode(E_NodeType type, SGNode* parent = nullptr);
+    SGNode(E_NodeType type, SGNodePrivate* p, SGNode* parent = nullptr);
     SGScene *scene();
+    SGNodePrivate *d_ptr;
 
     void markDirty(E_DirtyType dirty);
-
-    //ownership of `geometry` and `material` will be taken by this node.
-    void setGeometry(SGGeometry *geometry);
-    void setMaterial(SGMaterial *material);
 
     //something changed to gl is not thread-safe, changes should been made here.
     virtual bool syncState();

@@ -20,6 +20,7 @@ public:
     void setVAlignment(VAlignment va);
     void setText(const std::wstring &txt);
     void setColor(const Color &color);
+    void setPointSize(int point);
 
 protected:
     virtual bool compare(const SGNode *node) const;

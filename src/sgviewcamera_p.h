@@ -25,6 +25,8 @@ private:
     float m_scale = 1.f;
     RectF m_viewPort;
     bool m_stretch = false;//fill mode
+
+    SGViewCamera *q_ptr;
 };
 
 #endif // SGVIEWCAMERA_P_H

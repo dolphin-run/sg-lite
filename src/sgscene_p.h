@@ -20,6 +20,8 @@ public:
 
     float m_width = 1920;
     float m_height = 1080;
+
+    SGScene *q_ptr;
 };
 
 #endif // SGSCENE_P_H

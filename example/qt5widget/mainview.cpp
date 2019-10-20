@@ -2,6 +2,9 @@
 #include "ui_mainview.h"
 #include "node/sgrectanglenode.h"
 
+#include <QVariantAnimation>
+#include <QSequentialAnimationGroup>
+
 MainView::MainView(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainView)
@@ -12,10 +15,12 @@ MainView::MainView(QWidget *parent) :
     m_scene.addItem(m_textNode);
     m_textNode->setX(500);
     m_textNode->setY(700);
+    m_textNode->setSize(500,300);
     m_textNode->setZ(3);
     m_textNode->setText(L"ABÖÐ¹úgij.\"\nÒ»ÑÔ¾Å¶¦");
     m_textNode->setColor(0xff0000);
 
+    /*
     auto txtr = new SGRectangleNode();
     txtr->setX(500);
     txtr->setY(700);
@@ -67,7 +72,7 @@ MainView::MainView(QWidget *parent) :
     r31->setColor(0xff0000);
     r31->setSize(100, 100);
     r31->setRotation(-3.1416f/6.f);
-    //r31->setScale(2.0);
+    //r31->setScale(2.0);*/
 }
 
 MainView::~MainView()
@@ -118,4 +123,40 @@ void MainView::on_btn_add_view_clicked()
 void MainView::on_btn_text_color_clicked()
 {
     m_textNode->setColor(Color::random());
+}
+
+static int ptsize = 32;
+void MainView::on_btn_text_incsize_clicked()
+{
+    m_textNode->setPointSize(ptsize += 8);
+}
+
+void MainView::on_btn_text_decsize_clicked()
+{
+    m_textNode->setPointSize(ptsize -= 8);
+}
+
+void MainView::on_btn_animation_clicked()
+{
+    static QSequentialAnimationGroup *group = new QSequentialAnimationGroup(this);
+    static QVariantAnimation *animation1 = new QVariantAnimation(this);
+    static QVariantAnimation *animation2 = new QVariantAnimation(this);
+    group->addAnimation(animation1);
+    group->addAnimation(animation2);
+
+    animation1->setDuration(3000);
+    animation1->setStartValue(0.f);
+    animation1->setEndValue(10.f);
+    animation2->setDuration(3000);
+    animation2->setStartValue(10.f);
+    animation2->setEndValue(0.f);
+    animation2->setEasingCurve(QEasingCurve::InElastic);
+    connect(animation1, &QVariantAnimation::valueChanged, [this](const QVariant &value) {
+        m_textNode->setRotation(value.toFloat());
+    });
+    connect(animation2, &QVariantAnimation::valueChanged, [this](const QVariant &value) {
+        m_textNode->setRotation(value.toFloat());
+    });
+
+    group->start();
 }

@@ -38,6 +38,11 @@ private slots:
 
     void on_btn_text_color_clicked();
 
+    void on_btn_text_incsize_clicked();
+
+    void on_btn_text_decsize_clicked();
+
+    void on_btn_animation_clicked();
 private:
     Ui::MainView *ui;
 

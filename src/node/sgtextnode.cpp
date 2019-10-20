@@ -4,73 +4,79 @@
 #include "geometry/sgrectanglegeometry.h"
 #include "material/sgglyphmaterial.h"
 #include <algorithm>
-#include "sgnode_p.h"
 
 SGTextNode::SGTextNode(SGNode * parent) :
-    SGNode(E_NodeType::TextNodeType, parent)
+    SGNode(E_NodeType::TextNodeType, new SGTextNodePrivate, parent)
 {
-    SG_INIT_PRIVATE(SGTextNode);
-
-    d_ptr->m_glyphMaterial = new SGGlyphMaterial;
-    d_ptr->m_textGeometry = new SGTextRectangleGeometry;
-
-    setGeometry(d_ptr->m_textGeometry);
-    setMaterial(d_ptr->m_glyphMaterial);
 }
 
 SGTextNode::~SGTextNode()
 {
-    SG_FREE_PRIVATE();
 }
 
 void SGTextNode::setAlignment(HAlignment ha, VAlignment va)
 {
-    d_ptr->m_halignment = ha;
-    d_ptr->m_valignment = va;
+    SG_D(SGTextNode);
+    d->m_halignment = ha;
+    d->m_valignment = va;
 
-    d_ptr->reAlign();
+    d->reAlign();
+    markDirty(SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGTextNode::setHAlignment(HAlignment ha)
 {
-    d_ptr->m_halignment = ha;
+    SG_D(SGTextNode);
+    d->m_halignment = ha;
 
-    d_ptr->reAlign();
+    d->reAlign();
+    markDirty(SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGTextNode::setVAlignment(VAlignment va)
 {
-    d_ptr->m_valignment = va;
+    SG_D(SGTextNode);
+    d->m_valignment = va;
 
-    d_ptr->reAlign();
+    d->reAlign();
+    markDirty(SGNode::E_DirtyType::PositionDirty);
 }
 
 void SGTextNode::setText(const std::wstring & txt)
 {
-    Size bounding = d_ptr->setText(txt);
-    setSize(bounding.width, bounding.height);
+    SG_D(SGTextNode);
+    d->setText(txt);
 
-    d_ptr->reAlign();
+    d->reAlign();
+    markDirty(SGNode::E_DirtyType::SizeDirty);
 }
 
 void SGTextNode::setColor(const Color & color)
 {
-    //to do...
-    d_ptr->m_color = color;
+    SG_D(SGTextNode);
+    d->m_color = color;
+}
 
+void SGTextNode::setPointSize(int point)
+{
+    SG_D(SGTextNode);
+    d->m_pointSize = point;
+
+    d->reAlign();
+    markDirty(SGNode::E_DirtyType::PositionDirty);
     markDirty(SGNode::E_DirtyType::SizeDirty);
 }
 
 bool SGTextNode::compare(const SGNode *node) const
 {
     const SGTextNode *tnode = dynamic_cast<const SGTextNode*>(node);
-    return d_ptr->m_color == tnode->d_ptr->m_color;
+    return d_func()->m_color == tnode->d_func()->m_color;
 }
 
 SGNodeState SGTextNode::nodeState() const
 {
     SGNodeState stat;
-    stat.color = d_ptr->m_color;
+    stat.color = d_func()->m_color;
     return stat;
 }
 
@@ -80,6 +86,10 @@ SGTextNodePrivate::SGTextNodePrivate() :
 {
     m_valignment = VAlignment::AlignVCenter;
     m_halignment = HAlignment::AlignHCenter;
+
+    m_material = m_glyphMaterial = new SGGlyphMaterial;
+    m_geometry = m_textGeometry = new SGTextRectangleGeometry;
+
 }
 
 void SGTextNodePrivate::addLineText(const std::wstring & s, size_t first, size_t last)
@@ -101,10 +111,10 @@ void SGTextNodePrivate::addLineText(const std::wstring & s, size_t first, size_t
 }
 
 //to do... make multi-thread
-Size SGTextNodePrivate::setText(const std::wstring & txt)
+void SGTextNodePrivate::setText(const std::wstring & txt)
 {
     m_glyphLines.clear();
-    if (txt.empty()) return Size();
+    if (txt.empty()) return;
 
     size_t pos = -1;
     do
@@ -126,42 +136,77 @@ Size SGTextNodePrivate::setText(const std::wstring & txt)
 
     m_textGeometry->resize(chnum);
 
-    //to do...
-    return Size{ m_boundingWidth, m_boundingHeight };
+    resetGeometry();
 }
 
+////////////////////////////////////////////////////////////
+//
+//      +--------------------------+
+//      |                          |
+//      |   ABC                    |
+//      |                          |
+//      +--------------------------+
+//1. glyph pos may be not exactly as bounding rect pos.
+//2. scale and rotation should be oriented from bounding rect center.
+//make glyph as a sub-item of the bounding rect.
 void SGTextNodePrivate::reAlign()
 {
-    int chidx = 0;
-    int posY = 0;
+    float ratio = float(m_pointSize) / GLYPH_PIXEL_SIZE;
+    m_implicitWidth = m_boundingWidth*ratio;
+    m_implicitHeight = m_boundingHeight*ratio;
+
+    //refix implicit position.
+    int deltaX = 0;
+    int deltaY = 0;
+    switch (m_halignment)
+    {
+    case HAlignment::AlignLeft:
+        deltaX = 0;
+        break;
+    case HAlignment::AlignHCenter:
+        deltaX = (m_width - m_implicitWidth) / 2;
+        break;
+    case HAlignment::AlignRight:
+        deltaX = m_width - m_implicitWidth;
+        break;
+    }
     switch (m_valignment)
     {
     case VAlignment::AlignTop:
-        posY = 0;
+        deltaY = 0;
         break;
     case VAlignment::AlignVCenter:
-        posY = (q_ptr->height() - m_boundingHeight) / 2;
+        deltaY = (m_height - m_implicitHeight) / 2;
         break;
     case VAlignment::AlignBottom:
-        posY = q_ptr->height() - m_boundingHeight;
+        deltaY = m_height - m_implicitHeight;
         break;
     }
 
+    m_implicitX = m_x + deltaX;
+    m_implicitY = m_y + deltaY;
+}
+
+void SGTextNodePrivate::resetGeometry()
+{
+    int chidx = 0;
+    int posX = 0;
+    int posY = 0;
     for (int i = 0; i < m_glyphLines.size(); i++)
     {
         auto &lineinf = m_glyphLines.at(i);
 
-        int posX = 0;
+        posX = 0;
         switch (m_halignment)
         {
         case HAlignment::AlignLeft:
             posX = 0;
             break;
         case HAlignment::AlignHCenter:
-            posX = (q_ptr->width() - lineinf.width) / 2;
+            posX = (m_boundingWidth - lineinf.width) / 2;
             break;
         case HAlignment::AlignRight:
-            posX = q_ptr->width() - lineinf.width;
+            posX = m_boundingWidth - lineinf.width;
             break;
         }
 
@@ -181,6 +226,4 @@ void SGTextNodePrivate::reAlign()
 
         posY += GLYPH_LINE_SIZE;
     }
-
-    q_ptr->markDirty(SGNode::E_DirtyType::SizeDirty);
 }

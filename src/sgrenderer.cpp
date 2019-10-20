@@ -97,18 +97,16 @@ void SGRenderer::buildRenderNodes(const SGNode * gnode, Node *p)
 
     if (c->geometryChanged || (p&&p->geometryChanged))
     {
+        c->x = gnode->d_ptr->m_implicitX;
+        c->y = gnode->d_ptr->m_implicitY;
         if (p)
         {
-            c->x = p->x + gnode->d_ptr->m_x;
-            c->y = p->y + gnode->d_ptr->m_y;
+            c->x += p->x;
+            c->y += p->y;
         }
-        else
-        {
-            c->x = gnode->d_ptr->m_x;
-            c->y = gnode->d_ptr->m_y;
-        }
-        c->width = gnode->d_ptr->m_width;
-        c->height = gnode->d_ptr->m_height;
+
+        c->width = gnode->d_ptr->m_implicitWidth;
+        c->height = gnode->d_ptr->m_implicitHeight;
         c->rotation = gnode->d_ptr->m_rotation;
         c->scale = gnode->d_ptr->m_scale;
         c->bounding = RectF(c->x, c->y, c->width, c->height);

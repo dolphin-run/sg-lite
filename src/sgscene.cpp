@@ -6,7 +6,7 @@
 
 SGScene::SGScene()
 {
-    SG_INIT_PRIVATE(SGScene);
+    SG_INIT_PRIVATE(new SGScenePrivate);
 
     //initialize root node.
     d_ptr->m_root.d_ptr->m_scene = this;
@@ -95,6 +95,14 @@ void SGScene::clear()
     for (auto itm : d_ptr->m_nodes)
         delete itm;
     d_ptr->m_nodes.clear();
+}
+
+void SGScene::setSize(int wid, int hei)
+{
+    d_ptr->m_width = wid;
+    d_ptr->m_height = hei;
+
+    sizeChanged();
 }
 
 float SGScene::width() const

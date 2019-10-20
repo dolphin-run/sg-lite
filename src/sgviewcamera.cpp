@@ -4,7 +4,7 @@
 
 SGViewCamera::SGViewCamera()
 {
-    SG_INIT_PRIVATE(SGViewCamera);
+    SG_INIT_PRIVATE(new SGViewCameraPrivate);
 }
 
 SGViewCamera::~SGViewCamera()

@@ -26,6 +26,8 @@ protected:
     void setSceneSize(float wid, float hei);
     void setViewSize(float wid, float hei);
     void update();
+
+    SGViewCameraPrivate *d_ptr;
 };
 
 #endif // SGVIEWCAMERA_H

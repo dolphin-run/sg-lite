@@ -1,6 +1,7 @@
 #include "view.h"
 #include "sgviewcamera.h"
 #include <QOpenGLContext>
+#include <QDateTime>
 
 static QOpenGLContext *g_context = nullptr;
 
@@ -15,6 +16,10 @@ View::View(QWidget *parent)
 
     connect(m_pUserInteraction, SIGNAL(signalScale(bool)), this, SLOT(slotCameraScale(bool)));
     connect(m_pUserInteraction, SIGNAL(signalMove(int, int)), this, SLOT(slotCameraMove(int, int)));
+
+    m_fpsLabel = new QLabel(this);
+    m_fpsLabel->setFixedSize(60, 30);
+    m_fpsLabel->setStyleSheet("background-color: green; color: white; qproperty-alignment: AlignCenter;");
 }
 
 
@@ -44,9 +49,12 @@ void View::resizeGL(int w, int h)
 
 void View::paintGL()
 {
+    calculateFps();
     if (!isVisible())
         return;
     SGView::renderFrame();
+
+    m_fpsLabel->setText(QString::asprintf("%d", m_currentFps));
 
     update();
 }
@@ -66,4 +74,19 @@ void View::slotCameraScale(bool zoom)
     {
         this->viewCamera()->scale(1.f / 1.01f);
     }
+}
+
+void View::calculateFps()
+{
+    qint64 currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
+    m_times.push_back(currentTime);
+
+    while (m_times[0] < currentTime - 1000) {
+        m_times.pop_front();
+    }
+
+    int currentCount = m_times.length();
+    m_currentFps = (currentCount + m_cacheCount) / 2;
+
+    m_cacheCount = currentCount;
 }

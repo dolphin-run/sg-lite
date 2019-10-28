@@ -1,6 +1,8 @@
 #include "mainview.h"
 #include "ui_mainview.h"
 #include "node/sgrectanglenode.h"
+#include "node/sgcircularnode.h"
+#include "node/sgtextnode.h"
 
 #include <QVariantAnimation>
 #include <QSequentialAnimationGroup>
@@ -95,9 +97,14 @@ void MainView::on_btn_align_top_clicked()
     m_textNode->setVAlignment(VAlignment::AlignTop);
 }
 
+SGNode *root;
+static float rscale = 1.f;
+static float rrotate = 0.f;
+
 void MainView::on_btn_align_right_clicked()
 {
-    m_textNode->setHAlignment(HAlignment::AlignRight);
+    root->setRotation(rrotate+=0.1f);
+    //m_textNode->setHAlignment(HAlignment::AlignRight);
 }
 
 void MainView::on_btn_align_hcenter_clicked()
@@ -107,7 +114,8 @@ void MainView::on_btn_align_hcenter_clicked()
 
 void MainView::on_btn_align_left_clicked()
 {
-    m_textNode->setHAlignment(HAlignment::AlignLeft);
+    root->setRotation(rrotate -= 0.1f);
+    //m_textNode->setHAlignment(HAlignment::AlignLeft);
 }
 
 void MainView::on_btn_add_view_clicked()
@@ -128,12 +136,14 @@ void MainView::on_btn_text_color_clicked()
 static int ptsize = 32;
 void MainView::on_btn_text_incsize_clicked()
 {
-    m_textNode->setPointSize(ptsize += 8);
+    root->setScale(rscale *= 1.1f);
+    //m_textNode->setPointSize(ptsize += 8);
 }
 
 void MainView::on_btn_text_decsize_clicked()
 {
-    m_textNode->setPointSize(ptsize -= 8);
+    root->setScale(rscale /= 1.1f);
+    //m_textNode->setPointSize(ptsize -= 8);
 }
 
 void MainView::on_btn_animation_clicked()
@@ -159,4 +169,27 @@ void MainView::on_btn_animation_clicked()
     });
 
     group->start();
+}
+
+SceneLocal::SceneLocal()
+{
+    root = new SGNode;
+    root->setSize(256, 256);
+    this->addItem(root);
+
+    SGCircularNode *bkgrd = new SGCircularNode(root);
+    bkgrd->setSize(root->width(), root->height());
+    bkgrd->setInnerRadius(0.f);
+    bkgrd->setColor(0xffffff, 0xcc0000);
+
+    SGImageNode *icon = new SGImageNode(root);
+    icon->setPos(28, 28);
+    icon->setSize(200, 200);
+    icon->setImage("assets/images/img0.png");
+
+    SGTextNode *label = new SGTextNode(root);
+    label->setText(L"sglite label");
+    label->setColor(0xff0000);
+    label->setPos(128, 256);
+    label->setAlignment(HAlignment::AlignHCenter, VAlignment::AlignTop);
 }

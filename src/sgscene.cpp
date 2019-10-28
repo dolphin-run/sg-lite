@@ -92,8 +92,12 @@ bool SGScene::removeItem(SGNode * item)
 
 void SGScene::clear()
 {
+    //to do...
     for (auto itm : d_ptr->m_nodes)
+    {
+        removeItem(itm);
         delete itm;
+    }
     d_ptr->m_nodes.clear();
 }
 

@@ -39,15 +39,13 @@ static void msyh_glyph_initialize()
 class SGGlyphMaterialShader : public SGMaterialShader
 {
 public:
-    SGGlyphMaterialShader(const SGGlyphMaterial *parent) : m_parent(parent) { build(); }
+    SGGlyphMaterialShader() { build(); }
     ~SGGlyphMaterialShader() {}
 
     virtual void updateState(const float *mat4, const SGNodeState *stat) override
     {
         m_program.setMat4(m_matrixUniform, mat4);
         m_program.setVec4(m_colorUniform, glm::vec4(stat->color.r / 255.f, stat->color.g / 255.f, stat->color.b / 255.f, 1.f));
-
-        m_parent->texture()->bind();
     }
 
     virtual const char* vertexShader() const override
@@ -94,7 +92,6 @@ public:
 private:
     unsigned m_matrixUniform;
     unsigned m_colorUniform;
-    const SGGlyphMaterial *m_parent;
 };
 
 SGGlyphMaterial::SGGlyphMaterial()
@@ -111,7 +108,7 @@ E_MaterialType SGGlyphMaterial::type() const
 
 SGMaterialShader * SGGlyphMaterial::createShader() const
 {
-    return new SGGlyphMaterialShader(this);
+    return new SGGlyphMaterialShader;
 }
 
 const GlyphInfo& SGGlyphMaterial::setGlyph(wchar_t ch)
@@ -136,4 +133,9 @@ const GlyphInfo& SGGlyphMaterial::setGlyph(wchar_t ch)
 SGTexture * SGGlyphMaterial::texture() const
 {
     return m_tex;
+}
+
+void SGGlyphMaterial::syncState()
+{
+    m_tex->bind();
 }

@@ -1,6 +1,7 @@
 #include "scenefantacy.h"
 
 #include "node/sgrectanglenode.h"
+#include "node/sgtextnode.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>

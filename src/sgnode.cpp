@@ -7,17 +7,10 @@
 #include <algorithm>
 
 
-//SGNode::SGNode(SGNode* parent)
-//{
-//    if (parent)
-//    {
-//        parent->addChild(this);
-//    }
-//}
-//SGNode::SGNode(E_NodeType type, SGNode * parent)
-//{
-//    SGNode(type, new SGNodePrivate, parent);
-//}
+SGNode::SGNode(SGNode* parent)
+{
+    new (this)SGNode(SGNode::BasicNodeType, new SGNodePrivate, parent);
+}
 
 SGNode::SGNode(E_NodeType type, SGNodePrivate* p, SGNode * parent)
 {

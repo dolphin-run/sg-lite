@@ -32,7 +32,7 @@ bool SYUVInfo::update(int pixWid, int pixHei)
 class SGYuvMaterialShader : public SGMaterialShader
 {
 public:
-    SGYuvMaterialShader(const SGYuvMaterial *parent) : m_parent(parent) { build(); }
+    SGYuvMaterialShader() { build(); }
     ~SGYuvMaterialShader() {}
 
     virtual void updateState(const float *mat4, const SGNodeState *stat) override
@@ -42,8 +42,6 @@ public:
         m_program.setInt(m_texYUniform, 0);
         m_program.setInt(m_texUUniform, 1);
         m_program.setInt(m_texVUniform, 2);
-
-        m_parent->texture()->bind();
     }
 
     virtual const char* vertexShader() const override
@@ -117,7 +115,7 @@ E_MaterialType SGYuvMaterial::type() const
 
 SGMaterialShader * SGYuvMaterial::createShader() const
 {
-    return new SGYuvMaterialShader(this);
+    return new SGYuvMaterialShader;
 }
 
 void SGYuvMaterial::setYuvInfo(const SYUVInfo * info)
@@ -145,6 +143,7 @@ void SGYuvMaterial::setYuv(const unsigned char * src)
 
 void SGYuvMaterial::syncState()
 {
+    m_tex.bind();
     if (!m_yuvChanged) return;
 
     std::lock_guard<std::mutex> guard(m_yuvLock);

@@ -10,9 +10,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "sgmaterial.h"
+
 class SGView;
-class SGMaterial;
-class SGMaterialShader;
+//class SGMaterial;
+//class SGMaterialShader;
 
 //just for rendering
 struct Node {
@@ -93,7 +95,7 @@ class SGShaderManager
 public:
     SGMaterialShader* find(SGMaterial *material);
 private:
-    std::unordered_map<SGMaterial*, SGMaterialShader*> m_shaders;
+    std::unordered_map<E_MaterialType, SGMaterialShader*> m_shaders;
 };
 
 class SGRenderer

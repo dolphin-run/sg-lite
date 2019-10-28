@@ -5,7 +5,7 @@
 class SGDynImageMaterialShader : public SGMaterialShader
 {
 public:
-    SGDynImageMaterialShader(const SGDynImageMaterial *parent) : m_parent(parent) { build(); }
+    SGDynImageMaterialShader() { build(); }
     ~SGDynImageMaterialShader() {}
 
     virtual void updateState(const float *mat4, const SGNodeState *stat) override
@@ -13,8 +13,6 @@ public:
         m_program.setMat4(m_matrixUniform, mat4);
 
         m_program.setInt(m_texUniform, 0);
-
-        m_parent->texture()->bind();
     }
 
     virtual const char* vertexShader() const override
@@ -55,7 +53,6 @@ public:
 private:
     unsigned m_matrixUniform;
     unsigned m_texUniform;
-    const SGDynImageMaterial *m_parent;
 };
 
 SGDynImageMaterial::SGDynImageMaterial()
@@ -70,7 +67,7 @@ E_MaterialType SGDynImageMaterial::type() const
 
 SGMaterialShader * SGDynImageMaterial::createShader() const
 {
-    return new SGDynImageMaterialShader(this);
+    return new SGDynImageMaterialShader;
 }
 
 void SGDynImageMaterial::setSize(int wid, int hei)
@@ -105,6 +102,7 @@ SGTexture * SGDynImageMaterial::texture() const
 
 void SGDynImageMaterial::syncState()
 {
+    m_tex.bind();
     if (!m_yuvChanged) return;
 
     std::lock_guard<std::mutex> guard(m_yuvLock);

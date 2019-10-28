@@ -11,14 +11,12 @@ static SGGridImageTexture g_imgTex(2048, 2048, Image::Format_RGBA, 256, 256);
 class SGTextureMaterialShader : public SGMaterialShader
 {
 public:
-    SGTextureMaterialShader(const SGTextureMaterial *parent) : m_parent(parent) { build(); }
+    SGTextureMaterialShader() { build(); }
     ~SGTextureMaterialShader() {}
 
     virtual void updateState(const float *mat4, const SGNodeState *stat) override
     {
         m_program.setMat4(m_matrixUniform, mat4);
-
-        m_parent->texture()->bind();
     }
 
     virtual const char* vertexShader() const override
@@ -57,7 +55,6 @@ public:
     }
 private:
     unsigned m_matrixUniform;
-    const SGTextureMaterial *m_parent;
 };
 
 SGTextureMaterial::SGTextureMaterial()
@@ -72,7 +69,7 @@ E_MaterialType SGTextureMaterial::type() const
 
 SGMaterialShader * SGTextureMaterial::createShader() const
 {
-    return new SGTextureMaterialShader(this);
+    return new SGTextureMaterialShader;
 }
 
 const RectF& SGTextureMaterial::setImage(const char * path)
@@ -107,4 +104,9 @@ const RectF& SGTextureMaterial::setImage(const char * path)
 SGTexture * SGTextureMaterial::texture() const
 {
     return m_tex;
+}
+
+void SGTextureMaterial::syncState()
+{
+    m_tex->bind();
 }

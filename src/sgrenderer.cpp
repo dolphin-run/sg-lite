@@ -48,7 +48,7 @@ void Node::updateMatrix(const Node *pn)
 SGMaterialShader * SGShaderManager::find(SGMaterial *material)
 {
     E_MaterialType type = material->type();
-    if (m_shaders.count(material)) return m_shaders.at(material);
+    if (m_shaders.count(type)) return m_shaders.at(type);
 
     SGMaterialShader *shader = material->createShader();
 
@@ -60,7 +60,7 @@ SGMaterialShader * SGShaderManager::find(SGMaterial *material)
     //         p->bindAttributeLocation(attr[i], i);
     // }
     
-    m_shaders.insert(std::make_pair(material, shader));
+    m_shaders.insert(std::make_pair(type, shader));
     return shader;
 }
 
@@ -232,6 +232,7 @@ void SGRenderer::itemDeleted(SGNode * gnode)
         m_mapNodes.erase(gnode);
 
         //can be no-rebuild
+        m_rebuild |= E_RebuildFlag::SelectNodes;
         m_rebuild |= E_RebuildFlag::BuildBatches;
         m_rebuild |= E_RebuildFlag::UploadBatches;
     }
@@ -283,6 +284,7 @@ void SGRenderer::selectRenderNodes()
         nodeType = item.first->type();
         node = item.second;
         if (!node->visible) continue;
+        if (nodeType == SGNode::E_NodeType::BasicNodeType) continue;
 
         if (nodeType == SGNode::E_NodeType::ImageNodeType ||
             nodeType == SGNode::E_NodeType::TextNodeType ||

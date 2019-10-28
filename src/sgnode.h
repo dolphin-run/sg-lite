@@ -17,6 +17,7 @@ class SG_DECL_EXPORT SGNode
     friend class SGScene;
 public:
     enum E_NodeType {
+        BasicNodeType,
         RootNodeType, 
         RectangleNodeType,
         CircularNodeType,
@@ -38,7 +39,7 @@ public:
         //
         AllDirty = 0xff
     };
-    //SGNode(SGNode* parent = nullptr);
+    SGNode(SGNode* parent = nullptr);
     virtual ~SGNode();
     E_NodeType type() const;
     void addChild(SGNode* node);
@@ -70,7 +71,6 @@ public:
     void setSize(float wid, float hei);
 
 protected:
-    //SGNode(E_NodeType type, SGNode* parent = nullptr);
     SGNode(E_NodeType type, SGNodePrivate* p, SGNode* parent = nullptr);
     SGScene *scene();
     SGNodePrivate *d_ptr;

@@ -2,6 +2,7 @@
 #define VIEW_H
 
 #include <QOpenGLWidget>
+#include <QLabel>
 #include "sgview.h"
 #include "viewinteraction.h"
 
@@ -22,7 +23,13 @@ public slots:
     void slotCameraScale(bool zoom);
 
 private:
-    QOpenGLContext *m_context;
+    void calculateFps();
+private:
+    QOpenGLContext *m_context; 
+    int m_currentFps;
+    int m_cacheCount;
+    QVector<qint64> m_times;
+    QLabel *m_fpsLabel;
 
     ViewInteraction *m_pUserInteraction;
 };

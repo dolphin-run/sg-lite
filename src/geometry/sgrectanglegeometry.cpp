@@ -95,6 +95,7 @@ SGTextRectangleGeometry::SGTextRectangleGeometry(int n) :
 
 SGTextRectangleGeometry::~SGTextRectangleGeometry()
 {
+    if (vertices) delete[] vertices;
 }
 
 void SGTextRectangleGeometry::resize(int n)

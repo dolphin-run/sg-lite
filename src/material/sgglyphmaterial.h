@@ -16,6 +16,8 @@ public:
     const GlyphInfo& setGlyph(wchar_t ch);
     SGTexture *texture() const;
 
+    virtual void syncState() override;
+
 private:
     SGTexture *m_tex = nullptr;
 };

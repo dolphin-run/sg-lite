@@ -13,6 +13,12 @@ namespace Ui {
 class MainView;
 }
 
+class SceneLocal : public SGScene
+{
+public:
+    SceneLocal();
+};
+
 class MainView : public QWidget
 {
     Q_OBJECT
@@ -46,7 +52,7 @@ private slots:
 private:
     Ui::MainView *ui;
 
-    SceneFantacy m_scene;
+    SceneLocal m_scene;
     SGTextNode *m_textNode;
 };
 

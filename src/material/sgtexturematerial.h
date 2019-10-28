@@ -14,6 +14,8 @@ public:
     const RectF& setImage(const char *path);
     SGTexture *texture() const;
 
+    virtual void syncState() override;
+
 private:
     SGTexture *m_tex = nullptr;
 };

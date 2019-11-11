@@ -86,6 +86,7 @@ void SGRenderer::setRootNode(const SGRootNode *root)
 void SGRenderer::clear()
 {
     m_mapNodes.clear();
+    m_rebuild |= E_RebuildFlag::FullRebuild;
 }
 
 void SGRenderer::buildRenderNodes(const SGNode * gnode, Node *p)

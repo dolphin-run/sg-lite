@@ -185,7 +185,7 @@ void SGNode::setHeight(float height)
     markDirty(SGNode::E_DirtyType::SizeDirty);
 }
 
-void SGNode::setOpactity(float opacity)
+void SGNode::setOpacity(float opacity)
 {
     d_ptr->m_opacity = opacity;
     markDirty(SGNode::E_DirtyType::OpacityDirty);

@@ -56,6 +56,14 @@ void SGScene::itemChanged(SGNode *item, SGNode::E_DirtyType changes)
     }
 }
 
+void SGScene::itemsCleaned()
+{
+    for (auto view : d_ptr->m_views)
+    {
+        view->itemsCleaned();
+    }
+}
+
 bool SGScene::addItem(SGNode * item, SGNode *attached)
 {
     if (d_ptr->m_nodes.end() != std::find(d_ptr->m_nodes.begin(), d_ptr->m_nodes.end(), item)) return false;
@@ -92,13 +100,13 @@ bool SGScene::removeItem(SGNode * item)
 
 void SGScene::clear()
 {
-    //to do...
     for (auto itm : d_ptr->m_nodes)
     {
-        removeItem(itm);
         delete itm;
     }
     d_ptr->m_nodes.clear();
+
+    itemsCleaned();
 }
 
 void SGScene::setSize(int wid, int hei)

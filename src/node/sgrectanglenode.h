@@ -40,7 +40,7 @@ class SG_DECL_EXPORT SGYuvVideoNode : public SGNode
 public:
     SGYuvVideoNode(SGNode* parent = nullptr);
     void setPixelSize(int pxWid = 1920, int pxHei = 1080);
-    bool setYuv(const unsigned char* yuv, unsigned int len = -1);
+    bool setYuv(const unsigned char* yuv = nullptr, unsigned int len = -1);//yuv set to nullptr will clear the video.
 
 private:
     SYUVInfo *m_yuvInf = nullptr;

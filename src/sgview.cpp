@@ -69,6 +69,11 @@ void SGView::itemChanged(SGNode *item, SGNode::E_DirtyType changes)
     m_render->itemChanged(item, changes);
 }
 
+void SGView::itemsCleaned()
+{
+    m_render->clear();
+}
+
 void SGView::setSize(int width, int height)
 {
     m_width = width;

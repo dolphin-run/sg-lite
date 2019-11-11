@@ -137,7 +137,14 @@ void SGYuvMaterial::setYuv(const unsigned char * src)
 {
     std::lock_guard<std::mutex> guard(m_yuvLock);
 
-    memcpy(m_yuvBuf, src, m_yuvInfo->m_len);
+    if (src)
+    {
+        memcpy(m_yuvBuf, src, m_yuvInfo->m_len);
+    }
+    else
+    {
+        memset(m_yuvBuf, 0, m_yuvInfo->m_len);
+    }
     m_yuvChanged = 1;
 }
 

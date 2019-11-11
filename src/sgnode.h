@@ -61,7 +61,7 @@ public:
     void setZ(int z);
     void setWidth(float width);
     void setHeight(float height);
-    void setOpactity(float opacity);
+    void setOpacity(float opacity);
     void setRotation(float rotation);
     void setScale(float scale);
     void setVisible(bool visible = true);

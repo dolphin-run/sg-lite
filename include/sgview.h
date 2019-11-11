@@ -39,6 +39,7 @@ protected:
     virtual void itemAdded(SGNode *item);
     virtual void itemDeleted(SGNode *item);
     virtual void itemChanged(SGNode *item, SGNode::E_DirtyType changes);
+    virtual void itemsCleaned();
 
     //Viewer(desktop-window depends) call when the view size changed.
     virtual void setSize(int width, int height);

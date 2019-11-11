@@ -67,8 +67,8 @@ struct SG_DECL_EXPORT Color {
     uint8_t a;
 
     Color();
-    Color(uint32_t x);
-    Color(uint8_t r, uint8_t g, uint8_t b);
+    Color(uint32_t rgb);
+    Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
     bool operator==(const Color &c) const;
 
     static Color random();

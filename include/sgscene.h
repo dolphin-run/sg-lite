@@ -40,6 +40,7 @@ protected:
     void itemAdded(SGNode *item);
     void itemDeleted(SGNode *item);
     void itemChanged(SGNode *item, SGNode::E_DirtyType changes);
+    void itemsCleaned();
 
 protected:
     //add or remove item and its all generations from this scene

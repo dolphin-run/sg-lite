@@ -29,7 +29,7 @@ void SGColorRectangleGeometry::setColor(const Color & c)
         pt->r = c.r / 255.f;
         pt->g = c.g / 255.f;
         pt->b = c.b / 255.f;
-        pt->a = 1.f;
+        pt->a = c.a / 255.f;
         pt++;
     }
 }

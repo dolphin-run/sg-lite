@@ -111,6 +111,14 @@ SGYuvMaterial::SGYuvMaterial()
     m_yuvChanged = 0;
 }
 
+SGYuvMaterial::~SGYuvMaterial()
+{
+    if (m_yuvBuf)
+    {
+        delete[]m_yuvBuf;
+    }
+}
+
 E_MaterialType SGYuvMaterial::type() const
 {
     return E_MaterialType::YuvMaterialType;

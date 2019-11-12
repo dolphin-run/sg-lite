@@ -39,6 +39,8 @@ public:
     SGMaterial *m_material = nullptr;
 
     SGNode *q_ptr;
+
+    void clearChildren();
 };
 
 #endif // SGNODE_P_H

@@ -85,6 +85,10 @@ void SGRenderer::setRootNode(const SGRootNode *root)
 
 void SGRenderer::clear()
 {
+    for (auto &node : m_mapNodes)
+    {
+        m_nodePool.free(node.second);
+    }
     m_mapNodes.clear();
     m_rebuild |= E_RebuildFlag::FullRebuild;
 }

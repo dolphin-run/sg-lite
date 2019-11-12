@@ -66,6 +66,8 @@ void SGScene::itemsCleaned()
 
 bool SGScene::addItem(SGNode * item, SGNode *attached)
 {
+    if (item->d_ptr->m_parent) return false;
+
     if (d_ptr->m_nodes.end() != std::find(d_ptr->m_nodes.begin(), d_ptr->m_nodes.end(), item)) return false;
 
     if (!attached)
@@ -90,6 +92,11 @@ bool SGScene::removeItem(SGNode * item)
         {
             item->d_ptr->m_parent->removeChild(item);
         }
+        else
+        {
+            //remove as root node
+            d_ptr->m_root.removeChild(item);
+        }
         remove(item);
 
         return true;
@@ -105,6 +112,7 @@ void SGScene::clear()
         delete itm;
     }
     d_ptr->m_nodes.clear();
+    d_ptr->m_root.d_ptr->clearChildren();
 
     itemsCleaned();
 }
@@ -134,10 +142,9 @@ const SGRootNode * SGScene::rootNode() const
 
 void SGScene::remove(SGNode * item)
 {
-    auto it = std::find(d_ptr->m_nodes.begin(), d_ptr->m_nodes.end(), item);
-    assert(d_ptr->m_nodes.end() != it);
+    assert(d_ptr->m_nodes.end() != std::find(d_ptr->m_nodes.begin(), d_ptr->m_nodes.end(), item));
 
-    d_ptr->m_nodes.erase(it);
+    d_ptr->m_nodes.remove(item);
     item->d_ptr->m_scene = nullptr;
     itemDeleted(item);
     for (auto child : item->d_ptr->m_children)

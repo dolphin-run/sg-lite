@@ -231,6 +231,11 @@ void SGNode::setSize(float wid, float hei)
 
 SGNodePrivate::~SGNodePrivate() {}
 
+void SGNodePrivate::clearChildren()
+{
+    m_children.clear();
+}
+
 SGRootNode::SGRootNode() : SGNode(SGNode::E_NodeType::RootNodeType, new SGNodePrivate)
 {
 

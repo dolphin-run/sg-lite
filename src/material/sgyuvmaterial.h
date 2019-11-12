@@ -34,6 +34,7 @@ class SGYuvMaterial : public SGMaterial
 {
 public:
     SGYuvMaterial();
+    ~SGYuvMaterial();
     virtual E_MaterialType type() const override;
     virtual SGMaterialShader *createShader() const override;
     virtual bool share() const { return false; }

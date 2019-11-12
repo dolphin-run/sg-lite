@@ -17,6 +17,7 @@ public:
     virtual void updateState(const float *mat4, const SGNodeState *stat) override
     {
         m_program.setMat4(m_matrixUniform, mat4);
+        m_program.setFloat(m_opacityUniform, stat->opacity);
     }
 
     virtual const char* vertexShader() const override
@@ -35,8 +36,10 @@ public:
     {
         return  "varying vec4 tex;\n"
             "uniform sampler2D uSampler;\n"
+            "uniform float opacity;\n"
             "void main() {\n"
-            "   gl_FragColor = texture2D(uSampler, vec2(tex.x, tex.y)); \n"
+            "   vec4 color = texture2D(uSampler, vec2(tex.x, tex.y)); \n"
+            "   gl_FragColor = vec4(color.rgb, color.a*opacity); \n"
             "}\n";
     }
 
@@ -50,11 +53,13 @@ public:
     {
         compile();
         m_matrixUniform = m_program.uniformLocation("matrix");
+        m_opacityUniform = m_program.uniformLocation("opacity");
 
         return true;
     }
 private:
     unsigned m_matrixUniform;
+    unsigned m_opacityUniform;
 };
 
 SGTextureMaterial::SGTextureMaterial()

@@ -127,12 +127,12 @@ void SGRenderer::buildRenderNodes(const SGNode * gnode, Node *p)
             c->opacity = gnode->d_ptr->m_opacity;
         }
 
-        if (c->opacity < 0.01f)
+        if (c->opacity < 0.001f)
         {
             c->visible = 0;
             c->visibleChanged = 1;
         }
-        c->alpha = c->opacity < 0.99f;
+        c->alpha = c->opacity < 0.999f;
         c->opacityChanged = 1;//set to notify children if parent opacity changed
     }
 
@@ -415,7 +415,8 @@ void SGRenderer::buildAlphaBatches()
                 if (nj->batch)
                     continue;
 
-                if (ntype == nj->gnode->type() && node->gnode->compare(nj->gnode) && nj->gnode->d_ptr->m_material->share())
+                if (ntype == nj->gnode->type() && node->gnode->compare(nj->gnode) && nj->gnode->d_ptr->m_material->share()
+                    && node->opacity == nj->opacity)
                 {
                     if (overlapBounds.intersects(nj->bounding) &&
                         checkOverlap(i + 1, j - 1, nj->bounding))//not overlap
@@ -583,6 +584,7 @@ void SGRenderer::renderBatch(Batch * batch)
     shader->program()->bind();
 
     SGNodeState stat = gn->nodeState();
+    stat.opacity = n->opacity;
     shader->updateState(m_view->viewCamera()->transform(), &stat);
 
     glBindBuffer(GL_ARRAY_BUFFER, batch->vbo.id);

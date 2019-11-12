@@ -42,6 +42,7 @@ public:
         m_program.setInt(m_texYUniform, 0);
         m_program.setInt(m_texUUniform, 1);
         m_program.setInt(m_texVUniform, 2);
+        m_program.setFloat(m_opacityUniform, stat->opacity);
     }
 
     virtual const char* vertexShader() const override
@@ -62,6 +63,7 @@ public:
             "uniform sampler2D tex_y;\n"
             "uniform sampler2D tex_u;\n"
             "uniform sampler2D tex_v;\n"
+            "uniform float opacity;\n"
             "void main() {\n"
                 "vec3 yuv;\n"
                 "vec3 rgb;\n"
@@ -73,7 +75,7 @@ public:
                 "rgb = mat3(1.0, 1.0, 1.0,\n"
                 "    0.0, -0.395, 2.032,\n"
                 "    1.140, -0.581, 0.0) * yuv;\n"
-                "gl_FragColor = vec4(rgb, 1.0); \n"
+                "gl_FragColor = vec4(rgb, opacity); \n"
             "}\n";
     }
 
@@ -90,6 +92,7 @@ public:
         m_texYUniform = m_program.uniformLocation("tex_y");
         m_texUUniform = m_program.uniformLocation("tex_u");
         m_texVUniform = m_program.uniformLocation("tex_v");
+        m_opacityUniform = m_program.uniformLocation("opacity");
 
         return true;
     }
@@ -98,7 +101,7 @@ private:
     unsigned m_texYUniform;
     unsigned m_texUUniform;
     unsigned m_texVUniform;
-    const SGYuvMaterial *m_parent;
+    unsigned m_opacityUniform;
 };
 
 SGYuvMaterial::SGYuvMaterial()

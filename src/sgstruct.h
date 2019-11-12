@@ -103,6 +103,7 @@ struct SG_DECL_EXPORT Image {
 struct SGNodeState
 {
     Color color;
+    float opacity;
 };
 
 #endif // SGSTRUCT_H

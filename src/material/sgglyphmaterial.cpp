@@ -46,6 +46,7 @@ public:
     {
         m_program.setMat4(m_matrixUniform, mat4);
         m_program.setVec4(m_colorUniform, glm::vec4(stat->color.r / 255.f, stat->color.g / 255.f, stat->color.b / 255.f, 1.f));
+        m_program.setFloat(m_opacityUniform, stat->opacity);
     }
 
     virtual const char* vertexShader() const override
@@ -66,12 +67,13 @@ public:
             "uniform vec4 color;\n"
             "uniform sampler2D uSampler;\n"
             "const float smoothing = 1.0/16.0;\n"
+            "uniform float opacity;\n"
             "void main() {\n"
             "   float dist = texture2D(uSampler, vec2(tex.x, tex.y)).r; \n"
             //"   float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, dist); \n"
             "   float width = fwidth(dist);\n"
             "   float alpha = clamp(smoothstep(0.5 - width, 0.5 + width, dist), 0.0, 1.0);\n"
-            "   gl_FragColor = vec4(color.r, color.g, color.b, alpha); \n"
+            "   gl_FragColor = vec4(color.r, color.g, color.b, alpha*opacity); \n"
             "}\n";
     }
 
@@ -86,12 +88,14 @@ public:
         compile();
         m_matrixUniform = m_program.uniformLocation("matrix");
         m_colorUniform = m_program.uniformLocation("color");
+        m_opacityUniform = m_program.uniformLocation("opacity");
 
         return true;
     }
 private:
     unsigned m_matrixUniform;
     unsigned m_colorUniform;
+    unsigned m_opacityUniform;
 };
 
 SGGlyphMaterial::SGGlyphMaterial()

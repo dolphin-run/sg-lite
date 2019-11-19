@@ -106,4 +106,7 @@ struct SGNodeState
     float opacity;
 };
 
+
+enum SGYuvFormat { YUV_420P, YUV_420SP };
+
 #endif // SGSTRUCT_H

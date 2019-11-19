@@ -41,6 +41,7 @@ protected:
 protected:
     ImageGridBuffer m_imgBuf;
     unsigned m_id = 0;
+    bool m_changed = false;
 };
 
 #endif // SGGRIDIMAGETEXTURE_H

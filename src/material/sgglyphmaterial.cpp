@@ -22,6 +22,12 @@ static void msyh_glyph_initialize()
     };
 #endif
 
+#ifdef __linux__
+    const char* fontPathList[] = {
+        "/usr/share/fonts/truetype/freefont/FreeSerif.ttf"
+    };
+#endif
+
 #ifdef __APPLE__
     const char* fontPathList[] = {
         "/System/Library/Fonts/STHeiti Light.ttc"

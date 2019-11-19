@@ -52,7 +52,7 @@ private slots:
 private:
     Ui::MainView *ui;
 
-    SceneLocal m_scene;
+    SceneVideo m_scene;
     SGTextNode *m_textNode;
 };
 

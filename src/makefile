@@ -1,8 +1,10 @@
 .PHONY : mingw sgcore macos linux undefined
 
-CFLAGS := -g -shared -std=c++11 -Wall -DSG_BUILDING_PLUGIN -I3rdparty/include
+CFLAGS := -shared -std=c++11 -Wall -fPIC -DSG_BUILDING_PLUGIN -I3rdparty/include
 #comment this to use GLEW
 CFLAGS += -DSG_GL_GLAD
+#uncomment this when used in qtquick
+#CFLAGS += -DSG_VIEW_VERTICAL_MIRROR
 
 LDFLAGS :=
 
@@ -51,6 +53,8 @@ undefined:
 mingw : TARGET := sgcore.dll
 mingw : CFLAGS += -I/usr/include -I/usr/local/include -I.
 mingw : LDFLAGS += -L/usr/bin -lglew32 -lopengl32 -L/usr/local/bin
+linux : TARGET := libsgcore.so
+linux : CFLAGS += -I/usr/include -I/usr/local/include -I.
 macos : TARGET := libsgcore.dylib
 macos : CFLAGS += -I/usr/include -I/usr/local/include -I.
 macos : LDFLAGS += -L/usr/bin -L/usr/local/bin  -framework OpenGL
@@ -58,6 +62,7 @@ macos : LDFLAGS += -L/usr/bin -L/usr/local/bin  -framework OpenGL
 
 macos : $(SRC) sgcore
 mingw : $(SRC) sgcore
+linux : $(SRC) sgcore
 
 sgcore :
 	g++ $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
@@ -66,6 +71,7 @@ sgcore :
 clean:
 	-rm -f sgcore.dll
 	-rm -f libsgcore.dylib
+	-rm -f libsgcore.so
 
 .PHONY: install
 install:
@@ -89,4 +95,4 @@ install:
     ../include/node
     
 	-cp -f \
-    sgcore.dll ../lib
+    libsgcore.so ../lib/x64

@@ -9,8 +9,8 @@
 
 static int timer = 0;
 
-#define VIDEO_WIDTH 352
-#define VIDEO_HEIGHT 288
+#define VIDEO_WIDTH 960
+#define VIDEO_HEIGHT 540
 
 static const int yuvsize = VIDEO_WIDTH*VIDEO_HEIGHT * 3 / 2;
 static unsigned char *yuvbuf;
@@ -57,7 +57,7 @@ void SceneVideo::stop()
 
 void SceneVideo::taskYuvStream()
 {
-    FILE *file = fopen("assets/video/flower_cif.yuv" , "rb");
+    FILE *file = fopen("assets/video/smart.yuv" , "rb");
     if (!file)
     {
         std::cout << "open file failed..." << std::endl;

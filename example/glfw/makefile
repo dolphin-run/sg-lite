@@ -27,6 +27,9 @@ undefined:
 mingw : TARGET := sgglfw.exe
 mingw : CFLAGS += -I/usr/include -I/usr/local/include -I.
 mingw : LDFLAGS += -L/usr/bin -lglfw3 -L/usr/local/bin
+linux : TARGET := sgglfw.out
+linux : CFLAGS += -I/usr/include -I/usr/local/include -I.
+linux : LDFLAGS += -L/usr/bin -lglfw -pthread -L/usr/local/bin
 macos : TARGET := sgglfw
 macos : CFLAGS += -I/usr/include -I/usr/local/include -I3rdparty/include
 macos : LDFLAGS += -L/usr/bin -L/usr/local/bin -L3rdparty/lib64 -lglfw3 -framework Cocoa -framework IOKit -framework CoreVideo
@@ -34,6 +37,7 @@ macos : LDFLAGS += -L/usr/bin -L/usr/local/bin -L3rdparty/lib64 -lglfw3 -framewo
 
 macos : $(SRC) sgglfw
 mingw : $(SRC) sgglfw
+linux : $(SRC) sgglfw
 
 sgglfw :
 	g++ $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)

@@ -195,6 +195,9 @@ Image::Image(uint32_t w, uint32_t h, const uint8_t * px, ImageFormat fmt):
     case Image::Format_Alpha:
         component = 1;
         break;
+    case Image::Format_RA:
+        component = 2;
+        break;
     case Image::Format_RGB:
         component = 3;
         break;

@@ -27,8 +27,8 @@ void View::FreeGlfw()
 
 void View::windowSizeCallback(GLFWwindow* window, int width, int height)
 {
-    //if (g_glfwView.count(window))
-    //    g_glfwView.at(window)->resizeEvent(width, height);
+    if (g_glfwView.count(window))
+        g_glfwView.at(window)->setSize(width, height);
 }
 void View::framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
@@ -42,7 +42,7 @@ void View::framebufferSizeCallback(GLFWwindow* window, int width, int height)
 void View::windowScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
     if (g_glfwView.count(window))
-        g_glfwView.at(window)->viewCamera()->scale(yoffset > 0 ? 1.01f : 1.f / 1.01f);
+        g_glfwView.at(window)->viewCamera()->scale(yoffset > 0 ? 1.1f : 1.f / 1.1f);
 }
 
 void View::windowKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -116,7 +116,7 @@ bool View::create(const char* title)
     }
     glfwMakeContextCurrent(m_window);
 
-    glfwSetFramebufferSizeCallback(m_window, windowSizeCallback); 
+    glfwSetWindowSizeCallback(m_window, windowSizeCallback); 
     glfwSetKeyCallback(m_window, windowKeyCallback);
     glfwSetScrollCallback(m_window, windowScrollCallback);
     glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
@@ -127,6 +127,8 @@ bool View::create(const char* title)
     SGView::setSizePx(cwid,chei);
 
     g_glfwView.insert(std::make_pair(m_window, this));
+
+    return true;
 }
 
 void View::destroy()

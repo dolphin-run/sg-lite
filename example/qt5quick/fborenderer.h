@@ -6,6 +6,7 @@
 #include <qquickwindow.h>
 
 #include "sgview.h"
+#include "sgviewcamera.h"
 #include "scene.h"
 #include "scenefantacy.h"
 #include "scenevideo.h"
@@ -16,6 +17,7 @@ public:
     SceneQuickItemRenderer()
     {
         attach(&m_scene);
+        viewCamera()->setMirrored(false, true);
     }
 
     void updateScene(const char* psrc) {
@@ -59,8 +61,8 @@ private:
     QColor m_background;
 
     //mutable Scene m_scene;
-    //SceneFantacy m_scene;
-    SceneVideo m_scene;
+    SceneFantacy m_scene;
+    //SceneVideo m_scene;
 };
 
 #endif // SCENEQUICKITEMRENDERER_H

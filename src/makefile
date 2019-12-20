@@ -3,8 +3,6 @@
 CFLAGS := -shared -std=c++11 -Wall -fPIC -DSG_BUILDING_PLUGIN -I3rdparty/include
 #comment this to use GLEW
 CFLAGS += -DSG_GL_GLAD
-#uncomment this when used in qtquick
-#CFLAGS += -DSG_VIEW_VERTICAL_MIRROR
 
 LDFLAGS :=
 

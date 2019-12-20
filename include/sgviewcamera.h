@@ -16,6 +16,7 @@ public:
     void move(float x, float y);
     void scale(float s);
     void setFillMode(bool strench);
+    void setMirrored(bool horMirrored = false, bool verMirrored = false);
     void reset();
 
     const float* transform() const;

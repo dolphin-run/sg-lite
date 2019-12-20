@@ -25,6 +25,8 @@ private:
     float m_scale = 1.f;
     RectF m_viewPort;
     bool m_stretch = false;//fill mode
+    bool m_horMirrored = false;
+    bool m_verMirrored = false;
 
     SGViewCamera *q_ptr;
 };

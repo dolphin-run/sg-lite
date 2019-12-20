@@ -1,5 +1,6 @@
 #include "sgviewcamera.h"
 #include "sgviewcamera_p.h"
+#include <algorithm>
 
 
 SGViewCamera::SGViewCamera()
@@ -36,6 +37,8 @@ void SGViewCamera::moveCenter()
 
 void SGViewCamera::move(float x, float y)
 {
+    if (d_ptr->m_horMirrored) x = -x;
+    if (d_ptr->m_verMirrored) y = -y;
     d_ptr->m_center.x += (x / d_ptr->m_scale);
     d_ptr->m_center.y += (y / d_ptr->m_scale);
     update();
@@ -51,6 +54,14 @@ void SGViewCamera::scale(float s)
 void SGViewCamera::setFillMode(bool strench)
 {
     d_ptr->m_stretch = strench;
+}
+
+void SGViewCamera::setMirrored(bool horMirrored, bool verMirrored)
+{
+    d_ptr->m_horMirrored = horMirrored;
+    d_ptr->m_verMirrored = verMirrored;
+
+    update();
 }
 
 void SGViewCamera::reset()
@@ -85,6 +96,7 @@ void SGViewCameraPrivate::updateMatrix()
 {
     if (m_shei < 1.f || m_swid < 1.f || m_vwid < 1.f || m_vhei < 1.f) return;
     
+    float viewLeft, viewRight, viewBottom, viewTop;
     if (!m_stretch)
     {
         float wid = m_vwid / m_scale;
@@ -93,11 +105,10 @@ void SGViewCameraPrivate::updateMatrix()
         PointF oldcenter = m_viewPort.center();
         m_viewPort.move(m_center - oldcenter);
 
-#ifdef SG_VIEW_VERTICAL_MIRROR
-        m_transform = glm::ortho(m_viewPort.tl.x, m_viewPort.br.x, m_viewPort.tl.y, m_viewPort.br.y, -1.f, 1.f);
-#else
-        m_transform = glm::ortho(m_viewPort.tl.x, m_viewPort.br.x, m_viewPort.br.y, m_viewPort.tl.y, -1.f, 1.f);
-#endif
+        viewLeft = m_viewPort.tl.x;
+        viewRight = m_viewPort.br.x; 
+        viewBottom = m_viewPort.br.y; 
+        viewTop = m_viewPort.tl.y;
     }
     else 
     {
@@ -117,10 +128,16 @@ void SGViewCameraPrivate::updateMatrix()
             deltawid = (m_swid - actwid) / 2.f;
         }
 
-#ifdef SG_VIEW_VERTICAL_MIRROR
-        m_transform = glm::ortho(deltawid, actwid + deltawid, deltahei, acthei + deltahei, -1.f, 1.f);
-#else
-        m_transform = glm::ortho(deltawid, actwid + deltawid, acthei + deltahei, deltahei, -1.f, 1.f);
-#endif
+        viewLeft = deltawid;
+        viewRight = actwid + deltawid;
+        viewBottom = acthei + deltahei;
+        viewTop = deltahei;
     }
+
+    if (m_horMirrored)
+        std::swap(viewLeft, viewRight);
+    if (m_verMirrored)
+        std::swap(viewBottom, viewTop);
+
+    m_transform = glm::ortho(viewLeft, viewRight, viewBottom, viewTop, -1.f, 1.f);
 }

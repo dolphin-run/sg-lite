@@ -38,14 +38,15 @@ SRC := \
 UNAME=$(shell uname)
 SYS=$(if $(filter Linux%,$(UNAME)),linux,\
 	    $(if $(filter MINGW%,$(UNAME)),mingw,\
-	        undefined\
-))
+	        $(if $(filter Darwin%,$(UNAME)),macos,\
+	            undefined\
+)))
 
 all: $(SYS)
 
 undefined:
 	@echo "I can't guess your platform, please do 'make PLATFORM' where PLATFORM is one of these:"
-	@echo "      linux mingw"
+	@echo "      linux mingw macos"
 
 
 mingw : TARGET := sgcore.dll
@@ -93,4 +94,4 @@ install:
     ../include/node
     
 	-cp -f \
-    libsgcore.so ../lib/x64
+    libsgcore.* ../lib/x64

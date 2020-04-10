@@ -14,14 +14,15 @@ SRC := \
 UNAME=$(shell uname)
 SYS=$(if $(filter Linux%,$(UNAME)),linux,\
 	    $(if $(filter MINGW%,$(UNAME)),mingw,\
-	        undefined\
-))
+	        $(if $(filter Darwin%,$(UNAME)),macos,\
+	            undefined\
+)))
 
 all: $(SYS)
 
 undefined:
 	@echo "I can't guess your platform, please do 'make PLATFORM' where PLATFORM is one of these:"
-	@echo "      linux mingw"
+	@echo "      linux mingw macos"
 
 
 mingw : TARGET := sgglfw.exe
@@ -32,7 +33,7 @@ linux : CFLAGS += -I/usr/include -I/usr/local/include -I.
 linux : LDFLAGS += -L/usr/bin -lglfw -pthread -L/usr/local/bin
 macos : TARGET := sgglfw
 macos : CFLAGS += -I/usr/include -I/usr/local/include -I3rdparty/include
-macos : LDFLAGS += -L/usr/bin -L/usr/local/bin -L3rdparty/lib64 -lglfw3 -framework Cocoa -framework IOKit -framework CoreVideo
+macos : LDFLAGS += -L/usr/bin -L/usr/local/bin -L3rdparty/lib64 -lglfw -framework Cocoa -framework IOKit -framework CoreVideo
 
 
 macos : $(SRC) sgglfw

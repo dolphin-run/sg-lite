@@ -95,7 +95,7 @@ class SGShaderManager
 public:
     SGMaterialShader* find(SGMaterial *material);
 private:
-    std::unordered_map<E_MaterialType, SGMaterialShader*> m_shaders;
+    std::unordered_map<E_MaterialType, SGMaterialShader*, std::hash<int>> m_shaders;
 };
 
 class SGRenderer
